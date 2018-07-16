@@ -1,6 +1,7 @@
 ﻿#include "catch.hpp"
 #include "tree.h"
 #include "type.h"
+#include "logicalsystem.h"
 
 TEST_CASE("Trees")
 {
@@ -116,7 +117,19 @@ TEST_CASE("Trees")
     }
 }
 
+TEST_CASE("Logical Systems")
+{
+    LogicalSystem logicalSystem;
 
+    logicalSystem.setInferenceRulesPluginsDirPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework/plugins/InferenceRules");
+    logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination.dll");
+
+    CHECK_NOTHROW(logicalSystem.loadInferenceRules());
+
+    CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
+    CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
+    CHECK(logicalSystem.getInferenceRules()[0]->version() == 0);
+}
 
 
 

@@ -1,6 +1,1 @@
-#include "inferencerule.h"
-
-InferenceRule::InferenceRule()
-{
-
-}
+﻿#include "inferencerule.h"
