@@ -5,14 +5,14 @@ ProofLinks::ProofLinks()
 
 }
 
-const Formula *ProofLinks::getFormula() const
+const Formula *ProofLinks::getFormulaPtr() const
 {
-    return formula;
+    return formulaPtr;
 }
 
-void ProofLinks::setFormula(const Formula * const value)
+void ProofLinks::setFormulaPtr(const Formula * const value)
 {
-    formula = value;
+    formulaPtr = value;
 }
 
 QVector<const Proof *> ProofLinks::getLinks() const

@@ -73,3 +73,4 @@ void LogicalSystem::setWffType(const Type &value)
 {
     wffType.reset(new Type(value));
 }
+

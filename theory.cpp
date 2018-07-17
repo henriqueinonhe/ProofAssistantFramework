@@ -108,6 +108,11 @@ QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) con
     return proofList;
 }
 
+QVector<InferenceTactic *> Theory::getInferenceTactics() const
+{
+    return inferenceTactics;
+}
+
 QLinkedList<Formula> Theory::getAxioms() const
 {
     return axioms;

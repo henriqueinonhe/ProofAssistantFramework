@@ -6,12 +6,12 @@ Proof::Proof() :
 
 }
 
-QVector<ProofLinks> &Proof::getPremisesLinks()
+QVector<ProofLinks> Proof::getPremisesLinks() const
 {
     return premisesLinks;
 }
 
-ProofLinks &Proof::getConclusionLinks()
+ProofLinks Proof::getConclusionLinks() const
 {
     return conclusionLinks;
 }
@@ -20,7 +20,7 @@ bool Proof::isFinished() const
 {
     //NOTE Take care of edge case, when it is empty!
 
-    const Formula &conclusionFormula = *conclusionLinks.getFormula();
+    const Formula &conclusionFormula = *conclusionLinks.getFormulaPtr();
     const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
 
     return conclusionFormula == lastLineOfProofFormula;
@@ -42,7 +42,7 @@ QVector<const Formula *> Proof::getPremises() const
 
     std::for_each(premisesLinks.begin(), premisesLinks.end(), [&premises](const ProofLinks &links)
     {
-        premises.push_back(links.getFormula());
+        premises.push_back(links.getFormulaPtr());
     });
 
     return premises;
@@ -50,5 +50,5 @@ QVector<const Formula *> Proof::getPremises() const
 
 const Formula *Proof::getConclusion() const
 {
-    return conclusionLinks.getFormula();
+    return conclusionLinks.getFormulaPtr();
 }

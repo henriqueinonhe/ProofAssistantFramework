@@ -33,6 +33,7 @@ public:
     Type getWffType() const;
     void setWffType(const Type &value);
 
+
 protected:
     unique_ptr<const Type> wffType;
     QString name;
@@ -41,6 +42,7 @@ protected:
     QStringList inferenceRulesPluginsNames;
     QVector<InferenceRule *> inferenceRules; //I'm using raw pointers here because QPluginLoader already deletes
                                              //the plugin object when application terminates
+
 };
 
 #endif // LOGICALSYSTEM_H

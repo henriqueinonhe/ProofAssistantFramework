@@ -13,8 +13,8 @@ class Proof
 public:
     Proof();
 
-    QVector<ProofLinks> &getPremisesLinks();
-    ProofLinks &getConclusionLinks();
+    QVector<ProofLinks> getPremisesLinks() const;
+    ProofLinks getConclusionLinks() const;
 
     bool isFinished() const;
 
@@ -23,7 +23,6 @@ public:
 
     QVector<const Formula *> getPremises() const;
     const Formula *getConclusion() const;
-
 
 private:
     struct LineOfProofSection

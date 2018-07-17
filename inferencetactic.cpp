@@ -1,0 +1,2 @@
+﻿#include "inferencetactic.h"
+

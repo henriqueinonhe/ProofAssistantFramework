@@ -50,19 +50,52 @@ void ProofAssistant::createPremiseLineOfProof(const Formula &parsedPremise)
 void ProofAssistant::linkPremise(const QString &premise)
 {
     ProofLinks premiseProofLinks;
-
     premiseProofLinks.setLinks(currentTheory->findProofsWithConclusion(premise));
 
-    currentProof->linesOfProof.last()->getFormula(); //Ok There is a problem here....
-    premiseProofLinks.setFormula();
-//    currentProof->getPremisesLinks().push_back(premiseProofLinks);
+    LineOfProof &premiseLineOfProof = *currentProof->linesOfProof.last();
+    Formula *formulaPtr = premiseLineOfProof.formula.get();
+    premiseProofLinks.setFormulaPtr(formulaPtr);
+    currentProof->premisesLinks.push_back(premiseProofLinks);
 }
 
 void ProofAssistant::addPremise(const QString &premise)
 {
     const Formula parsedPremise = currentTheory->getParser()->parse(premise);
     createPremiseLineOfProof(parsedPremise);
-    linkPremise(premise);
+    linkPremise(premise); //NOTE Maybe linking should be done only when proof is finished!
+                          //So I need a temporary place to store them (both premises and conclusion)!
+}
+
+void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStringList &argumentList) const
+{
+    const LogicalSystem &logicalSystem = *currentTheory->getParentLogic();
+    InferenceRule *rule = queryInferenceProcedure<InferenceRule>(logicalSystem.getInferenceRules(), callCommand);
+
+    if(rule == nullptr)
+    {
+        throw std::invalid_argument("There is no inference rule associated with this call command!");
+    }
+
+    rule->apply(*currentProof, argumentList);
+
+    //Maybe should always have a check here?
+}
+
+void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const
+{
+    InferenceTactic *tactic = queryInferenceProcedure<InferenceTactic>(currentTheory->getInferenceTactics(), callCommand);
+
+    if(tactic == nullptr)
+    {
+        throw std::invalid_argument("There is no inference tactic associated with this call command!");
+    }
+
+    tactic->apply(this, argumentList);
+}
+
+void ProofAssistant::setLineOfProofComment(const unsigned int lineNumber, const QString &comment) const
+{
+    currentProof->linesOfProof[lineNumber]->setComment(comment);
 }
 
 void ProofAssistant::checkCurrentTheoryIsNull() const
@@ -80,3 +113,28 @@ void ProofAssistant::checkCurrentProofIsNull() const
         throw std::runtime_error("Current proof pointer is null!");
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

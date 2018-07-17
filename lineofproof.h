@@ -6,6 +6,8 @@
 #include "formula.h"
 #include "justification.h"
 
+class ProofAssistant;
+
 using namespace std;
 
 class LineOfProof
@@ -15,7 +17,7 @@ public:
 
     LineOfProof(const Formula &formula, const Justification &justification, const QString &comment = "");
 
-    Formula &getFormula();
+    Formula getFormula() const;
     void setFormula(const Formula &formula);
 
     Justification getJustification() const;
@@ -24,10 +26,12 @@ public:
     QString getComment() const;
     void setComment(const QString &value);
 
-private:
+protected:
     unique_ptr<Formula> formula;
     Justification justification;
     QString comment;
+
+    friend class ProofAssistant;
 };
 
 #endif // LINEOFPROOF_H
