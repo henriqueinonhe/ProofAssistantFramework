@@ -63,3 +63,13 @@ QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
 {
     return inferenceRules;
 }
+
+Type LogicalSystem::getWffType() const
+{
+    return *wffType;
+}
+
+void LogicalSystem::setWffType(const Type &value)
+{
+    wffType.reset(new Type(value));
+}

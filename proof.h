@@ -11,6 +11,17 @@ class Proof
 public:
     Proof();
 
+    QVector<ProofLinks> &getPremisesLinks();
+    ProofLinks &getConclusionLinks();
+
+    bool isFinished() const;
+
+    QString getName() const;
+    void setName(const QString &value);
+
+    QVector<const Formula *> getPremises() const;
+    const Formula *getConclusion() const;
+
 private:
     struct LineOfProofSection
     {
@@ -32,10 +43,11 @@ private:
         bool collapsed;
     };
 
+    QString name;
     QVector<ProofLinks> premisesLinks;
     ProofLinks conclusionLinks;
-    QVector<LineOfProof> demonstration;
-    Tree<LineOfProofSection> sectioning;
+    QVector<LineOfProof> demonstration; //FIXME Becomes either a linked list or wrap LineOfProof with a shared pointer
+    Tree<LineOfProofSection> sectioning; //TODO
     bool linkedWithAxioms; //NOTE Maybe find a better name
 };
 

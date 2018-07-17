@@ -2,6 +2,8 @@
 #include "tree.h"
 #include "type.h"
 #include "logicalsystem.h"
+#include "tablesignature.h"
+#include "dirtyfix.h"
 
 TEST_CASE("Trees")
 {
@@ -121,6 +123,8 @@ TEST_CASE("Logical Systems")
 {
     LogicalSystem logicalSystem;
 
+    logicalSystem.setWffType(Type("o"));
+
     logicalSystem.setInferenceRulesPluginsDirPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework/plugins/InferenceRules");
     logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination.dll");
 
@@ -129,11 +133,41 @@ TEST_CASE("Logical Systems")
     CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
     CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
     CHECK(logicalSystem.getInferenceRules()[0]->version() == 0);
+    CHECK(logicalSystem.getInferenceRules()[0]->id() == "Logos Classical And Elimination");
+}
+
+TEST_CASE("Theories")
+{
+    LogicalSystem logicalSystem;
+    logicalSystem.setWffType(Type("o"));
+
+    Theory theory;
+
+    CHECK_THROWS(theory.addAxiom("P"));
+
+    theory.setParentLogic(&logicalSystem);
+
+    CHECK_THROWS(theory.addAxiom("P"));
+
+    TableSignature *signature = new TableSignature;
+
+    signature->addToken(CoreToken("P", Type("o")));
+    signature->addToken(CoreToken("&", Type("[o,o]->o")));
+    signature->addToken(CoreToken("~", Type("o->o")));
+
+    theory.setSignature(signature);
+
+    CHECK_NOTHROW(theory.addAxiom("P"));
+    CHECK_NOTHROW(theory.addAxiom("(& P P)"));
+    CHECK_NOTHROW(theory.removeAxiom("P"));
+    CHECK_NOTHROW(theory.removeAxiom("(& P P)"));
+
+    CHECK(theory.getAxioms().isEmpty());
 }
 
 
 
-//TEST_CASE("Dirty Fix")
-//{
-//    DirtyFix::fix();
-//}
+TEST_CASE("Dirty Fix")
+{
+    DirtyFix::fix();
+}
