@@ -6,6 +6,8 @@
 #include "prooflinks.h"
 #include "tree.h"
 
+class ProofAssistant;
+
 class Proof
 {
 public:
@@ -21,6 +23,7 @@ public:
 
     QVector<const Formula *> getPremises() const;
     const Formula *getConclusion() const;
+
 
 private:
     struct LineOfProofSection
@@ -46,9 +49,11 @@ private:
     QString name;
     QVector<ProofLinks> premisesLinks;
     ProofLinks conclusionLinks;
-    QVector<LineOfProof> demonstration; //FIXME Becomes either a linked list or wrap LineOfProof with a shared pointer
+    QVector<shared_ptr<LineOfProof>> linesOfProof;
     Tree<LineOfProofSection> sectioning; //TODO
     bool linkedWithAxioms; //NOTE Maybe find a better name
+
+    friend class ProofAssistant;
 };
 
 #endif // PROOF_H

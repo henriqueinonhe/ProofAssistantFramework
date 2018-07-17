@@ -87,19 +87,19 @@ QVector<const Proof *> Theory::findProofsWithConclusion(const QString &formula) 
     return proofList;
 }
 
-QVector<const Proof *> Theory::findProofsWithPremiss(const QString &formula) const
+QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) const
 {
     QVector<const Proof *> proofList;
 
     std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const Proof &proof)
     {
         const QVector<const Formula *> premises = proof.getPremises();
-        bool containsPremiss = std::any_of(premises.begin(), premises.end(), [&formula](const Formula * const premiss)
+        bool containsPremise = std::any_of(premises.begin(), premises.end(), [&formula](const Formula * const premise)
         {
-            return premiss->formattedString() == formula;
+            return premise->formattedString() == formula;
         });
 
-        if(containsPremiss)
+        if(containsPremise)
         {
             proofList.push_back(&proof);
         }
@@ -108,7 +108,7 @@ QVector<const Proof *> Theory::findProofsWithPremiss(const QString &formula) con
     return proofList;
 }
 
-QVector<Formula> Theory::getAxioms() const
+QLinkedList<Formula> Theory::getAxioms() const
 {
     return axioms;
 }

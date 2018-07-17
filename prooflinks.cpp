@@ -19,3 +19,8 @@ QVector<const Proof *> ProofLinks::getLinks() const
 {
     return links;
 }
+
+void ProofLinks::setLinks(const QVector<const Proof *> &value)
+{
+    links = value;
+}

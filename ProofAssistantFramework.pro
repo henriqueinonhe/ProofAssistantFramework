@@ -55,7 +55,8 @@ SOURCES += main.cpp \
     lineofproof.cpp \
     prooflinks.cpp \
     inferencerule.cpp \
-    proofassistant.cpp
+    proofassistant.cpp \
+    justification.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -112,4 +113,5 @@ HEADERS += \
     prooflinks.h \
     inferencerule.h \
     tree.h \
-    proofassistant.h
+    proofassistant.h \
+    justification.h

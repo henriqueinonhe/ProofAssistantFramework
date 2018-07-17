@@ -16,7 +16,7 @@ public:
 
     void addAxiom(const QString &axiom);
     void removeAxiom(const QString &axiom);
-    QVector<Formula> getAxioms() const;
+    QLinkedList<Formula> getAxioms() const;
 
     const LogicalSystem *getParentLogic() const;
     void setParentLogic(const LogicalSystem * const value);
@@ -29,14 +29,14 @@ public:
     QLinkedList<Proof> getProofs() const;
 
     QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
-    QVector<const Proof *> findProofsWithPremiss(const QString &formula) const;
+    QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
 private:
     QString name;
     unique_ptr<Parser> parser;
     unique_ptr<Signature> signature;
-    QVector<Formula> axioms;
-    QLinkedList<Proof> proofs; //NOTE Why linked list?
+    QLinkedList<Formula> axioms; //NOTE Do we really need a linked list here?
+    QLinkedList<Proof> proofs; //Linked list because proofs will be referenced by pointers
     const LogicalSystem *parentLogic;
 };
 

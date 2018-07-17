@@ -18,7 +18,12 @@ ProofLinks &Proof::getConclusionLinks()
 
 bool Proof::isFinished() const
 {
-    return conclusionLinks.getFormula()->formattedString() == demonstration.last().getSentence();
+    //NOTE Take care of edge case, when it is empty!
+
+    const Formula &conclusionFormula = *conclusionLinks.getFormula();
+    const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
+
+    return conclusionFormula == lastLineOfProofFormula;
 }
 
 QString Proof::getName() const

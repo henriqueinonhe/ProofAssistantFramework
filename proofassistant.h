@@ -2,6 +2,8 @@
 #define PROOFASSISTANT_H
 
 #include "theory.h"
+#include "prooflinks.h"
+#include <memory>
 
 class ProofAssistant
 {
@@ -16,7 +18,7 @@ public:
 
     void createProof();
     void setProofName(const QString &name);
-    void addPremiss(const QString &premiss);
+    void addPremise(const QString &premise);
 
 private:
     void checkCurrentTheoryIsNull() const;
@@ -24,7 +26,9 @@ private:
 
     Theory *currentTheory;
     Proof *currentProof;
-    bool proofOwner;
+    bool proofOwner; //WTF! What is this again?
+    void createPremiseLineOfProof(const Formula &parsedPremise);
+    void linkPremise(const QString &premise);
 };
 
 #endif // PROOFASSISTANT_H

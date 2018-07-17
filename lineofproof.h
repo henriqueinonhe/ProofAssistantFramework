@@ -2,23 +2,32 @@
 #define LINEOFPROOF_H
 
 #include <QString>
+#include <memory>
+#include "formula.h"
+#include "justification.h"
+
+using namespace std;
 
 class LineOfProof
 {
 public:
     LineOfProof();
 
-    QString getSentence() const;
-    void setSentence(const QString &value);
+    LineOfProof(const Formula &formula, const Justification &justification, const QString &comment = "");
+
+    Formula &getFormula();
+    void setFormula(const Formula &formula);
+
+    Justification getJustification() const;
+    void setJustification(const Justification &value);
 
     QString getComment() const;
     void setComment(const QString &value);
 
 private:
-    QString sentence; //FIXME Gotta be something else here, probably an interface
+    unique_ptr<Formula> formula;
+    Justification justification;
     QString comment;
-    //Justification
-
 };
 
 #endif // LINEOFPROOF_H

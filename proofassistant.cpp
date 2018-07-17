@@ -40,11 +40,29 @@ void ProofAssistant::setProofName(const QString &name)
     currentProof->setName(name);
 }
 
-void ProofAssistant::addPremiss(const QString &premiss)
+void ProofAssistant::createPremiseLineOfProof(const Formula &parsedPremise)
 {
-    Formula parsedPremiss = currentTheory->getParser()->parse(premiss);
+    shared_ptr<LineOfProof> newPremiseLine = make_shared<LineOfProof>(LineOfProof(parsedPremise, Justification("Premise", QStringList())));
 
+    currentProof->linesOfProof.push_back(newPremiseLine);
+}
 
+void ProofAssistant::linkPremise(const QString &premise)
+{
+    ProofLinks premiseProofLinks;
+
+    premiseProofLinks.setLinks(currentTheory->findProofsWithConclusion(premise));
+
+    currentProof->linesOfProof.last()->getFormula(); //Ok There is a problem here....
+    premiseProofLinks.setFormula();
+//    currentProof->getPremisesLinks().push_back(premiseProofLinks);
+}
+
+void ProofAssistant::addPremise(const QString &premise)
+{
+    const Formula parsedPremise = currentTheory->getParser()->parse(premise);
+    createPremiseLineOfProof(parsedPremise);
+    linkPremise(premise);
 }
 
 void ProofAssistant::checkCurrentTheoryIsNull() const

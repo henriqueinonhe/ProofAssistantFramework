@@ -33,7 +33,7 @@ void LineOfProof::setJustification(const Justification &value)
     justification = value;
 }
 
-Formula LineOfProof::getFormula() const
+Formula &LineOfProof::getFormula()
 {
     return *formula;
 }
