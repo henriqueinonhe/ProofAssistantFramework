@@ -4,7 +4,8 @@
 #include "formula.h"
 #include "lineofproof.h"
 #include "prooflinks.h"
-#include "tree.h"
+#include "lineofproofsection.h"
+#include "lineofproofsectionmanager.h"
 
 class ProofAssistant;
 
@@ -25,31 +26,11 @@ public:
     const Formula *getConclusion() const;
 
 private:
-    struct LineOfProofSection
-    {
-        LineOfProofSection(const unsigned int beginIndex,
-                           const unsigned int endIndex,
-                           const QString &label,
-                           const bool collapsed) :
-            beginIndex(beginIndex),
-            endIndex(endIndex),
-            label(label),
-            collapsed(collapsed)
-        {}
-
-        LineOfProofSection(){}
-
-        unsigned int beginIndex;
-        unsigned int endIndex;
-        QString label;
-        bool collapsed;
-    };
-
     QString name;
     QVector<ProofLinks> premisesLinks;
     ProofLinks conclusionLinks;
     QVector<shared_ptr<LineOfProof>> linesOfProof;
-    Tree<LineOfProofSection> sectioning; //TODO
+    LineOfProofSectionManager sectioning;
     bool linkedWithAxioms; //NOTE Maybe find a better name
 
     friend class ProofAssistant;

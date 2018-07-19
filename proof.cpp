@@ -18,12 +18,17 @@ ProofLinks Proof::getConclusionLinks() const
 
 bool Proof::isFinished() const
 {
-    //NOTE Take care of edge case, when it is empty!
+    if(linesOfProof.isEmpty())
+    {
+        return false;
+    }
+    else
+    {
+        const Formula &conclusionFormula = *conclusionLinks.getFormulaPtr();
+        const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
 
-    const Formula &conclusionFormula = *conclusionLinks.getFormulaPtr();
-    const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
-
-    return conclusionFormula == lastLineOfProofFormula;
+        return conclusionFormula == lastLineOfProofFormula;
+    }
 }
 
 QString Proof::getName() const
@@ -52,3 +57,4 @@ const Formula *Proof::getConclusion() const
 {
     return conclusionLinks.getFormulaPtr();
 }
+

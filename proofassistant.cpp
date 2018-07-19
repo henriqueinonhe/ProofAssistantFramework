@@ -31,6 +31,8 @@ void ProofAssistant::createProof()
 
     currentProof = new Proof;
     proofOwner = true;
+
+    //NOTE The process is not finished yet!
 }
 
 void ProofAssistant::setProofName(const QString &name)
@@ -76,9 +78,16 @@ void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStrin
         throw std::invalid_argument("There is no inference rule associated with this call command!");
     }
 
-    rule->apply(*currentProof, argumentList);
+    currentProof->linesOfProof.push_back(shared_ptr<LineOfProof>(new LineOfProof(rule->apply(*currentProof, argumentList))));
 
-    //Maybe should always have a check here?
+
+    //NOTE Refactor this! Extract function!
+    if(currentProof->isFinished())
+    {
+        currentTheory->proofs.push_back(*currentProof);
+
+        delete currentProof;
+    }
 }
 
 void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const

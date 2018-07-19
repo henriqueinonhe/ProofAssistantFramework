@@ -58,7 +58,9 @@ SOURCES += main.cpp \
     proofassistant.cpp \
     justification.cpp \
     inferenceprocedure.cpp \
-    inferencetactic.cpp
+    inferencetactic.cpp \
+    lineofproofsection.cpp \
+    lineofproofsectionmanager.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -118,4 +120,6 @@ HEADERS += \
     proofassistant.h \
     justification.h \
     inferenceprocedure.h \
-    inferencetactic.h
+    inferencetactic.h \
+    lineofproofsection.h \
+    lineofproofsectionmanager.h

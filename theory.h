@@ -8,6 +8,7 @@
 #include "inferencetactic.h"
 
 class LogicalSystem;
+class ProofAssistant;
 
 class Theory
 {
@@ -43,6 +44,8 @@ private:
     const LogicalSystem *parentLogic;
     QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes
                                                  //the plugin object when application terminates
+
+    friend class ProofAssistant;
 };
 
 #endif // THEORY_H

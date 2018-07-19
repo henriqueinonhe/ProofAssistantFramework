@@ -1,6 +1,7 @@
 ﻿#ifndef TREE_H
 #define TREE_H
 
+#include <QLinkedList>
 #include <QVector>
 #include <memory>
 #include <QRegularExpression>
@@ -15,15 +16,16 @@ class Tree
 {
 public:
     Tree() :
-        root(this, nullptr, QVector<unsigned int>(), T()),
-        height(0)
+        root(this, nullptr, T())
     {}
 
-    unsigned int getHeight() const {return height;}
+    unsigned int getHeight() const
+    {
+        return root.getGreatestDescendantHeight();
+    }
 
 private:
     TreeNode<T> root;
-    unsigned int height;
 
 friend class TreeNode<T>;
 friend class TreeIterator<T>;
@@ -41,26 +43,42 @@ public:
 
     void appendChild(const T &obj)
     {
-        QVector<unsigned int> coordinates = this->coordinates;
-        coordinates.push_back(getChildrenNumber());
-        children.push_back(make_shared<TreeNode<T>>(TreeNode<T>(tree, this, coordinates, obj)));
+        children.push_back(make_shared<TreeNode<T>>(TreeNode<T>(tree, this, obj)));
     }
 
-    QVector<unsigned int> getCoordinates() const {return coordinates;}
+    void insertChildVertically(const T &obj)
+    {
+        //TODO
+    }
+
+    QVector<unsigned int> getCoordinates() const
+    {
+        QVector<unsigned int> coordinates;
+
+        const TreeNode<T> *ptr = this;
+        while(!ptr->isRoot())
+        {
+            coordinates.prepend(ptr->getOwnChildNumber());
+            ptr = ptr->parent;
+        }
+
+        return coordinates;
+    }
 
     QString coordinatesToString() const
     {
         QString coordinatesString;
+        const QVector<unsigned int> coordinates = this->getCoordinates();
 
         coordinatesString += "(";
-        if(!this->coordinates.empty())
+        if(!coordinates.empty())
         {
             const unsigned int lastIndexCompensation = 1;
-            std::for_each(this->coordinates.begin(), this->coordinates.end() - lastIndexCompensation, [&](unsigned int e) {
+            std::for_each(coordinates.begin(), coordinates.end() - lastIndexCompensation, [&](unsigned int e) {
                 coordinatesString += QString::number(e);
                 coordinatesString += ",";
             });
-            coordinatesString += QString::number(this->coordinates.back());
+            coordinatesString += QString::number(coordinates.back());
         }
         coordinatesString += ")";
 
@@ -78,39 +96,68 @@ public:
 
     unsigned int getHeight() const
     {
-        return coordinates.size();
+        const TreeNode<T> *ptr = this;
+
+        unsigned int height = 0;
+        while(!ptr->isRoot())
+        {
+            ptr = ptr->parent;
+            height++;
+        }
+
+        return height;
     }
+
     unsigned int getChildrenNumber() const
     {
         return children.size();
     }
+
     unsigned int getOwnChildNumber() const
     {
-        return coordinates.back();
+        TreeNode<T> *ptr = parent;
+
+        unsigned int ownChildNumber = 0;
+        while(ptr->children[ownChildNumber].get() != this)
+        {
+            ownChildNumber++;
+        }
+
+        return ownChildNumber;
+    }
+
+    unsigned int getGreatestDescendantHeight() const
+    {
+        if(this->isChildless())
+        {
+            return getHeight();
+        }
+        else
+        {
+            QVector<unsigned int> greatestDescendantHeightVector;
+
+            std::for_each(children.begin(), children.end(), [&greatestDescendantHeightVector](const shared_ptr<TreeNode<T>> &node)
+            {
+                greatestDescendantHeightVector.push_back(node->getGreatestDescendantHeight());
+            });
+
+
+            return *std::max_element(greatestDescendantHeightVector.begin(),
+                                    greatestDescendantHeightVector.end());
+        }
     }
 
 private:
-    TreeNode(Tree<T> *tree, TreeNode<T> *parent, const QVector<unsigned int> &coordinates, const T &obj) :
+    TreeNode(Tree<T> *tree, TreeNode<T> *parent, const T &obj) :
         tree(tree),
         parent(parent),
-        coordinates(coordinates),
         obj(obj)
     {
-        updateTreeHeight();
-    }
-
-    void updateTreeHeight()
-    {
-        if(tree->height < getHeight())
-        {
-            tree->height = getHeight();
-        }
     }
 
     Tree<T> *tree;
     TreeNode<T> *parent;
     QVector<shared_ptr<TreeNode<T>>> children;
-    QVector<unsigned int> coordinates;
     T obj;
 
 friend class Tree<T>;
