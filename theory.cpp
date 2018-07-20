@@ -1,11 +1,6 @@
 ﻿#include "theory.h"
 #include "logicalsystem.h"
 
-Theory::Theory()
-{
-
-}
-
 Theory::Theory(const LogicalSystem * const parentLogic) :
     parentLogic(parentLogic)
 {

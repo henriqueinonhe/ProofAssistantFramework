@@ -145,7 +145,7 @@ TEST_CASE("Theories")
     LogicalSystem logicalSystem;
     logicalSystem.setWffType(Type("o"));
 
-    Theory theory;
+    Theory theory(&logicalSystem);
 
     CHECK_THROWS(theory.addAxiom("P"));
 
@@ -229,19 +229,21 @@ TEST_CASE("Program Manager and Storage Manager")
 
     CHECK_NOTHROW(manager.createLogicalSystem("Pure First Order Logic",
                                               "First order logic without equality or functions.",
-                                              inferenceRulesNameList));
+                                              inferenceRulesNameList,
+                                              Type("o")));
+
     CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
     CHECK(manager.getActiveLogicalSystem()->getName() == "Pure First Order Logic");
     CHECK(manager.getActiveLogicalSystem()->getDescription() == "First order logic without equality or functions.");
     CHECK(manager.getActiveLogicalSystem()->getInferenceRulesPluginsNames() == inferenceRulesNameList);
+    CHECK(manager.getActiveLogicalSystem()->getWffType() == Type("o"));
 
     CHECK_THROWS(manager.createLogicalSystem("Pure First Order Logic",
                                              "First order logic without equality or functions.",
-                                             inferenceRulesNameList));
+                                             inferenceRulesNameList,
+                                             Type("o")));
 
     CHECK_NOTHROW(manager.removeLogicalSystem("Pure First Order Logic"));
-
-
 }
 
 TEST_CASE("Dirty Fix")

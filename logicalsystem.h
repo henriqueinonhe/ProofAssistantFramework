@@ -19,7 +19,8 @@ public:
     LogicalSystem();
     LogicalSystem(const QString &name,
                   const QString &description,
-                  const QStringList &inferenceRulesPluginsNames);
+                  const QStringList &inferenceRulesPluginsNames,
+                  const Type &wffType);
 
     QString getName() const;
     void setName(const QString &value);
@@ -31,7 +32,7 @@ public:
     void setInferenceRulesPluginsNames(const QStringList &value);
     void addInferenceRulePluginName(const QString &pluginName);
 
-    void loadInferenceRules();
+    void loadInferenceRules(); //FIXME This gotta be remade!
 
     QString getInferenceRulesPluginsDirPath() const;
     void setInferenceRulesPluginsDirPath(const QString &value);
@@ -42,13 +43,13 @@ public:
     void setWffType(const Type &value);
 
 protected:
-    unique_ptr<const Type> wffType;
     QString name;
     QString description;
     QString inferenceRulesPluginsDirPath;
     QStringList inferenceRulesPluginsNames;
     QVector<InferenceRule *> inferenceRules; //I'm using raw pointers here because QPluginLoader already deletes
                                              //the plugin object when application terminates
+    unique_ptr<const Type> wffType;
 
     friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
     friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);

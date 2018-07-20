@@ -1,15 +1,32 @@
 ﻿#include "storagemanager.h"
 
+QString StorageManager::rootPath = "";
 const QString StorageManager::storageFilesSuffix = ".dat";
 const QString StorageManager::storageDirName = "data";
+
+//Logical System
 const QString StorageManager::logicalSystemsDirName = "Logical Systems";
 const QString StorageManager::logicalSystemsRecordsFileName = "Logical Systems Records";
 const QString StorageManager::logicalSystemDataFileName = "logicalsystem";
-QString StorageManager::rootPath = "";
 
-QString StorageManager::getLogicalSystemsRecordsPath()
+//Theory
+const QString StorageManager::theoriesDirName = "Theories";
+const QString StorageManager::theoriesRecordsFileName = "Theories Records";
+const QString StorageManager::theoryDataFileName = "theory";
+
+QString StorageManager::logicalSystemsRecordsPath()
 {
     return logicalSystemsDirPath() +  "/" + logicalSystemsRecordsFileName + storageFilesSuffix;
+}
+
+const QString StorageManager::theoriesDirPath(const QString &logicalSystemName)
+{
+    return logicalSystemsDirPath() + "/" + logicalSystemName + "/" + theoriesDirName;
+}
+
+const QString StorageManager::theoriesRecordsPath(const QString &logicalSystemName)
+{
+    return theoriesDirPath(logicalSystemName) + "/" + theoriesRecordsFileName + storageFilesSuffix;
 }
 
 QString StorageManager::getRootPath()
@@ -24,12 +41,12 @@ void StorageManager::setRootPath(const QString &value)
 
 QVector<LogicalSystemRecord> StorageManager::retrieveLogicalSystemsRecords()
 {
-    QFile logicalSystemsRecordsFile(getLogicalSystemsRecordsPath());
+    QFile logicalSystemsRecordsFile(logicalSystemsRecordsPath());
     if(!logicalSystemsRecordsFile.open(QIODevice::ReadOnly))
     {
         QString errorMsg;
         errorMsg += "Failed to load logical systems records file at:";
-        errorMsg += QString("\"") + getLogicalSystemsRecordsPath() + "\"";
+        errorMsg += QString("\"") + logicalSystemsRecordsPath() + "\"";
 
         throw std::logic_error(errorMsg.toStdString());
     }
@@ -43,12 +60,12 @@ QVector<LogicalSystemRecord> StorageManager::retrieveLogicalSystemsRecords()
 
 void StorageManager::storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records)
 {
-    QFile logicalSystemsRecordsFile(getLogicalSystemsRecordsPath());
+    QFile logicalSystemsRecordsFile(logicalSystemsRecordsPath());
     if(!logicalSystemsRecordsFile.open(QIODevice::WriteOnly))
     {
         QString errorMsg;
         errorMsg += "Failed to load logical systems records file at:";
-        errorMsg += QString("\"") + getLogicalSystemsRecordsPath() + "\"";
+        errorMsg += QString("\"") + logicalSystemsRecordsPath() + "\"";
 
         throw std::logic_error(errorMsg.toStdString());
     }
@@ -121,5 +138,45 @@ void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem 
     }
     QDataStream in(&logicalSystemDataFile);
     in >> *system;
+}
+
+QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)
+{
+    QFile theoriesRecordsFile(theoriesRecordsPath(logicalSystemName));
+    if(!theoriesRecordsFile.open(QIODevice::ReadOnly))
+    {
+        QString errorMsg;
+        errorMsg += "Failed to load theories records file at:";
+        errorMsg += QString("\"") + theoriesRecordsPath(logicalSystemName) + "\"";
+
+        throw std::logic_error(errorMsg.toStdString());
+    }
+    QDataStream in(&theoriesRecordsFile);
+
+    QVector<TheoryRecord> theoriesRecords;
+    in >> theoriesRecords;
+
+    return theoriesRecords;
+}
+
+StorageManager::storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records)
+{
+    QFile theoriesRecordsFile(theoriesRecordsPath(logicalSystemName));
+    if(!theoriesRecordsFile.open(QIODevice::WriteOnly))
+    {
+        QString errorMsg;
+        errorMsg += "Failed to load theories records file at:";
+        errorMsg += QString("\"") + theoriesRecordsPath(logicalSystemName) + "\"";
+
+        throw std::logic_error(errorMsg.toStdString());
+    }
+    QDataStream out(&theoriesRecordsFile);
+
+    out << records;
+}
+
+void StorageManager::createTheoryDir(const QString &logicalSystemName, const Theory &theory)
+{
+//TODO
 }
 

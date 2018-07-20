@@ -63,7 +63,8 @@ SOURCES += main.cpp \
     lineofproofsectionmanager.cpp \
     storagemanager.cpp \
     logicalsystemrecord.cpp \
-    programmanager.cpp
+    programmanager.cpp \
+    theoryrecord.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -128,4 +129,5 @@ HEADERS += \
     lineofproofsectionmanager.h \
     storagemanager.h \
     logicalsystemrecord.h \
-    programmanager.h
+    programmanager.h \
+    theoryrecord.h

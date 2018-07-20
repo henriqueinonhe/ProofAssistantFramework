@@ -18,7 +18,7 @@ public:
 
     void createLogicalSystem(const QString &name,
                              const QString &description,
-                             const QStringList &inferenceRuleNamesList) const;
+                             const QStringList &inferenceRuleNamesList, const Type &wffType) const;
     void removeLogicalSystem(const QString &name) const;
 
     void loadLogicalSystem(const QString &name);

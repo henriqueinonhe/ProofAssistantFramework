@@ -22,7 +22,8 @@ bool ProgramManager::checkLogicalSystemNameCollision(const QString &name) const
 
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
-                                         const QStringList &inferenceRuleNamesList) const
+                                         const QStringList &inferenceRuleNamesList,
+                                         const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
     {
@@ -34,7 +35,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, inferenceRuleNamesList));
+    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, inferenceRuleNamesList, wffType));
 }
 
 QVector<LogicalSystemRecord> ProgramManager::getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const
@@ -75,6 +76,7 @@ void ProgramManager::loadLogicalSystem(const QString &name)
     StorageManager::loadLogicalSystem(name, system);
 
     activeLogicalSystem.reset(system);
+    //system->loadInferenceRules(); //FIXME!
 }
 
 
