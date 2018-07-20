@@ -5,7 +5,7 @@ ProofAssistant::ProofAssistant()
 
 }
 
-Theory *ProofAssistant::getCurrentTheory() const
+const Theory *ProofAssistant::getCurrentTheory() const
 {
     return currentTheory;
 }
@@ -15,7 +15,7 @@ void ProofAssistant::setCurrentTheory(Theory *value)
     currentTheory = value;
 }
 
-Proof *ProofAssistant::getCurrentProof() const
+const Proof *ProofAssistant::getCurrentProof() const
 {
     return currentProof;
 }
@@ -84,9 +84,7 @@ void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStrin
     //NOTE Refactor this! Extract function!
     if(currentProof->isFinished())
     {
-        currentTheory->proofs.push_back(*currentProof);
-
-        delete currentProof;
+        currentTheory->proofs.push_back(shared_ptr<Proof>(currentProof));
     }
 }
 

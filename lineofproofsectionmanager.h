@@ -14,6 +14,8 @@ public:
     LineOfProofSection getSection(const unsigned int beginIndex, const unsigned int endIndex) const;
 
 private:
+    void testForSiblingsIndexesCross(const LineOfProofSection &section, const unsigned int currentNodeIndex, TreeIterator<LineOfProofSection> iter);
+
     Tree<LineOfProofSection> sections;
 };
 

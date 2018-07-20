@@ -11,10 +11,10 @@ class ProofAssistant
 public:
     ProofAssistant();
 
-    Theory *getCurrentTheory() const;
+    const Theory *getCurrentTheory() const;
     void setCurrentTheory(Theory *value);
 
-    Proof *getCurrentProof() const;
+    const Proof *getCurrentProof() const;
     void setCurrentProof(Proof *value);
 
     void createProof();

@@ -74,3 +74,13 @@ void LogicalSystem::setWffType(const Type &value)
     wffType.reset(new Type(value));
 }
 
+QString LogicalSystem::getDescription() const
+{
+    return description;
+}
+
+void LogicalSystem::setDescription(const QString &value)
+{
+    description = value;
+}
+

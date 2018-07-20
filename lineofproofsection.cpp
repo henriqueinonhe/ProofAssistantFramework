@@ -71,10 +71,10 @@ bool LineOfProofSection::indexesContainProperly(const LineOfProofSection &other)
 bool LineOfProofSection::indexesCross(const LineOfProofSection &other) const
 {
     return (beginIndex < other.beginIndex &&
-           endIndex > other.beginIndex &&
+           endIndex >= other.beginIndex &&
            endIndex < other.endIndex) ||
            (beginIndex > other.beginIndex &&
-            beginIndex < other.endIndex &&
+            beginIndex <= other.endIndex &&
             endIndex > other.endIndex);
 }
 

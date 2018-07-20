@@ -6,6 +6,7 @@
 #include "proof.h"
 #include "parser.h"
 #include "inferencetactic.h"
+#include "formatter.h"
 
 class LogicalSystem;
 class ProofAssistant;
@@ -28,8 +29,6 @@ public:
 
     Parser *getParser() const;
 
-    QLinkedList<Proof> getProofs() const;
-
     QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
     QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
@@ -40,10 +39,12 @@ private:
     unique_ptr<Parser> parser;
     unique_ptr<Signature> signature;
     QLinkedList<Formula> axioms; //NOTE Do we really need a linked list here?
-    QLinkedList<Proof> proofs; //Linked list because proofs will be referenced by pointers
+    QVector<shared_ptr<Proof>> proofs;
     const LogicalSystem *parentLogic;
     QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes
                                                  //the plugin object when application terminates
+    Formatter preFormatter;
+    Formatter postFormatter;
 
     friend class ProofAssistant;
 };

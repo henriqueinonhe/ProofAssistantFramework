@@ -6,6 +6,7 @@
 #include "dirtyfix.h"
 #include "lineofproofsection.h"
 #include "lineofproofsectionmanager.h"
+#include "storagemanager.h"
 
 TEST_CASE("Trees")
 {
@@ -128,7 +129,7 @@ TEST_CASE("Logical Systems")
     logicalSystem.setWffType(Type("o"));
 
     logicalSystem.setInferenceRulesPluginsDirPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework/plugins/InferenceRules");
-    logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination.dll");
+    logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination");
 
     CHECK_NOTHROW(logicalSystem.loadInferenceRules());
 
@@ -188,6 +189,8 @@ TEST_CASE("Line of Proof Section")
 
     CHECK(section1.indexesCross(section3));
     CHECK(section3.indexesCross(section1));
+    CHECK(LineOfProofSection(1, 3, "").indexesCross(LineOfProofSection(3, 5, "")));
+    CHECK(LineOfProofSection(3, 5, "").indexesCross(LineOfProofSection(1, 3, "")));
     CHECK(!section1.indexesCross(section2));
     CHECK(!section2.indexesCross(section1));
 }
@@ -203,11 +206,18 @@ TEST_CASE("Line of Proof Section Manager")
     CHECK_NOTHROW(sectionManager.addSection(LineOfProofSection(5, 6, "")));
     CHECK_NOTHROW(sectionManager.addSection(LineOfProofSection(2, 4, "")));
 
+    //Fail due to equal indexes
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(1, 6, "")));
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(3, 4, "")));
 
+    //Fail due to crossing indexes
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(1, 7, "")));
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(2, 7, "")));
+}
+
+TEST_CASE("Storage Manager")
+{
+
 }
 
 TEST_CASE("Dirty Fix")

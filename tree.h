@@ -46,9 +46,12 @@ public:
         children.push_back(make_shared<TreeNode<T>>(TreeNode<T>(tree, this, obj)));
     }
 
-    void insertChildVertically(const T &obj)
+    void insertParent(const T &obj)
     {
-        //TODO
+        shared_ptr<TreeNode<T>> &thisChildFormerPointer = parent->children[getOwnChildNumber()];
+        shared_ptr<TreeNode<T>> thisChildNewPointer = thisChildFormerPointer;
+        thisChildFormerPointer.reset(new TreeNode<T>(tree, parent, obj));
+        thisChildFormerPointer->children.push_back(thisChildNewPointer);
     }
 
     QVector<unsigned int> getCoordinates() const
@@ -115,7 +118,7 @@ public:
 
     unsigned int getOwnChildNumber() const
     {
-        TreeNode<T> *ptr = parent;
+        const TreeNode<T> *ptr = parent;
 
         unsigned int ownChildNumber = 0;
         while(ptr->children[ownChildNumber].get() != this)

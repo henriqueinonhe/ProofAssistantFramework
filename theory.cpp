@@ -67,20 +67,15 @@ Parser *Theory::getParser() const
     return parser.get();
 }
 
-QLinkedList<Proof> Theory::getProofs() const
-{
-    return proofs;
-}
-
 QVector<const Proof *> Theory::findProofsWithConclusion(const QString &formula) const
 {
     QVector<const Proof *> proofList;
 
-    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const Proof &proof)
+    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
     {
-        if(proof.getConclusion()->formattedString() == formula)
+        if(proof->getConclusion()->formattedString() == formula)
         {
-            proofList.push_back(&proof);
+            proofList.push_back(proof.get());
         }
     });
 
@@ -91,9 +86,9 @@ QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) con
 {
     QVector<const Proof *> proofList;
 
-    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const Proof &proof)
+    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
     {
-        const QVector<const Formula *> premises = proof.getPremises();
+        const QVector<const Formula *> premises = proof->getPremises();
         bool containsPremise = std::any_of(premises.begin(), premises.end(), [&formula](const Formula * const premise)
         {
             return premise->formattedString() == formula;
@@ -101,7 +96,7 @@ QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) con
 
         if(containsPremise)
         {
-            proofList.push_back(&proof);
+            proofList.push_back(proof.get());
         }
     });
 
