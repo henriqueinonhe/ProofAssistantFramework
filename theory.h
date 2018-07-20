@@ -8,6 +8,7 @@
 #include "inferencetactic.h"
 #include "stringprocessor.h"
 #include "formatter.h"
+#include <QDataStream>
 
 class LogicalSystem;
 class ProofAssistant;
@@ -34,13 +35,19 @@ public:
 
     QVector<InferenceTactic *> getInferenceTactics() const;
 
+    QString getName() const;
+    void setName(const QString &value);
+
+    QString getDescription() const;
+    void setDescription(const QString &value);
+
 private:
     QString name;
     QString description;
-    unique_ptr<Parser> parser;
     unique_ptr<Signature> signature;
-    QLinkedList<Formula> axioms; //NOTE Do we really need a linked list here? Maybe use axiom entries to also describe/comment them? Or is that too much?
-    QVector<shared_ptr<Proof>> proofs;
+    unique_ptr<Parser> parser;
+    QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
+    QVector<shared_ptr<Proof>> proofs; //Maybe using a vector will be KEY to serialize/unserialize proof links! Think this through! TODO
     QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes
                                                  //the plugin object when application terminates
     QStringList inferenceTacticsPluginsNameList;
@@ -53,6 +60,11 @@ private:
     const LogicalSystem *parentLogic;
 
     friend class ProofAssistant;
+    friend QDataStream &operator <<(QDataStream &stream, const Theory &theory);
+    friend QDataStream &operator >>(QDataStream &stream, Theory &theory);
 };
+
+QDataStream &operator <<(QDataStream &stream, const Theory &theory);
+QDataStream &operator >>(QDataStream &stream, Theory &theory);
 
 #endif // THEORY_H

@@ -29,6 +29,21 @@ const QString StorageManager::theoriesRecordsPath(const QString &logicalSystemNa
     return theoriesDirPath(logicalSystemName) + "/" + theoriesRecordsFileName + storageFilesSuffix;
 }
 
+QDir StorageManager::accessTheoriesDir(const QString &logicalSystemName)
+{
+    QDir theoriesDir(theoriesDirPath(logicalSystemName));
+    if(!theoriesDir.exists())
+    {
+        QString errorMsg;
+        errorMsg += "Failed to load theories directory at:";
+        errorMsg += QString("\"") + theoriesDirPath(logicalSystemName) + "\"";
+
+        throw std::logic_error(errorMsg.toStdString());
+    }
+
+    return theoriesDir;
+}
+
 QString StorageManager::getRootPath()
 {
     return rootPath;
@@ -103,7 +118,7 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
         throw std::runtime_error("Couldn't create logical system directory!");
     }
 
-    const QString newLogicalSystemDataPath = logicalSystemsDirPath() + "/" + system.getName() + "/" + "logicalsystem" + storageFilesSuffix;
+    const QString newLogicalSystemDataPath = logicalSystemsDirPath() + "/" + system.getName() + "/" + logicalSystemDataFileName + storageFilesSuffix;
 
     QFile newLogicalSystemDataFile(newLogicalSystemDataPath);
     if(!newLogicalSystemDataFile.open(QIODevice::WriteOnly))
@@ -177,6 +192,32 @@ StorageManager::storeTheoriesRecords(const QString &logicalSystemName, const QVe
 
 void StorageManager::createTheoryDir(const QString &logicalSystemName, const Theory &theory)
 {
-//TODO
+    QDir theoriesDir = accessTheoriesDir(logicalSystemName);
+
+    if(!theoriesDir.mkdir(theory.getName()))
+    {
+        throw std::runtime_error("Couldn't create theory directory!");
+    }
+
+    const QString newTheoryDataPath = theoriesDirPath(logicalSystemName) + "/" + theory.getName() + "/" + theoryDataFileName + storageFilesSuffix;
+
+    QFile newtheoryDataFile(newTheoryDataPath);
+    if(!newtheoryDataFile.open(QIODevice::WriteOnly))
+    {
+        throw std::runtime_error("Couldn't create theory data file!");
+    }
+    QDataStream out(&newtheoryDataFile);
+    out << theory; //This is a key point! FIXME!
+}
+
+void StorageManager::deleteLogicalSystemDir(const QString &systemName)
+{
+    QDir directory = accessLogicalSystemsDir();
+    directory.cd(systemName);
+
+    if(!directory.removeRecursively())
+    {
+        throw std::runtime_error("Couldn't remove logical system directory!");
+    }
 }
 

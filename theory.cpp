@@ -103,9 +103,41 @@ QVector<InferenceTactic *> Theory::getInferenceTactics() const
     return inferenceTactics;
 }
 
+QString Theory::getName() const
+{
+    return name;
+}
+
+void Theory::setName(const QString &value)
+{
+    name = value;
+}
+
+QString Theory::getDescription() const
+{
+    return description;
+}
+
+void Theory::setDescription(const QString &value)
+{
+    description = value;
+}
+
+QDataStream &Theory::operator <<(QDataStream &stream, const Theory &theory)
+{
+    //TODO
+    stream << name << description;
+}
+
+QDataStream &Theory::operator >>(QDataStream &stream, Theory &theory)
+{
+    //TODO
+}
+
 QLinkedList<Formula> Theory::getAxioms() const
 {
     return axioms;
 }
+
 
 

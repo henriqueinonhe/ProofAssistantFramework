@@ -26,9 +26,10 @@ public:
     bool checkLogicalSystemNameCollision(const QString &name) const;
 
 private:
+    QVector<LogicalSystemRecord> getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const;
+
     unique_ptr<LogicalSystem> activeLogicalSystem;
     Theory *activeTheory;
-    QVector<LogicalSystemRecord> getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const;
 };
 
 #endif // PROGRAMMANAGER_H

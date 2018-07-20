@@ -41,6 +41,7 @@ private:
     static const QString logicalSystemDataFileName;
     static QString logicalSystemsDirPath();
     static QString logicalSystemsRecordsPath();
+    static QDir accessLogicalSystemsDir();
 
     //Theory
     static const QString theoriesDirName;
@@ -48,8 +49,7 @@ private:
     static const QString theoryDataFileName;
     static const QString theoriesDirPath(const QString &logicalSystemName);
     static const QString theoriesRecordsPath(const QString &logicalSystemName);
-
-    static QDir accessLogicalSystemsDir();
+    static QDir accessTheoriesDir(const QString &logicalSystemName);
 
     static QString rootPath;
 };
