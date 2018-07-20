@@ -9,25 +9,31 @@
 class StorageManager
 {
 public:
+    static QString getRootPath();
+    static void setRootPath(const QString &value);
 
-    StorageManager(const QString &rootPath);
+    static QVector<LogicalSystemRecord> retrieveLogicalSystemsRecords();
+    static void storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records);
 
-    QString getRootPath() const;
+    static QString logicalSystemsDirPath();
 
-    QVector<LogicalSystemRecord> retrieveLogicalSystemsRecords() const;
-    void storeLogicalSystemRecord(const LogicalSystem &system) const;
+    static void createLogicalSystemDir(const LogicalSystem &system);
+    static void deleteLogicalSystemDir(const QString &systemName);
 
-    QString logicalSystemsDirPath() const;
+    static void loadLogicalSystem(const QString &systemName, LogicalSystem * const system);
 
 private:
-    const QString storageFilesSuffix = ".dat";
-    const QString storageDirName = "data";
-    const QString logicalSystemsDirName = "Logical Systems";
-    const QString logicalSystemsRecordsFileName = "Logical Systems Records";
+    static const QString storageFilesSuffix;
+    static const QString storageDirName;
+    static const QString logicalSystemsDirName;
+    static const QString logicalSystemsRecordsFileName;
+    static const QString logicalSystemDataFileName;
 
-    const QString getLogicalSystemsRecordsPath() const;
+    static QString getLogicalSystemsRecordsPath();
 
-    QString rootPath;
+    static QDir accessLogicalSystemsDir();
+
+    static QString rootPath;
 };
 
 #endif // STORAGEMANAGER_H

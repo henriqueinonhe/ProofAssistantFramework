@@ -17,6 +17,9 @@ class LogicalSystem
 {
 public:
     LogicalSystem();
+    LogicalSystem(const QString &name,
+                  const QString &description,
+                  const QStringList &inferenceRulesPluginsNames);
 
     QString getName() const;
     void setName(const QString &value);
@@ -46,6 +49,12 @@ protected:
     QStringList inferenceRulesPluginsNames;
     QVector<InferenceRule *> inferenceRules; //I'm using raw pointers here because QPluginLoader already deletes
                                              //the plugin object when application terminates
+
+    friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
+    friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);
 };
+
+QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
+QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);
 
 #endif // LOGICALSYSTEM_H

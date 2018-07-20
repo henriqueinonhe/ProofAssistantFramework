@@ -5,6 +5,14 @@ LogicalSystem::LogicalSystem()
 
 }
 
+LogicalSystem::LogicalSystem(const QString &name, const QString &description, const QStringList &inferenceRulesPluginsNames) :
+    name(name),
+    description(description),
+    inferenceRulesPluginsNames(inferenceRulesPluginsNames)
+{
+
+}
+
 QString LogicalSystem::getName() const
 {
     return name;
@@ -84,3 +92,17 @@ void LogicalSystem::setDescription(const QString &value)
     description = value;
 }
 
+
+QDataStream & operator <<(QDataStream &stream, const LogicalSystem &system)
+{
+    stream << system.name << system.description << system.inferenceRulesPluginsNames;
+
+    return stream;
+}
+
+QDataStream & operator >>(QDataStream &stream, LogicalSystem &system)
+{
+    stream >> system.name >> system.description >> system.inferenceRulesPluginsNames;
+
+    return stream;
+}

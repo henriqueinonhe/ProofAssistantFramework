@@ -7,6 +7,7 @@
 #include "lineofproofsection.h"
 #include "lineofproofsectionmanager.h"
 #include "storagemanager.h"
+#include "programmanager.h"
 
 TEST_CASE("Trees")
 {
@@ -215,8 +216,31 @@ TEST_CASE("Line of Proof Section Manager")
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(2, 7, "")));
 }
 
-TEST_CASE("Storage Manager")
+TEST_CASE("Program Manager and Storage Manager")
 {
+    StorageManager::setRootPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
+
+    CHECK(StorageManager::getRootPath() == "C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
+
+    ProgramManager manager;
+
+    QStringList inferenceRulesNameList;
+    inferenceRulesNameList << "rule1" << "rule2" << "rule3";
+
+    CHECK_NOTHROW(manager.createLogicalSystem("Pure First Order Logic",
+                                              "First order logic without equality or functions.",
+                                              inferenceRulesNameList));
+    CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
+    CHECK(manager.getActiveLogicalSystem()->getName() == "Pure First Order Logic");
+    CHECK(manager.getActiveLogicalSystem()->getDescription() == "First order logic without equality or functions.");
+    CHECK(manager.getActiveLogicalSystem()->getInferenceRulesPluginsNames() == inferenceRulesNameList);
+
+    CHECK_THROWS(manager.createLogicalSystem("Pure First Order Logic",
+                                             "First order logic without equality or functions.",
+                                             inferenceRulesNameList));
+
+    CHECK_NOTHROW(manager.removeLogicalSystem("Pure First Order Logic"));
+
 
 }
 
