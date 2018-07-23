@@ -17,9 +17,14 @@ class Theory
 {
 public:
     Theory(const LogicalSystem * const parentLogic);
+    Theory(const LogicalSystem * const parentLogic,
+           const QString &name,
+           const QString &description,
+           const QLinkedList<Formula> axioms,
+           const QStringList &inferenceTacticsPluginsNameList,
+           const QStringList &preProcessorPluginsNameList,
+           const QStringList &postProcessorPluginsNameList);
 
-    void addAxiom(const QString &axiom);
-    void removeAxiom(const QString &axiom);
     QLinkedList<Formula> getAxioms() const;
 
     const LogicalSystem *getParentLogic() const;
@@ -42,22 +47,24 @@ public:
     void setDescription(const QString &value);
 
 private:
+    const LogicalSystem *parentLogic;
+
     QString name;
     QString description;
     unique_ptr<Signature> signature;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
+
     QVector<shared_ptr<Proof>> proofs; //Maybe using a vector will be KEY to serialize/unserialize proof links! Think this through! TODO
+    QStringList inferenceTacticsPluginsNameList;
+    QStringList preProcessorPluginsNameList;
+    QStringList postProcessorPluginsNameList;
     QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes
                                                  //the plugin object when application terminates
-    QStringList inferenceTacticsPluginsNameList;
-    QStringList postProcessorPluginsNameList;
-    QStringList preProcessorPluginsNameList;
     QVector<StringProcessor *> preProcessors;
     QVector<StringProcessor *> postProcessors;
     Formatter preFormatter;
     Formatter postFormatter;
-    const LogicalSystem *parentLogic;
 
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Theory &theory);

@@ -96,19 +96,15 @@ void LogicalSystem::setDescription(const QString &value)
 
 QDataStream & operator <<(QDataStream &stream, const LogicalSystem &system)
 {
-    QString wffTypeRawString = system.getWffType().toString();
-
-    stream << system.name << system.description << system.inferenceRulesPluginsNames << wffTypeRawString;
+    stream << system.name << system.description << system.inferenceRulesPluginsNames << system.getWffType();
 
     return stream;
 }
 
 QDataStream & operator >>(QDataStream &stream, LogicalSystem &system)
 {
-    QString wffTypeRawString;
-
-    stream >> system.name >> system.description >> system.inferenceRulesPluginsNames >> wffTypeRawString;
-    system.setWffType(wffTypeRawString);
+    stream >> system.name >> system.description >> system.inferenceRulesPluginsNames;
+    system.setWffType(Type(stream));
 
     return stream;
 }

@@ -7,28 +7,18 @@ Theory::Theory(const LogicalSystem * const parentLogic) :
 
 }
 
-void Theory::addAxiom(const QString &axiom)
+Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) :
+    parentLogic(parentLogic),
+    name(name),
+    description(description),
+    axioms(axioms),
+    inferenceTacticsPluginsNameList(inferenceTacticsPluginsNameList),
+    preProcessorPluginsNameList(preProcessorPluginsNameList),
+    postProcessorPluginsNameList(postProcessorPluginsNameList)
 {
-    //NOTE Maybe I should prevent duplicates...
-
-    if(parentLogic == nullptr)
-    {
-        throw std::runtime_error("This theory doesn't belong to any logical system!");
-    }
-
-    if(!signature)
-    {
-        throw std::runtime_error("Signature is not set yet!");
-    }
+    //Gotta do some validation! Axioms for instance, there cannot be duplicates!
 
 
-
-    axioms.push_back(parser->parse(axiom));
-}
-
-void Theory::removeAxiom(const QString &axiom)
-{
-    axioms.removeAll(parser->parse(axiom));
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -123,15 +113,22 @@ void Theory::setDescription(const QString &value)
     description = value;
 }
 
-QDataStream &Theory::operator <<(QDataStream &stream, const Theory &theory)
+QDataStream &operator <<(QDataStream &stream, const Theory &theory)
 {
-    //TODO
-    stream << name << description;
+    //This probably will have severeal adjustments in the future!
+    stream << theory.name << theory.description << theory.axioms << theory.inferenceTacticsPluginsNameList << theory.preProcessorPluginsNameList << theory.postProcessorPluginsNameList;
+
+    return stream;
 }
 
-QDataStream &Theory::operator >>(QDataStream &stream, Theory &theory)
+QDataStream &operator >>(QDataStream &stream, Theory &theory)
 {
-    //TODO
+
+    stream >> theory.name >> theory.description;
+    theory.axioms = Formula::unserializeList(stream, theory.signature.get());
+    stream >> theory.inferenceTacticsPluginsNameList >> theory.preProcessorPluginsNameList >> theory.postProcessorPluginsNameList;
+
+    return stream;
 }
 
 QLinkedList<Formula> Theory::getAxioms() const

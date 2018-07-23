@@ -65,7 +65,8 @@ SOURCES += main.cpp \
     logicalsystemrecord.cpp \
     programmanager.cpp \
     theoryrecord.cpp \
-    logosprogrammanager.cpp
+    logosprogrammanager.cpp \
+    ../Language/Parser/parsingtreeconstiterator.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -132,4 +133,5 @@ HEADERS += \
     logicalsystemrecord.h \
     programmanager.h \
     theoryrecord.h \
-    logosprogrammanager.h
+    logosprogrammanager.h \
+    ../Language/Parser/parsingtreeconstiterator.h

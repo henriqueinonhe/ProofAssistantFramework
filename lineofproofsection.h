@@ -3,8 +3,6 @@
 
 #include <QString>
 
-//Testar isso pra caralho!!!
-
 class LineOfProofSection
 {
 public:

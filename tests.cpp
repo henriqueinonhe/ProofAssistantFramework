@@ -147,11 +147,7 @@ TEST_CASE("Theories")
 
     Theory theory(&logicalSystem);
 
-    CHECK_THROWS(theory.addAxiom("P"));
-
     theory.setParentLogic(&logicalSystem);
-
-    CHECK_THROWS(theory.addAxiom("P"));
 
     TableSignature *signature = new TableSignature;
 
@@ -160,11 +156,6 @@ TEST_CASE("Theories")
     signature->addToken(CoreToken("~", Type("o->o")));
 
     theory.setSignature(signature);
-
-    CHECK_NOTHROW(theory.addAxiom("P"));
-    CHECK_NOTHROW(theory.addAxiom("(& P P)"));
-    CHECK_NOTHROW(theory.removeAxiom("P"));
-    CHECK_NOTHROW(theory.removeAxiom("(& P P)"));
 
     CHECK(theory.getAxioms().isEmpty());
 }
@@ -224,26 +215,85 @@ TEST_CASE("Program Manager and Storage Manager")
 
     ProgramManager manager;
 
-    QStringList inferenceRulesNameList;
-    inferenceRulesNameList << "rule1" << "rule2" << "rule3";
+    SECTION("Logical System Management")
+    {
+        QStringList inferenceRulesNameList;
+        inferenceRulesNameList << "rule1" << "rule2" << "rule3";
 
-    CHECK_NOTHROW(manager.createLogicalSystem("Pure First Order Logic",
-                                              "First order logic without equality or functions.",
-                                              inferenceRulesNameList,
-                                              Type("o")));
+        CHECK_NOTHROW(manager.createLogicalSystem("Pure First Order Logic",
+                                                  "First order logic without equality or functions.",
+                                                  inferenceRulesNameList,
+                                                  Type("o")));
 
-    CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
-    CHECK(manager.getActiveLogicalSystem()->getName() == "Pure First Order Logic");
-    CHECK(manager.getActiveLogicalSystem()->getDescription() == "First order logic without equality or functions.");
-    CHECK(manager.getActiveLogicalSystem()->getInferenceRulesPluginsNames() == inferenceRulesNameList);
-    CHECK(manager.getActiveLogicalSystem()->getWffType() == Type("o"));
+        CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
+        CHECK(manager.getActiveLogicalSystem()->getName() == "Pure First Order Logic");
+        CHECK(manager.getActiveLogicalSystem()->getDescription() == "First order logic without equality or functions.");
+        CHECK(manager.getActiveLogicalSystem()->getInferenceRulesPluginsNames() == inferenceRulesNameList);
+        CHECK(manager.getActiveLogicalSystem()->getWffType() == Type("o"));
 
-    CHECK_THROWS(manager.createLogicalSystem("Pure First Order Logic",
-                                             "First order logic without equality or functions.",
-                                             inferenceRulesNameList,
-                                             Type("o")));
+        CHECK_THROWS(manager.createLogicalSystem("Pure First Order Logic",
+                                                 "First order logic without equality or functions.",
+                                                 inferenceRulesNameList,
+                                                 Type("o")));
 
-    CHECK_NOTHROW(manager.removeLogicalSystem("Pure First Order Logic"));
+        CHECK_NOTHROW(manager.removeLogicalSystem("Pure First Order Logic"));
+    }
+
+    SECTION("Theory Management")
+    {
+        //Logical System Setup
+        QStringList inferenceRulesNameList;
+        inferenceRulesNameList << "rule1" << "rule2" << "rule3";
+
+        manager.createLogicalSystem("Pure First Order Logic",
+                                    "First order logic without equality or functions.",
+                                    inferenceRulesNameList,
+                                    Type("o"));
+
+        manager.loadLogicalSystem("Pure First Order Logic");
+
+        CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
+
+        //Theory
+        TableSignature signature;
+        signature.addToken(CoreToken("P", Type("o")));
+        signature.addToken(CoreToken("~", Type("o->o")));
+
+        Parser parser(&signature, Type("o"));
+
+        QLinkedList<Formula> axiomsList;
+        axiomsList.push_back(parser.parse("P"));
+        axiomsList.push_back(parser.parse("(~ P)"));
+        axiomsList.push_back(parser.parse("(~(~ P))"));
+
+        CHECK_NOTHROW(manager.createTheory("Dummy Theory",
+                                           "This is just an ordinary dummy theory.",
+                                           axiomsList,
+                                           QStringList(),
+                                           QStringList(),
+                                           QStringList()));
+
+        CHECK_THROWS(manager.createTheory("Dummy Theory",
+                                          "This is just an ordinary dummy theory.",
+                                          axiomsList,
+                                          QStringList(),
+                                          QStringList(),
+                                          QStringList()));
+
+        CHECK_NOTHROW(manager.loadTheory("Dummy Theory"));
+
+        CHECK(manager.getActiveTheory()->getName() == "Dummy Theory");
+        CHECK(manager.getActiveTheory()->getDescription() == "This is just an oridnary dummy theory.");
+        CHECK(manager.getActiveTheory()->getAxioms() == axiomsList);
+
+        CHECK_NOTHROW(manager.removeTheory("Dummy Theory"));
+
+        //Cleanup
+        manager.removeLogicalSystem("Pure First Order Logic");
+    }
+
+    //TODO Serialize Signature!
+
 }
 
 TEST_CASE("Dirty Fix")
