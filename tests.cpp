@@ -255,11 +255,13 @@ TEST_CASE("Program Manager and Storage Manager")
         CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
 
         //Theory
-        TableSignature signature;
-        signature.addToken(CoreToken("P", Type("o")));
-        signature.addToken(CoreToken("~", Type("o->o")));
+        //This is temporary
+        Signature *tempSignature = new TableSignature;
+        TableSignature *signature = dynamic_cast<TableSignature *>(tempSignature);
+        signature->addToken(CoreToken("P", Type("o")));
+        signature->addToken(CoreToken("~", Type("o->o")));
 
-        Parser parser(&signature, Type("o"));
+        Parser parser(signature, Type("o"));
 
         QLinkedList<Formula> axiomsList;
         axiomsList.push_back(parser.parse("P"));
@@ -292,7 +294,7 @@ TEST_CASE("Program Manager and Storage Manager")
         manager.removeLogicalSystem("Pure First Order Logic");
     }
 
-    //TODO Serialize Signature!
+    //TODO How can I deal with signature in the theory?
 
 }
 

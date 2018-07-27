@@ -47,12 +47,13 @@ private:
         return procedure;
     }
 
+    void createPremiseLineOfProof(const Formula &parsedPremise);
+    void linkPremise(const QString &premise);
+
     Theory *currentTheory;
     Proof *currentProof;
     bool proofOwner; //WTF! What is this again?
     //bool proofInProgress; Maybe ...
-    void createPremiseLineOfProof(const Formula &parsedPremise);
-    void linkPremise(const QString &premise);
 };
 
 #endif // PROOFASSISTANT_H

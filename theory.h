@@ -6,7 +6,8 @@
 #include "proof.h"
 #include "parser.h"
 #include "inferencetactic.h"
-#include "stringprocessor.h"
+#include "signatureplugin.h"
+#include "stringprocessorplugin.h"
 #include "formatter.h"
 #include <QDataStream>
 
@@ -52,6 +53,7 @@ private:
     QString name;
     QString description;
     unique_ptr<Signature> signature;
+    SignaturePlugin *signaturePlugin;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
 
@@ -61,8 +63,8 @@ private:
     QStringList postProcessorPluginsNameList;
     QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes
                                                  //the plugin object when application terminates
-    QVector<StringProcessor *> preProcessors;
-    QVector<StringProcessor *> postProcessors;
+    QVector<StringProcessorPlugin *> preProcessors;
+    QVector<StringProcessorPlugin *> postProcessors;
     Formatter preFormatter;
     Formatter postFormatter;
 
