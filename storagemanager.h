@@ -51,6 +51,25 @@ private:
     static const QString theoryDirPath(const QString &logicalSystemName, const QString &theoryName);
     static const QString theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName);
 
+    //Plugins
+    static const QString pluginsDirName;
+    static const QString inferenceRulesPluginsDirName;
+    static const QString signaturePluginsDirName;
+    static const QString inferenceTacticsPluginsDirName;
+    static const QString preProcessorPluginsDirName;
+    static const QString postProcessorPluginsDirName;
+    static QString pluginsDirPath();
+    static QString inferenceRulesPluginsDirPath();
+    static QString signaturePluginsDirPath();
+    static QString inferenceTacticsPluginsDirPath();
+    static QString preProcessorPluginsDirPath();
+    static QString postProcessorPluginsDirPath();
+    static QString inferenceRulePluginPath(const QString &pluginName);
+    static QString signaturePluginPath(const QString &pluginName);
+    static QString inferenceTacticPluginPath(const QString &pluginName);
+    static QString preProcessorPluginPath(const QString &pluginName);
+    static QString postProcessorPluginPath(const QString &pluginName);
+
     //Files and Directories
     static void accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode);
     static void accessDir(const QDir &dir);

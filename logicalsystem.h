@@ -10,6 +10,7 @@
 #include "type.h"
 #include <QFile>
 #include <QDataStream>
+#include "storagemanager.h"
 
 using namespace std;
 

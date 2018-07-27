@@ -7,16 +7,18 @@ Theory::Theory(const LogicalSystem * const parentLogic) :
 
 }
 
-Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) :
+Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QString &signaturePluginName, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) :
     parentLogic(parentLogic),
     name(name),
     description(description),
     axioms(axioms),
+    signaturePluginName(signaturePluginName),
     inferenceTacticsPluginsNameList(inferenceTacticsPluginsNameList),
     preProcessorPluginsNameList(preProcessorPluginsNameList),
     postProcessorPluginsNameList(postProcessorPluginsNameList)
 {
     //Gotta do some validation! Axioms for instance, there cannot be duplicates!
+    //Maybe this needs a builder...
 
 
 }
@@ -31,20 +33,9 @@ void Theory::setParentLogic(const LogicalSystem * const value)
     parentLogic = value;
 }
 
-Signature *Theory::getSignature() const
+const Signature *Theory::getSignature() const
 {
-    return signature.get();
-}
-
-void Theory::setSignature(Signature * const signature)
-{
-    if(parentLogic == nullptr)
-    {
-        throw std::runtime_error("This theory doesn't belong to any logical system!");
-    }
-
-    this->signature.reset(signature);
-    parser.reset(new Parser(signature, parentLogic->getWffType()));
+    return signaturePlugin->getSignature();
 }
 
 Parser *Theory::getParser() const
@@ -113,21 +104,49 @@ void Theory::setDescription(const QString &value)
     description = value;
 }
 
+void Theory::serializePlugins(QDataStream &stream) const
+{
+    stream << *signaturePlugin;
+    serializePluginVector<InferenceTactic>(stream, inferenceTactics);
+    serializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
+    serializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
+}
+
+void Theory::unserializePlugins(QDataStream &stream)
+{
+    stream >> *signaturePlugin;
+    unserializePluginVector<InferenceTactic>(stream, inferenceTactics);
+    unserializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
+    unserializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
+}
+
+void Theory::loadPlugins()
+{
+    //Load Signature
+    QPluginLoader loader;
+    loader.setFileName(StorageManager::signaturePluginPath(signaturePluginName));
+}
+
 QDataStream &operator <<(QDataStream &stream, const Theory &theory)
 {
-    //This probably will have severeal adjustments in the future!
-    stream << theory.name << theory.description << theory.axioms << theory.inferenceTacticsPluginsNameList << theory.preProcessorPluginsNameList << theory.postProcessorPluginsNameList;
+    stream << theory.name << theory.description << theory.signaturePluginName << theory.axioms << theory.inferenceTacticsPluginsNameList << theory.preProcessorPluginsNameList << theory.postProcessorPluginsNameList;
+
+    theory.serializePlugins(stream);
 
     return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, Theory &theory)
 {
+    stream >> theory.name >> theory.description >> theory.signaturePluginName >> theory.inferenceTacticsPluginsNameList >> theory.preProcessorPluginsNameList >> theory.postProcessorPluginsNameList;
 
-    stream >> theory.name >> theory.description;
-    theory.axioms = Formula::unserializeList(stream, theory.signature.get());
-    stream >> theory.inferenceTacticsPluginsNameList >> theory.preProcessorPluginsNameList >> theory.postProcessorPluginsNameList;
+    //Then load plugins
 
+
+    //Then unserialize plugins
+    theory.unserializePlugins(stream);
+
+    theory.axioms = Formula::unserializeList(stream, theory.signaturePlugin->getSignature()); //FIXME!
     return stream;
 }
 

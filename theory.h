@@ -10,6 +10,7 @@
 #include "stringprocessorplugin.h"
 #include "formatter.h"
 #include <QDataStream>
+#include <QPluginLoader>
 
 class LogicalSystem;
 class ProofAssistant;
@@ -21,7 +22,7 @@ public:
     Theory(const LogicalSystem * const parentLogic,
            const QString &name,
            const QString &description,
-           const QLinkedList<Formula> axioms,
+           const QLinkedList<Formula> axioms, const QString &signaturePluginName,
            const QStringList &inferenceTacticsPluginsNameList,
            const QStringList &preProcessorPluginsNameList,
            const QStringList &postProcessorPluginsNameList);
@@ -31,8 +32,7 @@ public:
     const LogicalSystem *getParentLogic() const;
     void setParentLogic(const LogicalSystem * const value);
 
-    Signature *getSignature() const;
-    void setSignature(Signature * const signature);
+    const Signature *getSignature() const;
 
     Parser *getParser() const;
 
@@ -48,23 +48,44 @@ public:
     void setDescription(const QString &value);
 
 private:
+    template<class T>
+    void serializePluginVector(QDataStream &stream, QVector<T *> pluginVector)
+    {
+        std::for_each(pluginVector.begin(), pluginVector.end(), [](const T * const plugin)
+        {
+            stream << *plugin;
+        });
+    }
+
+    template<class T>
+    void unserializePluginVector(QDataStream &stream, QVector<T *> pluginVector)
+    {
+        std::for_each(pluginVector.begin(), pluginVector.end(), [](T * const plugin)
+        {
+            stream >> *plugin;
+        });
+    }
+
+    void serializePlugins(QDataStream &stream) const;
+    void unserializePlugins(QDataStream &stream);
+
+    void loadPlugins();
+
     const LogicalSystem *parentLogic;
 
     QString name;
     QString description;
-    unique_ptr<Signature> signature;
-    SignaturePlugin *signaturePlugin;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
-
     QVector<shared_ptr<Proof>> proofs; //Maybe using a vector will be KEY to serialize/unserialize proof links! Think this through! TODO
+    QString signaturePluginName;
     QStringList inferenceTacticsPluginsNameList;
     QStringList preProcessorPluginsNameList;
     QStringList postProcessorPluginsNameList;
-    QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes
-                                                 //the plugin object when application terminates
-    QVector<StringProcessorPlugin *> preProcessors;
-    QVector<StringProcessorPlugin *> postProcessors;
+    SignaturePlugin *signaturePlugin;
+    QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes the plugin object when application terminates
+    QVector<StringProcessorPlugin *> preProcessorPlugins;
+    QVector<StringProcessorPlugin *> postProcessorPlugins;
     Formatter preFormatter;
     Formatter postFormatter;
 

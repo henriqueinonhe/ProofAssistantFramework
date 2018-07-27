@@ -43,10 +43,8 @@ void LogicalSystem::loadInferenceRules()
 {
     std::for_each(inferenceRulesPluginsNames.begin(), inferenceRulesPluginsNames.end(), [this](const QString &pluginName)
     {
-        QString inferenceRulePluginPath = inferenceRulesPluginsDirPath + "/" + pluginName;
-
         QPluginLoader loader;
-        loader.setFileName(inferenceRulePluginPath);
+        loader.setFileName(StorageManager::inferenceRulePluginPath(pluginName));
         bool loadSuccess = loader.load();
 
         if(!loadSuccess)

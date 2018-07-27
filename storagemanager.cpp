@@ -14,6 +14,14 @@ const QString StorageManager::theoriesDirName = "Theories";
 const QString StorageManager::theoriesRecordsFileName = "theoriesrecords";
 const QString StorageManager::theoryDataFileName = "theory";
 
+//Plugins
+const QString StorageManager::pluginsDirName = "plugins";
+const QString StorageManager::inferenceRulesPluginsDirName = "Inference Rules";
+const QString StorageManager::signaturePluginsDirName = "Signatures";
+const QString StorageManager::inferenceTacticsPluginsDirName = "Inference Tactics";
+const QString StorageManager::preProcessorPluginsDirName = "Pre Processors";
+const QString StorageManager::postProcessorPluginsDirName = "Post Processors";
+
 QString StorageManager::logicalSystemsRecordsPath()
 {
     return logicalSystemsDirPath() +  "/" + logicalSystemsRecordsFileName + storageFilesSuffix;
@@ -47,6 +55,61 @@ const QString StorageManager::theoryDirPath(const QString &logicalSystemName, co
 const QString StorageManager::theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName)
 {
     return theoryDirPath(logicalSystemName, theoryName) + "/" + theoryDataFileName + storageFilesSuffix;
+}
+
+QString StorageManager::pluginsDirPath()
+{
+    return rootPath + "/" + pluginsDirName;
+}
+
+QString StorageManager::inferenceRulesPluginsDirPath()
+{
+    return pluginsDirPath() + "/" + inferenceRulesPluginsDirName;
+}
+
+QString StorageManager::signaturePluginsDirPath()
+{
+    return pluginsDirPath() + "/" + signaturePluginsDirName;
+}
+
+QString StorageManager::inferenceTacticsPluginsDirPath()
+{
+    return pluginsDirPath() + "/" + inferenceRulesPluginsDirName;
+}
+
+QString StorageManager::preProcessorPluginsDirPath()
+{
+    return pluginsDirPath() + "/" + preProcessorPluginsDirName;
+}
+
+QString StorageManager::postProcessorPluginsDirPath()
+{
+    return pluginsDirPath() + "/" + postProcessorPluginsDirName;
+}
+
+QString StorageManager::inferenceRulePluginPath(const QString &pluginName)
+{
+    return inferenceRulesPluginsDirPath() + "/" + pluginName;
+}
+
+QString StorageManager::signaturePluginPath(const QString &pluginName)
+{
+    return signaturePluginsDirPath() + "/" + pluginName;
+}
+
+QString StorageManager::inferenceTacticPluginPath(const QString &pluginName)
+{
+    return inferenceTacticsPluginsDirPath() + "/" + pluginName;
+}
+
+QString StorageManager::preProcessorPluginPath(const QString &pluginName)
+{
+    return preProcessorPluginsDirPath() + "/" + pluginName;
+}
+
+QString StorageManager::postProcessorPluginPath(const QString &pluginName)
+{
+    return postProcessorPluginsDirPath() + "/" + pluginName;
 }
 
 void StorageManager::accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode)

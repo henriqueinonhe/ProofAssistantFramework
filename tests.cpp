@@ -256,10 +256,9 @@ TEST_CASE("Program Manager and Storage Manager")
 
         //Theory
         //This is temporary
-        Signature *tempSignature = new TableSignature;
-        TableSignature *signature = dynamic_cast<TableSignature *>(tempSignature);
-        signature->addToken(CoreToken("P", Type("o")));
-        signature->addToken(CoreToken("~", Type("o->o")));
+        TableSignature signature;
+        signature.addToken(CoreToken("P", Type("o")));
+        signature.addToken(CoreToken("~", Type("o->o")));
 
         Parser parser(signature, Type("o"));
 
@@ -268,19 +267,25 @@ TEST_CASE("Program Manager and Storage Manager")
         axiomsList.push_back(parser.parse("(~ P)"));
         axiomsList.push_back(parser.parse("(~(~ P))"));
 
+        QStringList dummyInferenceTacticsPluginNameList;
+        QStringList dummyPreProcessorsPluginNameList;
+        QStringList dummyPostProcessorsPluginNameList;
+
         CHECK_NOTHROW(manager.createTheory("Dummy Theory",
                                            "This is just an ordinary dummy theory.",
                                            axiomsList,
-                                           QStringList(),
-                                           QStringList(),
-                                           QStringList()));
+                                           "TableSignature",
+                                           dummyInferenceTacticsPluginNameList,
+                                           dummyPreProcessorsPluginNameList,
+                                           dummyPostProcessorsPluginNameList));
 
         CHECK_THROWS(manager.createTheory("Dummy Theory",
                                           "This is just an ordinary dummy theory.",
                                           axiomsList,
-                                          QStringList(),
-                                          QStringList(),
-                                          QStringList()));
+                                          "TableSignature",
+                                          dummyInferenceTacticsPluginNameList,
+                                          dummyPreProcessorsPluginNameList,
+                                          dummyPostProcessorsPluginNameList));
 
         CHECK_NOTHROW(manager.loadTheory("Dummy Theory"));
 
