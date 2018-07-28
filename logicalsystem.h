@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QDataStream>
 #include "storagemanager.h"
+#include "pluginmanager.h"
 
 using namespace std;
 
@@ -33,10 +34,7 @@ public:
     void setInferenceRulesPluginsNames(const QStringList &value);
     void addInferenceRulePluginName(const QString &pluginName);
 
-    void loadInferenceRules(); //FIXME This gotta be remade!
-
-    QString getInferenceRulesPluginsDirPath() const;
-    void setInferenceRulesPluginsDirPath(const QString &value);
+    void loadInferenceRules();
 
     QVector<InferenceRule *> getInferenceRules() const;
 
@@ -46,7 +44,6 @@ public:
 protected:
     QString name;
     QString description;
-    QString inferenceRulesPluginsDirPath;
     QStringList inferenceRulesPluginsNames;
     QVector<InferenceRule *> inferenceRules; //I'm using raw pointers here because QPluginLoader already deletes
                                              //the plugin object when application terminates

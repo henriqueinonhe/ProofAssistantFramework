@@ -1,20 +1,15 @@
 ﻿#include "signatureplugin.h"
 
-SignaturePlugin::SignaturePlugin()
-{
-
-}
-
 QDataStream &operator <<(QDataStream &stream, const SignaturePlugin &signature)
 {
-    signature.serialize();
+    signature.serialize(stream);
 
     return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, SignaturePlugin &signature)
 {
-    signature.unserialize();
+    signature.unserialize(stream);
 
     return stream;
 }

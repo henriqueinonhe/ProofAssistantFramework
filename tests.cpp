@@ -125,11 +125,12 @@ TEST_CASE("Trees")
 
 TEST_CASE("Logical Systems")
 {
+    StorageManager::setRootPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
+
     LogicalSystem logicalSystem;
 
     logicalSystem.setWffType(Type("o"));
 
-    logicalSystem.setInferenceRulesPluginsDirPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework/plugins/InferenceRules");
     logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination");
 
     CHECK_NOTHROW(logicalSystem.loadInferenceRules());
@@ -149,13 +150,13 @@ TEST_CASE("Theories")
 
     theory.setParentLogic(&logicalSystem);
 
-    TableSignature *signature = new TableSignature;
+//    TableSignature *signature = new TableSignature;
 
-    signature->addToken(CoreToken("P", Type("o")));
-    signature->addToken(CoreToken("&", Type("[o,o]->o")));
-    signature->addToken(CoreToken("~", Type("o->o")));
+//    signature->addToken(CoreToken("P", Type("o")));
+//    signature->addToken(CoreToken("&", Type("[o,o]->o")));
+//    signature->addToken(CoreToken("~", Type("o->o")));
 
-    theory.setSignature(signature);
+//    theory.setSignature(signature);
 
     CHECK(theory.getAxioms().isEmpty());
 }
@@ -260,12 +261,12 @@ TEST_CASE("Program Manager and Storage Manager")
         signature.addToken(CoreToken("P", Type("o")));
         signature.addToken(CoreToken("~", Type("o->o")));
 
-        Parser parser(signature, Type("o"));
+        Parser parser(&signature, Type("o"));
 
         QLinkedList<Formula> axiomsList;
-        axiomsList.push_back(parser.parse("P"));
-        axiomsList.push_back(parser.parse("(~ P)"));
-        axiomsList.push_back(parser.parse("(~(~ P))"));
+//        axiomsList.push_back(parser.parse("P"));
+//        axiomsList.push_back(parser.parse("(~ P)"));
+//        axiomsList.push_back(parser.parse("(~(~ P))"));
 
         QStringList dummyInferenceTacticsPluginNameList;
         QStringList dummyPreProcessorsPluginNameList;
@@ -274,7 +275,7 @@ TEST_CASE("Program Manager and Storage Manager")
         CHECK_NOTHROW(manager.createTheory("Dummy Theory",
                                            "This is just an ordinary dummy theory.",
                                            axiomsList,
-                                           "TableSignature",
+                                           "TableSignaturePlugin",
                                            dummyInferenceTacticsPluginNameList,
                                            dummyPreProcessorsPluginNameList,
                                            dummyPostProcessorsPluginNameList));
@@ -282,7 +283,7 @@ TEST_CASE("Program Manager and Storage Manager")
         CHECK_THROWS(manager.createTheory("Dummy Theory",
                                           "This is just an ordinary dummy theory.",
                                           axiomsList,
-                                          "TableSignature",
+                                          "TableSignaturePlugin",
                                           dummyInferenceTacticsPluginNameList,
                                           dummyPreProcessorsPluginNameList,
                                           dummyPostProcessorsPluginNameList));
@@ -290,7 +291,7 @@ TEST_CASE("Program Manager and Storage Manager")
         CHECK_NOTHROW(manager.loadTheory("Dummy Theory"));
 
         CHECK(manager.getActiveTheory()->getName() == "Dummy Theory");
-        CHECK(manager.getActiveTheory()->getDescription() == "This is just an oridnary dummy theory.");
+        CHECK(manager.getActiveTheory()->getDescription() == "This is just an ordinary dummy theory.");
         CHECK(manager.getActiveTheory()->getAxioms() == axiomsList);
 
         CHECK_NOTHROW(manager.removeTheory("Dummy Theory"));
@@ -299,7 +300,6 @@ TEST_CASE("Program Manager and Storage Manager")
         manager.removeLogicalSystem("Pure First Order Logic");
     }
 
-    //TODO How can I deal with signature in the theory?
 
 }
 

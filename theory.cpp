@@ -20,7 +20,7 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
     //Gotta do some validation! Axioms for instance, there cannot be duplicates!
     //Maybe this needs a builder...
 
-
+    loadPlugins();
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -107,31 +107,45 @@ void Theory::setDescription(const QString &value)
 void Theory::serializePlugins(QDataStream &stream) const
 {
     stream << *signaturePlugin;
-    serializePluginVector<InferenceTactic>(stream, inferenceTactics);
-    serializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
-    serializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
+    PluginManager::serializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
+    PluginManager::serializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
 }
 
 void Theory::unserializePlugins(QDataStream &stream)
 {
     stream >> *signaturePlugin;
-    unserializePluginVector<InferenceTactic>(stream, inferenceTactics);
-    unserializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
-    unserializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
+    PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
+    PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
 }
 
 void Theory::loadPlugins()
 {
     //Load Signature
-    QPluginLoader loader;
-    loader.setFileName(StorageManager::signaturePluginPath(signaturePluginName));
+    PluginManager::loadSinglePlugin<SignaturePlugin>(signaturePlugin, signaturePluginName, StorageManager::signaturePluginPath);
+
+    //Load Inference Tactics
+    PluginManager::loadPluginVector<InferenceTactic>(inferenceTactics,
+                                                     inferenceTacticsPluginsNameList,
+                                                     StorageManager::inferenceTacticPluginPath);
+
+    //Load Pre Processors
+    PluginManager::loadPluginVector<StringProcessorPlugin>(preProcessorPlugins,
+                                                           preProcessorPluginsNameList,
+                                                           StorageManager::preProcessorPluginPath);
+
+    //Load Post Processors
+    PluginManager::loadPluginVector<StringProcessorPlugin>(postProcessorPlugins,
+                                                           postProcessorPluginsNameList,
+                                                           StorageManager::postProcessorPluginPath);
 }
 
 QDataStream &operator <<(QDataStream &stream, const Theory &theory)
 {
-    stream << theory.name << theory.description << theory.signaturePluginName << theory.axioms << theory.inferenceTacticsPluginsNameList << theory.preProcessorPluginsNameList << theory.postProcessorPluginsNameList;
+    stream << theory.name << theory.description << theory.signaturePluginName << theory.inferenceTacticsPluginsNameList << theory.preProcessorPluginsNameList << theory.postProcessorPluginsNameList;
 
     theory.serializePlugins(stream);
+
+    stream << theory.axioms; //Formulas Serialization and Unserialization require special treatment
 
     return stream;
 }
@@ -140,13 +154,11 @@ QDataStream &operator >>(QDataStream &stream, Theory &theory)
 {
     stream >> theory.name >> theory.description >> theory.signaturePluginName >> theory.inferenceTacticsPluginsNameList >> theory.preProcessorPluginsNameList >> theory.postProcessorPluginsNameList;
 
-    //Then load plugins
-
-
-    //Then unserialize plugins
+    theory.loadPlugins();
     theory.unserializePlugins(stream);
 
-    theory.axioms = Formula::unserializeList(stream, theory.signaturePlugin->getSignature()); //FIXME!
+    //Formulas Serialization and Unserialization require special treatment
+    theory.axioms = Formula::unserializeList(stream, theory.signaturePlugin->getSignature());
     return stream;
 }
 

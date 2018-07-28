@@ -41,29 +41,9 @@ void LogicalSystem::addInferenceRulePluginName(const QString &pluginName)
 
 void LogicalSystem::loadInferenceRules()
 {
-    std::for_each(inferenceRulesPluginsNames.begin(), inferenceRulesPluginsNames.end(), [this](const QString &pluginName)
-    {
-        QPluginLoader loader;
-        loader.setFileName(StorageManager::inferenceRulePluginPath(pluginName));
-        bool loadSuccess = loader.load();
-
-        if(!loadSuccess)
-        {
-            throw std::runtime_error(""); //Create specialized exception
-        }
-
-        inferenceRules.push_back(qobject_cast<InferenceRule *>(loader.instance()));
-    });
-}
-
-QString LogicalSystem::getInferenceRulesPluginsDirPath() const
-{
-    return inferenceRulesPluginsDirPath;
-}
-
-void LogicalSystem::setInferenceRulesPluginsDirPath(const QString &value)
-{
-    inferenceRulesPluginsDirPath = value;
+    PluginManager::loadPluginVector<InferenceRule>(inferenceRules,
+                                                   inferenceRulesPluginsNames,
+                                                   StorageManager::inferenceRulePluginPath);
 }
 
 QVector<InferenceRule *> LogicalSystem::getInferenceRules() const

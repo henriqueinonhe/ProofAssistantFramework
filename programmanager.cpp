@@ -34,7 +34,7 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
-void ProgramManager::createTheory(const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) const
+void ProgramManager::createTheory(const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QString &signaturePluginName, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) const
 {
     checkActiveLogicalSystem();
     const QString activeLogicalSystemName = activeLogicalSystem->getName();
@@ -55,6 +55,7 @@ void ProgramManager::createTheory(const QString &name, const QString &descriptio
                                                                     name,
                                                                     description,
                                                                     axioms,
+                                                                    signaturePluginName,
                                                                     inferenceTacticsPluginsNameList,
                                                                     preProcessorPluginsNameList,
                                                                     postProcessorPluginsNameList));

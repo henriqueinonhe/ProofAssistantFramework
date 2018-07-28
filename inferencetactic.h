@@ -7,6 +7,7 @@ class InferenceTactic : virtual public InferenceProcedure
 {
 public:
     virtual void apply(const ProofAssistant *assistant, const QStringList &argumentList) = 0;
+
 };
 
 Q_DECLARE_INTERFACE(InferenceTactic, "InferenceTactic")

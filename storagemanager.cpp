@@ -89,27 +89,27 @@ QString StorageManager::postProcessorPluginsDirPath()
 
 QString StorageManager::inferenceRulePluginPath(const QString &pluginName)
 {
-    return inferenceRulesPluginsDirPath() + "/" + pluginName;
+    return inferenceRulesPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::signaturePluginPath(const QString &pluginName)
 {
-    return signaturePluginsDirPath() + "/" + pluginName;
+    return signaturePluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::inferenceTacticPluginPath(const QString &pluginName)
 {
-    return inferenceTacticsPluginsDirPath() + "/" + pluginName;
+    return inferenceTacticsPluginsDirPath() + "/" + pluginName  + ".dll";
 }
 
 QString StorageManager::preProcessorPluginPath(const QString &pluginName)
 {
-    return preProcessorPluginsDirPath() + "/" + pluginName;
+    return preProcessorPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::postProcessorPluginPath(const QString &pluginName)
 {
-    return postProcessorPluginsDirPath() + "/" + pluginName;
+    return postProcessorPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 void StorageManager::accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode)

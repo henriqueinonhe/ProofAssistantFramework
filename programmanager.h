@@ -29,7 +29,7 @@ public:
     Theory *getActiveTheory() const;
     void createTheory(const QString &name,
                       const QString &description,
-                      const QLinkedList<Formula> axioms,
+                      const QLinkedList<Formula> axioms, const QString &signaturePluginName,
                       const QStringList &inferenceTacticsPluginsNameList,
                       const QStringList &preProcessorPluginsNameList,
                       const QStringList &postProcessorPluginsNameList) const;

@@ -27,7 +27,6 @@ public:
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
     static void loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory * const theory);
 
-private:
     //Root
     static const QString storageFilesSuffix;
     static const QString storageDirName;
@@ -69,6 +68,8 @@ private:
     static QString inferenceTacticPluginPath(const QString &pluginName);
     static QString preProcessorPluginPath(const QString &pluginName);
     static QString postProcessorPluginPath(const QString &pluginName);
+
+private:
 
     //Files and Directories
     static void accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode);
