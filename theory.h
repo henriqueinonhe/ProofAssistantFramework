@@ -60,7 +60,7 @@ private:
     QString description;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
-    //QVector<shared_ptr<Proof>> proofs; //Maybe using a vector will be KEY to serialize/unserialize proof links! Think this through! TODO
+    QVector<shared_ptr<Proof>> proofs; //Maybe using a vector will be KEY to serialize/unserialize proof links! Think this through! TODO
     QString signaturePluginName;
     QStringList inferenceTacticsPluginsNameList;
     QStringList preProcessorPluginsNameList;

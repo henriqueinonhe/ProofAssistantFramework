@@ -5,6 +5,7 @@
 #include "theory.h"
 #include "proof.h"
 #include "storagemanager.h"
+#include "proofassistant.h"
 #include <memory>
 
 using namespace std;
@@ -29,22 +30,29 @@ public:
     Theory *getActiveTheory() const;
     void createTheory(const QString &name,
                       const QString &description,
-                      const QLinkedList<Formula> axioms, const QString &signaturePluginName,
+                      const QLinkedList<Formula> axioms,
+                      const QString &signaturePluginName,
                       const QStringList &inferenceTacticsPluginsNameList,
                       const QStringList &preProcessorPluginsNameList,
                       const QStringList &postProcessorPluginsNameList) const;
     void removeTheory(const QString &theoryName) const;
     bool checkTheoryNameCollision(const QString &logicalSystemName, const QString &name) const;
+    //TODO Edit Theory
+
+    //Proof
+    //void createProof(const QString &string);
 
 private:
     void checkActiveLogicalSystem() const;
     void checkActiveTheory() const;
 
     QVector<LogicalSystemRecord> getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const;
-    QVector<TheoryRecord> getTheoryRecordsWithoutRemovedRecord(const QString &logicalSystemName, const QString &theoryName) const;
+    QVector<TheoryRecord> getTheoryRecordsWithoutRemovedRecord(const QString &logicalSystemName, const QString &theoryName) const; //TODO Create function template to keep code DRY
 
     unique_ptr<LogicalSystem> activeLogicalSystem;
     unique_ptr<Theory> activeTheory;
+    unique_ptr<Proof> activeProof;
+    ProofAssistant proofAssistant;
 };
 
 #endif // PROGRAMMANAGER_H

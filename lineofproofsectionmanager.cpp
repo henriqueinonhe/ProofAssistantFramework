@@ -80,3 +80,15 @@ LineOfProofSection LineOfProofSectionManager::getSection(const unsigned int begi
     //The searching method is really close to the addSection method
     //I do not need this now, so I will wait till this is necessary!
 }
+
+QDataStream &operator <<(QDataStream &stream, const LineOfProofSectionManager &sectionManager)
+{
+    stream << sections;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, LineOfProofSectionManager &sectionManager)
+{
+    stream >> sections;
+    return stream;
+}

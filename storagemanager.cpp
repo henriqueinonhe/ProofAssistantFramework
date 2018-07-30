@@ -14,6 +14,10 @@ const QString StorageManager::theoriesDirName = "Theories";
 const QString StorageManager::theoriesRecordsFileName = "theoriesrecords";
 const QString StorageManager::theoryDataFileName = "theory";
 
+//Proof
+const QString StorageManager::proofsDirName = "Proofs";
+const QString StorageManager::proofsRecordsFileName = "proofrecords";
+
 //Plugins
 const QString StorageManager::pluginsDirName = "plugins";
 const QString StorageManager::inferenceRulesPluginsDirName = "Inference Rules";
@@ -37,24 +41,34 @@ QString StorageManager::logicalSystemDataFilePath(const QString &logicalSystemNa
     return logicalSystemDirPath(logicalSystemName) + "/" + logicalSystemDataFileName + storageFilesSuffix;
 }
 
-const QString StorageManager::theoriesDirPath(const QString &logicalSystemName)
+QString StorageManager::theoriesDirPath(const QString &logicalSystemName)
 {
     return logicalSystemDirPath(logicalSystemName) + "/" + theoriesDirName;
 }
 
-const QString StorageManager::theoriesRecordsPath(const QString &logicalSystemName)
+QString StorageManager::theoriesRecordsPath(const QString &logicalSystemName)
 {
     return theoriesDirPath(logicalSystemName) + "/" + theoriesRecordsFileName + storageFilesSuffix;
 }
 
-const QString StorageManager::theoryDirPath(const QString &logicalSystemName, const QString &theoryName)
+QString StorageManager::theoryDirPath(const QString &logicalSystemName, const QString &theoryName)
 {
     return theoriesDirPath(logicalSystemName) + "/" + theoryName;
 }
 
-const QString StorageManager::theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName)
+QString StorageManager::theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName)
 {
     return theoryDirPath(logicalSystemName, theoryName) + "/" + theoryDataFileName + storageFilesSuffix;
+}
+
+QString StorageManager::proofsDirPath(const QString &logicalSystemName, const QString &theoryName)
+{
+    return theoryDirPath(logicalSystemName, theoryName) + "/" + proofsDirName;
+}
+
+QString StorageManager::proofsRecordsFilePath(const QString &logicalSystemName, const QString &theoryName)
+{
+    return proofsDirPath(logicalSystemName, theoryName) + "/" + proofsRecordsFileName;
 }
 
 QString StorageManager::pluginsDirPath()
@@ -172,23 +186,12 @@ void StorageManager::setRootPath(const QString &value)
 
 QVector<LogicalSystemRecord> StorageManager::retrieveLogicalSystemsRecords()
 {
-    QFile logicalSystemsRecordsFile(logicalSystemsRecordsPath());
-    accessFile(logicalSystemsRecordsFile, QIODevice::ReadOnly);
-    QDataStream in(&logicalSystemsRecordsFile);
-
-    QVector<LogicalSystemRecord> logicalSystemsRecords;
-    in >> logicalSystemsRecords;
-
-    return logicalSystemsRecords;
+    return retrieveRecords<LogicalSystemRecord>(logicalSystemsRecordsPath());
 }
 
 void StorageManager::storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records)
 {
-    QFile logicalSystemsRecordsFile(logicalSystemsRecordsPath());
-    accessFile(logicalSystemsRecordsFile, QIODevice::WriteOnly);
-    QDataStream out(&logicalSystemsRecordsFile);
-
-    out << records;
+    storeRecords<LogicalSystemRecord>(records, logicalSystemsRecordsPath());
 }
 
 QString StorageManager::logicalSystemsDirPath()
@@ -208,11 +211,7 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
     dir.cd(logicalSystemName);
     mkDir(dir, "Theories");
 
-    const QString newLogicalSystemDataPath = logicalSystemDataFilePath(logicalSystemName);
-    QFile newLogicalSystemDataFile(newLogicalSystemDataPath);
-    accessFile(newLogicalSystemDataFile, QIODevice::WriteOnly);
-    QDataStream out(&newLogicalSystemDataFile);
-    out << system;
+    saveComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
 
     //Theories Directory
     dir.cd("Theories");
@@ -223,40 +222,27 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
 void StorageManager::deleteLogicalSystemDir(const QString &systemName)
 {
     QDir directory(logicalSystemDirPath(systemName));
-
-    if(!directory.removeRecursively())
-    {
-        throw std::runtime_error("Couldn't remove logical system directory!");
-    }
+    rmDir(directory);
 }
 
-void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem * const loadedSystem)
+void StorageManager::saveLogicalSystem(const LogicalSystem &system)
 {
-    QFile logicalSystemDataFile(logicalSystemDataFilePath(systemName));
-    accessFile(logicalSystemDataFile, QIODevice::ReadOnly);
-    QDataStream in(&logicalSystemDataFile);
-    in >> *loadedSystem;
+    saveComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
+}
+
+void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem)
+{
+    loadComponent(logicalSystemDataFilePath(systemName), loadedSystem);
 }
 
 QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)
 {
-    QFile theoriesRecordsFile(theoriesRecordsPath(logicalSystemName));
-    accessFile(theoriesRecordsFile, QIODevice::ReadOnly);
-    QDataStream in(&theoriesRecordsFile);
-
-    QVector<TheoryRecord> theoriesRecords;
-    in >> theoriesRecords;
-
-    return theoriesRecords;
+    return retrieveRecords<TheoryRecord>(theoriesRecordsPath(logicalSystemName));
 }
 
 void StorageManager::storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records)
 {
-    QFile theoriesRecordsFile(theoriesRecordsPath(logicalSystemName));
-    accessFile(theoriesRecordsFile, QIODevice::WriteOnly);
-    QDataStream out(&theoriesRecordsFile);
-
-    out << records;
+    storeRecords<TheoryRecord>(records, theoriesRecordsPath(logicalSystemName));
 }
 
 void StorageManager::createTheoryDir(const QString &logicalSystemName, const Theory &theory)
@@ -265,26 +251,28 @@ void StorageManager::createTheoryDir(const QString &logicalSystemName, const The
     QDir theoriesDir(theoriesDirPath(logicalSystemName));
     mkDir(theoriesDir, theoryName);
 
-    QFile newTheoryDataFile(theoryDataFilePath(logicalSystemName, theoryName));
-    accessFile(newTheoryDataFile, QIODevice::WriteOnly);
-    QDataStream out(&newTheoryDataFile);
-    out << theory;
+    saveComponent<Theory>(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
 }
 
 void StorageManager::deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName)
 {
     QDir theoryDir(theoryDirPath(logicalSystemName, theoryName));
-
-    theoryDir.removeRecursively();
+    rmDir(theoryDir);
 }
 
-void StorageManager::loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory * const theory)
+void StorageManager::saveTheory(Theory &theory)
 {
-    QFile theoryDataFile(theoryDataFilePath(logicalSystemName, theoryName));
-    accessFile(theoryDataFile, QIODevice::ReadOnly);
-    QDataStream stream(&theoryDataFile);
+    saveComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
+}
 
-    stream >> *theory;
+void StorageManager::loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory)
+{
+    loadComponent(theoryDataFilePath(logicalSystemName, theoryName), theory);
+}
+
+QVector<ProofRecord> StorageManager::retrieveProofRecords(const QString &logicalSystemName, const QString &theoryName)
+{
+    //retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
 }
 
 const QString StorageManager::storageDirPath()

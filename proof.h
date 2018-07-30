@@ -6,6 +6,7 @@
 #include "prooflinks.h"
 #include "lineofproofsection.h"
 #include "lineofproofsectionmanager.h"
+#include <QDataStream>
 
 class ProofAssistant;
 
@@ -27,6 +28,7 @@ public:
 
 private:
     QString name;
+    QString description;
     QVector<ProofLinks> premisesLinks;
     ProofLinks conclusionLinks;
     QVector<shared_ptr<LineOfProof>> linesOfProof;
@@ -34,6 +36,11 @@ private:
     bool linkedWithAxioms; //NOTE Maybe find a better name
 
     friend class ProofAssistant;
+    friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);
+    friend QDataStream &operator >>(QDataStream &stream, Proof &proof);
 };
+
+QDataStream &operator <<(QDataStream &stream, const Proof &proof);
+QDataStream &operator >>(QDataStream &stream, Proof &proof);
 
 #endif // PROOF_H

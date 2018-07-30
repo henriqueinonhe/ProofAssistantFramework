@@ -58,3 +58,13 @@ const Formula *Proof::getConclusion() const
     return conclusionLinks.getFormulaPtr();
 }
 
+
+QDataStream &operator <<(QDataStream &stream, const Proof &proof)
+{
+    //TODO
+}
+
+QDataStream &operator >>(QDataStream &stream, Proof &proof)
+{
+    //TODO
+}

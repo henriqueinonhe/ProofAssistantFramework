@@ -69,7 +69,8 @@ SOURCES += main.cpp \
     ../Language/Parser/parsingtreeconstiterator.cpp \
     signatureplugin.cpp \
     stringprocessorplugin.cpp \
-    pluginmanager.cpp
+    pluginmanager.cpp \
+    proofrecord.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -140,4 +141,5 @@ HEADERS += \
     ../Language/Parser/parsingtreeconstiterator.h \
     signatureplugin.h \
     stringprocessorplugin.h \
-    pluginmanager.h
+    pluginmanager.h \
+    proofrecord.h

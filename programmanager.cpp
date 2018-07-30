@@ -24,8 +24,8 @@ bool ProgramManager::checkLogicalSystemNameCollision(const QString &name) const
 void ProgramManager::loadTheory(const QString &name)
 {
     checkActiveLogicalSystem();
-    Theory *theory = new Theory(activeLogicalSystem.get());
-    StorageManager::loadTheory(activeLogicalSystem->getName(), name, theory);
+    Theory *theory = new Theory(activeLogicalSystem.get()); //FIXME Use smart ptr!
+    StorageManager::loadTheory(activeLogicalSystem->getName(), name, *theory);
     activeTheory.reset(theory);
 }
 
@@ -176,7 +176,7 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
     LogicalSystem *system = new LogicalSystem;
-    StorageManager::loadLogicalSystem(name, system);
+    StorageManager::loadLogicalSystem(name, *system);
 
     activeLogicalSystem.reset(system);
     //system->loadInferenceRules(); //FIXME!

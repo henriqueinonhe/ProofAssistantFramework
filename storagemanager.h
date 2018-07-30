@@ -6,6 +6,7 @@
 #include "logicalsystemrecord.h"
 #include "logicalsystem.h"
 #include "theoryrecord.h"
+#include "proofrecord.h"
 
 class StorageManager
 {
@@ -18,14 +19,22 @@ public:
     static void storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records);
     static void createLogicalSystemDir(const LogicalSystem &system);
     static void deleteLogicalSystemDir(const QString &systemName);
-    static void loadLogicalSystem(const QString &systemName, LogicalSystem * const loadedSystem);
+    static void saveLogicalSystem(const LogicalSystem &system);
+    static void loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem);
 
     //Theory
     static QVector<TheoryRecord> retrieveTheoriesRecords(const QString &logicalSystemName);
     static void storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records);
     static void createTheoryDir(const QString &logicalSystemName, const Theory &theory);
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
-    static void loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory * const theory);
+    static void saveTheory(Theory &theory);
+    static void loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory);
+
+    //Proof
+    static QVector<ProofRecord> retrieveProofRecords(const QString &logicalSystemName,
+                                                     const QString &theoryName);
+
+    // Files, Dirs and Paths
 
     //Root
     static const QString storageFilesSuffix;
@@ -45,10 +54,16 @@ public:
     static const QString theoriesDirName;
     static const QString theoriesRecordsFileName;
     static const QString theoryDataFileName;
-    static const QString theoriesDirPath(const QString &logicalSystemName);
-    static const QString theoriesRecordsPath(const QString &logicalSystemName);
-    static const QString theoryDirPath(const QString &logicalSystemName, const QString &theoryName);
-    static const QString theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName);
+    static QString theoriesDirPath(const QString &logicalSystemName);
+    static QString theoriesRecordsPath(const QString &logicalSystemName);
+    static QString theoryDirPath(const QString &logicalSystemName, const QString &theoryName);
+    static QString theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName);
+
+    //Proof
+    static const QString proofsDirName;
+    static const QString proofsRecordsFileName;
+    static QString proofsDirPath(const QString &logicalSystemName, const QString &theoryName);
+    static QString proofsRecordsFilePath(const QString &logicalSystemName, const QString &theoryName);
 
     //Plugins
     static const QString pluginsDirName;
@@ -70,6 +85,49 @@ public:
     static QString postProcessorPluginPath(const QString &pluginName);
 
 private:
+    //Templates
+    template<class T>
+    static QVector<T> retrieveRecords(const QString &recordsFilePath)
+    {
+        QFile recordsFile(recordsFilePath);
+        accessFile(recordsFile, QIODevice::ReadOnly);
+        QDataStream in(&recordsFile);
+
+        QVector<T> records;
+        in >> records;
+
+        return records;
+    }
+
+    template<class T>
+    static void storeRecords(const QVector<T> &records, const QString &recordsFilePath)
+    {
+        QFile recordsFile(recordsFilePath);
+        accessFile(recordsFile, QIODevice::WriteOnly);
+        QDataStream out(&recordsFile);
+
+        out << records;
+    }
+
+    template<class T>
+    static void saveComponent(const QString &dataFilePath, const T &component)
+    {
+        QFile dataFile(dataFilePath);
+        accessFile(dataFile, QIODevice::WriteOnly);
+        QDataStream stream(&dataFile);
+        stream << component;
+    }
+
+    template<class T>
+    static void loadComponent(const QString &dataFilePath, T &component)
+    {
+        QFile dataFile(dataFilePath);
+        accessFile(dataFile, QIODevice::ReadOnly);
+        QDataStream stream(&dataFile);
+        stream >> component;
+    }
+
+
 
     //Files and Directories
     static void accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode);
