@@ -41,30 +41,32 @@ void Proof::setName(const QString &value)
     name = value;
 }
 
-QVector<const Formula *> Proof::getPremises() const
+QVector<Formula> Proof::getPremises() const
 {
-    QVector<const Formula *> premises;
+    QVector<Formula> premises;
 
     std::for_each(premisesLinks.begin(), premisesLinks.end(), [&premises](const ProofLinks &links)
     {
-        premises.push_back(links.getFormulaPtr());
+        premises.push_back(links.getFormula());
     });
 
     return premises;
 }
 
-const Formula *Proof::getConclusion() const
+Formula Proof::getConclusion() const
 {
-    return conclusionLinks.getFormulaPtr();
+    return conclusionLinks.getFormula();
 }
 
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof)
 {
-    //TODO
+    stream << proof.id << proof.name << proof.description << proof.premisesLinks << proof.conclusionLinks << proof.linesOfProof << proof.sectioning;
+    return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, Proof &proof)
 {
-    //TODO
+    stream >> proof.id >> proof.name >> proof.description >> proof.premisesLinks >> proof.conclusionLinks >> proof.linesOfProof >> proof.sectioning;
+    return stream;
 }

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDataStream>
 
 class Justification
 {
@@ -19,6 +20,12 @@ public:
 private:
     QString inferenceRuleCallCommand;
     QStringList argumentList;
+
+    friend QDataStream &operator <<(QDataStream &stream, const Justification &justification);
+    friend QDataStream &operator >>(QDataStream &stream, Justification &justification);
 };
+
+QDataStream &operator <<(QDataStream &stream, const Justification &justification);
+QDataStream &operator >>(QDataStream &stream, Justification &justification);
 
 #endif // JUSTIFICATION_H

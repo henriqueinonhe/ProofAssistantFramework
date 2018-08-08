@@ -5,6 +5,7 @@
 #include <memory>
 #include "formula.h"
 #include "justification.h"
+#include <QDataStream>
 
 class ProofAssistant;
 
@@ -32,6 +33,11 @@ protected:
     QString comment;
 
     friend class ProofAssistant;
+    friend QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
+    friend QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof);
 };
+
+QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
+QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof);
 
 #endif // LINEOFPROOF_H

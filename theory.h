@@ -60,13 +60,14 @@ private:
     QString description;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
-    QVector<shared_ptr<Proof>> proofs; //Maybe using a vector will be KEY to serialize/unserialize proof links! Think this through! TODO
     QString signaturePluginName;
     QStringList inferenceTacticsPluginsNameList;
     QStringList preProcessorPluginsNameList;
     QStringList postProcessorPluginsNameList;
+
+    //I'm using raw pointers here because QPluginLoader already deletes the plugin object when application terminates
     SignaturePlugin *signaturePlugin;
-    QVector<InferenceTactic *> inferenceTactics; //I'm using raw pointers here because QPluginLoader already deletes the plugin object when application terminates
+    QVector<InferenceTactic *> inferenceTactics;
     QVector<StringProcessorPlugin *> preProcessorPlugins;
     QVector<StringProcessorPlugin *> postProcessorPlugins;
     Formatter preFormatter;

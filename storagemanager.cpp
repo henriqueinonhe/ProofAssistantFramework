@@ -272,7 +272,12 @@ void StorageManager::loadTheory(const QString &logicalSystemName, const QString 
 
 QVector<ProofRecord> StorageManager::retrieveProofRecords(const QString &logicalSystemName, const QString &theoryName)
 {
-    //retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+    retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+}
+
+void StorageManager::storeProofRecords(const QString &logicalSystemName, const QString &theoryName, const QVector<ProofRecord> &records)
+{
+    storeRecords<ProofRecord>(records, proofsRecordsFilePath(logicalSystemName, theoryName));
 }
 
 const QString StorageManager::storageDirPath()

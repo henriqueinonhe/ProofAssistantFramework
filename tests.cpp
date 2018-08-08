@@ -208,6 +208,11 @@ TEST_CASE("Line of Proof Section Manager")
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(2, 7, "")));
 }
 
+TEST_CASE("Proofs")
+{
+    //TODO Gotta test those proofs really hard!
+}
+
 TEST_CASE("Program Manager and Storage Manager")
 {
     StorageManager::setRootPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");

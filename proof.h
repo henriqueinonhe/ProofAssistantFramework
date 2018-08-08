@@ -23,17 +23,17 @@ public:
     QString getName() const;
     void setName(const QString &value);
 
-    QVector<const Formula *> getPremises() const;
-    const Formula *getConclusion() const;
+    QVector<Formula> getPremises() const;
+    Formula getConclusion() const;
 
 private:
+    unsigned int id;
     QString name;
     QString description;
     QVector<ProofLinks> premisesLinks;
     ProofLinks conclusionLinks;
-    QVector<shared_ptr<LineOfProof>> linesOfProof;
+    QVector<LineOfProof> linesOfProof;
     LineOfProofSectionManager sectioning;
-    bool linkedWithAxioms; //NOTE Maybe find a better name
 
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);

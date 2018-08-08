@@ -33,6 +33,9 @@ public:
     //Proof
     static QVector<ProofRecord> retrieveProofRecords(const QString &logicalSystemName,
                                                      const QString &theoryName);
+    static void storeProofRecords(const QString &logicalSystemName,
+                                  const QString &theoryName,
+                                  const QVector<ProofRecord> &records);
 
     // Files, Dirs and Paths
 
@@ -86,6 +89,9 @@ public:
 
 private:
     //Templates
+
+    //Maybe I can make this even dryer
+    //FIXME
     template<class T>
     static QVector<T> retrieveRecords(const QString &recordsFilePath)
     {
