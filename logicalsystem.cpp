@@ -8,7 +8,6 @@ LogicalSystem::LogicalSystem()
 LogicalSystem::LogicalSystem(const QString &name, const QString &description, const Type &wffType) :
     name(name),
     description(description),
-    inferenceRulesPluginsNames(inferenceRulesPluginsNames),
     wffType(new Type(wffType))
 {
 
