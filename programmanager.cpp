@@ -34,7 +34,7 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
-void ProgramManager::createTheory(const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QString &signaturePluginName, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) const
+void ProgramManager::createTheory(const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) const
 {
     checkActiveLogicalSystem();
     const QString activeLogicalSystemName = activeLogicalSystem->getName();
@@ -55,7 +55,7 @@ void ProgramManager::createTheory(const QString &name, const QString &descriptio
                                                                     name,
                                                                     description,
                                                                     axioms,
-                                                                    signaturePluginName,
+                                                                    activeLogicalSystem->getSignaturePluginName(),
                                                                     inferenceTacticsPluginsNameList,
                                                                     preProcessorPluginsNameList,
                                                                     postProcessorPluginsNameList));
@@ -105,6 +105,7 @@ void ProgramManager::checkActiveTheory() const
 
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
+                                         const QString &signaturePluginName,
                                          const QStringList &inferenceRuleNamesList,
                                          const Type &wffType) const
 {
@@ -121,7 +122,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //File management
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, inferenceRuleNamesList, wffType));
+    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, signaturePluginName, inferenceRuleNamesList, wffType));
 
 }
 

@@ -31,11 +31,11 @@ public:
     static void loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory);
 
     //Proof
-    static QVector<ProofRecord> retrieveProofRecords(const QString &logicalSystemName,
-                                                     const QString &theoryName);
-    static void storeProofRecords(const QString &logicalSystemName,
-                                  const QString &theoryName,
-                                  const QVector<ProofRecord> &records);
+    static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName,
+                                                      const QString &theoryName);
+    static void storeProofsRecords(const QString &logicalSystemName,
+                                   const QString &theoryName,
+                                   const QVector<ProofRecord> &records);
 
     // Files, Dirs and Paths
 

@@ -21,6 +21,7 @@ public:
     LogicalSystem();
     LogicalSystem(const QString &name,
                   const QString &description,
+                  const QString &signaturePluginName,
                   const QStringList &inferenceRulesPluginsNames,
                   const Type &wffType);
 
@@ -29,6 +30,9 @@ public:
 
     QString getDescription() const;
     void setDescription(const QString &value);
+
+    QString getSignaturePluginName() const;
+    void setSignaturePluginName(const QString &value);
 
     QStringList getInferenceRulesPluginsNames() const;
     void setInferenceRulesPluginsNames(const QStringList &value);
@@ -44,6 +48,7 @@ public:
 protected:
     QString name;
     QString description;
+    QString signaturePluginName;
     QStringList inferenceRulesPluginsNames;
     QVector<InferenceRule *> inferenceRules; //I'm using raw pointers here because QPluginLoader already deletes
                                              //the plugin object when application terminates

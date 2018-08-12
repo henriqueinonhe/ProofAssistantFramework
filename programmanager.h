@@ -20,7 +20,9 @@ public:
     LogicalSystem *getActiveLogicalSystem() const;
     void createLogicalSystem(const QString &name,
                              const QString &description,
-                             const QStringList &inferenceRuleNamesList, const Type &wffType) const;
+                             const QString &signaturePluginName,
+                             const QStringList &inferenceRuleNamesList,
+                             const Type &wffType) const;
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;
     //TODO Edit Logical System
@@ -31,7 +33,6 @@ public:
     void createTheory(const QString &name,
                       const QString &description,
                       const QLinkedList<Formula> axioms,
-                      const QString &signaturePluginName,
                       const QStringList &inferenceTacticsPluginsNameList,
                       const QStringList &preProcessorPluginsNameList,
                       const QStringList &postProcessorPluginsNameList) const;
@@ -51,8 +52,6 @@ private:
 
     unique_ptr<LogicalSystem> activeLogicalSystem;
     unique_ptr<Theory> activeTheory;
-    unique_ptr<Proof> activeProof;
-    ProofAssistant proofAssistant;
 };
 
 #endif // PROGRAMMANAGER_H

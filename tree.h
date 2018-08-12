@@ -30,23 +30,22 @@ private:
 
 friend class TreeNode<T>;
 friend class TreeIterator<T>;
-friend QDataStream &operator <<(QDataStream &stream, const Tree<T> &tree);
-friend QDataStream &operator >>(QDataStream &stream, Tree<T> &tree);
+friend QDataStream &operator <<(QDataStream &stream, const Tree<T> &tree)
+{
+    //TODO
+
+//    stream << tree.root;
+//    return stream;
+}
+
+friend QDataStream &operator >>(QDataStream &stream, Tree<T> &tree)
+{
+    //TODO
+//    stream >> tree.root;
+//    return stream;
+}
+
 };
-
-template<class T>
-QDataStream &operator <<(QDataStream &stream, const Tree<T> &tree)
-{
-    stream << root;
-    return stream;
-}
-
-template <class T>
-QDataStream &operator >>(QDataStream &stream, Tree<T> &tree)
-{
-    stream >> root;
-    return stream;
-}
 
 template <class T>
 class TreeNode

@@ -3,6 +3,9 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDataStream>
+
+//NOTE Maybe use formulas here...
 
 class ProofRecord
 {
@@ -18,6 +21,12 @@ private:
     QString description;
     QStringList premises;
     QString conclusion;
+
+    friend QDataStream &operator <<(QDataStream &stream, const ProofRecord &record);
+    friend QDataStream &operator >>(QDataStream &stream, ProofRecord &record);
 };
+
+QDataStream &operator <<(QDataStream &stream, const ProofRecord &record);
+QDataStream &operator >>(QDataStream &stream, ProofRecord &record);
 
 #endif // PROOFRECORD_H

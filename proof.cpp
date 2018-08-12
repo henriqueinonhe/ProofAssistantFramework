@@ -18,17 +18,19 @@ ProofLinks Proof::getConclusionLinks() const
 
 bool Proof::isFinished() const
 {
-    if(linesOfProof.isEmpty())
-    {
-        return false;
-    }
-    else
-    {
-        const Formula &conclusionFormula = *conclusionLinks.getFormulaPtr();
-        const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
+//    if(linesOfProof.isEmpty())
+//    {
+//        return false;
+//    }
+//    else
+//    {
+//        const Formula &conclusionFormula = *conclusionLinks.getFormulaPtr();
+//        const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
 
-        return conclusionFormula == lastLineOfProofFormula;
-    }
+//        return conclusionFormula == lastLineOfProofFormula;
+//    }
+
+    //FIXME!
 }
 
 QString Proof::getName() const
@@ -47,7 +49,7 @@ QVector<Formula> Proof::getPremises() const
 
     std::for_each(premisesLinks.begin(), premisesLinks.end(), [&premises](const ProofLinks &links)
     {
-        premises.push_back(links.getFormula());
+       // premises.push_back(links.getFormula());
     });
 
     return premises;
@@ -55,18 +57,21 @@ QVector<Formula> Proof::getPremises() const
 
 Formula Proof::getConclusion() const
 {
-    return conclusionLinks.getFormula();
+    //return conclusionLinks.getFormula();
 }
 
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof)
 {
-    stream << proof.id << proof.name << proof.description << proof.premisesLinks << proof.conclusionLinks << proof.linesOfProof << proof.sectioning;
-    return stream;
+    //FIXME!
+//    stream << proof.id << proof.name << proof.description /*<< proof.premisesLinks << proof.conclusionLinks */ << proof.linesOfProof << proof.sectioning << proof.linkedWithAxioms;
+//    return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, Proof &proof)
 {
-    stream >> proof.id >> proof.name >> proof.description >> proof.premisesLinks >> proof.conclusionLinks >> proof.linesOfProof >> proof.sectioning;
-    return stream;
+
+    //FIXME!
+//    stream >> proof.id >> proof.name >> proof.description /*>> proof.premisesLinks >> proof.conclusionLinks*/ >> proof.linesOfProof >> proof.sectioning >> proof.linkedWithAxioms;
+//    return stream;
 }

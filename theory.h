@@ -48,6 +48,12 @@ public:
     QString getDescription() const;
     void setDescription(const QString &value);
 
+    QStringList getInferenceTacticsPluginsNameList() const;
+
+    QStringList getPreProcessorPluginsNameList() const;
+
+    QStringList getPostProcessorPluginsNameList() const;
+
 private:
     void serializePlugins(QDataStream &stream) const;
     void unserializePlugins(QDataStream &stream);
@@ -60,7 +66,7 @@ private:
     QString description;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
-    QString signaturePluginName;
+    QString signaturePluginName; //FIXME Move this to the logical system!
     QStringList inferenceTacticsPluginsNameList;
     QStringList preProcessorPluginsNameList;
     QStringList postProcessorPluginsNameList;

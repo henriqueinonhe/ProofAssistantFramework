@@ -83,12 +83,12 @@ LineOfProofSection LineOfProofSectionManager::getSection(const unsigned int begi
 
 QDataStream &operator <<(QDataStream &stream, const LineOfProofSectionManager &sectionManager)
 {
-    stream << sections;
+    stream << sectionManager.sections;
     return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, LineOfProofSectionManager &sectionManager)
 {
-    stream >> sections;
+    stream >> sectionManager.sections;
     return stream;
 }

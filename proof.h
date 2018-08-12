@@ -34,6 +34,7 @@ private:
     ProofLinks conclusionLinks;
     QVector<LineOfProof> linesOfProof;
     LineOfProofSectionManager sectioning;
+    bool linkedWithAxioms;
 
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);

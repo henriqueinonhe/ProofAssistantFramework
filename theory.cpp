@@ -45,38 +45,40 @@ Parser *Theory::getParser() const
 
 QVector<const Proof *> Theory::findProofsWithConclusion(const QString &formula) const
 {
-    QVector<const Proof *> proofList;
+//    QVector<const Proof *> proofList;
 
-    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
-    {
-        if(proof->getConclusion()->formattedString() == formula)
-        {
-            proofList.push_back(proof.get());
-        }
-    });
+//    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
+//    {
+//        if(proof->getConclusion()->formattedString() == formula)
+//        {
+//            proofList.push_back(proof.get());
+//        }
+//    });
 
-    return proofList;
+//    return proofList;
+    //FIXME
 }
 
 QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) const
 {
-    QVector<const Proof *> proofList;
+//    QVector<const Proof *> proofList;
 
-    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
-    {
-        const QVector<const Formula *> premises = proof->getPremises();
-        bool containsPremise = std::any_of(premises.begin(), premises.end(), [&formula](const Formula * const premise)
-        {
-            return premise->formattedString() == formula;
-        });
+//    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
+//    {
+//        const QVector<const Formula *> premises = proof->getPremises();
+//        bool containsPremise = std::any_of(premises.begin(), premises.end(), [&formula](const Formula * const premise)
+//        {
+//            return premise->formattedString() == formula;
+//        });
 
-        if(containsPremise)
-        {
-            proofList.push_back(proof.get());
-        }
-    });
+//        if(containsPremise)
+//        {
+//            proofList.push_back(proof.get());
+//        }
+//    });
 
-    return proofList;
+//    return proofList;
+    //FIXME
 }
 
 QVector<InferenceTactic *> Theory::getInferenceTactics() const
@@ -106,6 +108,7 @@ void Theory::setDescription(const QString &value)
 
 void Theory::serializePlugins(QDataStream &stream) const
 {
+    //TODO Serialize Signature
     stream << *signaturePlugin;
     PluginManager::serializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
     PluginManager::serializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
@@ -113,6 +116,7 @@ void Theory::serializePlugins(QDataStream &stream) const
 
 void Theory::unserializePlugins(QDataStream &stream)
 {
+    //TODO Serialize Signature
     stream >> *signaturePlugin;
     PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, preProcessorPlugins);
     PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, postProcessorPlugins);
@@ -137,6 +141,21 @@ void Theory::loadPlugins()
     PluginManager::loadPluginVector<StringProcessorPlugin>(postProcessorPlugins,
                                                            postProcessorPluginsNameList,
                                                            StorageManager::postProcessorPluginPath);
+}
+
+QStringList Theory::getPostProcessorPluginsNameList() const
+{
+    return postProcessorPluginsNameList;
+}
+
+QStringList Theory::getPreProcessorPluginsNameList() const
+{
+    return preProcessorPluginsNameList;
+}
+
+QStringList Theory::getInferenceTacticsPluginsNameList() const
+{
+    return inferenceTacticsPluginsNameList;
 }
 
 QDataStream &operator <<(QDataStream &stream, const Theory &theory)
