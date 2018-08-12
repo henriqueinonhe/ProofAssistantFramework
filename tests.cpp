@@ -125,20 +125,10 @@ TEST_CASE("Trees")
 
 TEST_CASE("Logical Systems")
 {
-    StorageManager::setRootPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
-
     LogicalSystem logicalSystem;
 
     logicalSystem.setWffType(Type("o"));
 
-    logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination");
-
-    CHECK_NOTHROW(logicalSystem.loadInferenceRules());
-
-    CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
-    CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
-    CHECK(logicalSystem.getInferenceRules()[0]->version() == 0);
-    CHECK(logicalSystem.getInferenceRules()[0]->id() == "Logos Classical And Elimination");
 }
 
 TEST_CASE("Theories")

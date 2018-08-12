@@ -5,7 +5,7 @@ LogicalSystem::LogicalSystem()
 
 }
 
-LogicalSystem::LogicalSystem(const QString &name, const QString &description, const QStringList &inferenceRulesPluginsNames, const Type &wffType) :
+LogicalSystem::LogicalSystem(const QString &name, const QString &description, const Type &wffType) :
     name(name),
     description(description),
     inferenceRulesPluginsNames(inferenceRulesPluginsNames),
@@ -22,28 +22,6 @@ QString LogicalSystem::getName() const
 void LogicalSystem::setName(const QString &value)
 {
     name = value;
-}
-
-QStringList LogicalSystem::getInferenceRulesPluginsNames() const
-{
-    return inferenceRulesPluginsNames;
-}
-
-void LogicalSystem::setInferenceRulesPluginsNames(const QStringList &value)
-{
-    inferenceRulesPluginsNames = value;
-}
-
-void LogicalSystem::addInferenceRulePluginName(const QString &pluginName)
-{
-    inferenceRulesPluginsNames.push_back(pluginName);
-}
-
-void LogicalSystem::loadInferenceRules()
-{
-    PluginManager::loadPluginVector<InferenceRule>(inferenceRules,
-                                                   inferenceRulesPluginsNames,
-                                                   StorageManager::inferenceRulePluginPath);
 }
 
 QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
@@ -74,14 +52,14 @@ void LogicalSystem::setDescription(const QString &value)
 
 QDataStream & operator <<(QDataStream &stream, const LogicalSystem &system)
 {
-    stream << system.name << system.description << system.inferenceRulesPluginsNames << system.getWffType();
+    stream << system.name << system.description << system.getWffType();
 
     return stream;
 }
 
 QDataStream & operator >>(QDataStream &stream, LogicalSystem &system)
 {
-    stream >> system.name >> system.description >> system.inferenceRulesPluginsNames;
+    stream >> system.name >> system.description ;
     system.setWffType(Type(stream));
 
     return stream;
