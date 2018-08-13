@@ -22,25 +22,20 @@ public:
     Theory(const LogicalSystem * const parentLogic,
            const QString &name,
            const QString &description,
-           const QLinkedList<Formula> axioms,
-           const QString &signaturePluginName,
-           const QStringList &inferenceTacticsPluginsNameList,
-           const QStringList &preProcessorPluginsNameList,
-           const QStringList &postProcessorPluginsNameList);
-
-    QLinkedList<Formula> getAxioms() const;
+           SignaturePlugin * const signaturePlugin,
+           const QLinkedList<Formula> &axioms);
+    Theory(const LogicalSystem * const parentLogic,
+           QDataStream &stream,
+           SignaturePlugin * const signaturePlugin,
+           const QVector<InferenceTactic *> &inferenceTactics,
+           const QVector<StringProcessorPlugin *> &preProcessors,
+           const QVector<StringProcessorPlugin *> &postProcessors);
 
     const LogicalSystem *getParentLogic() const;
     void setParentLogic(const LogicalSystem * const value);
 
-    const Signature *getSignature() const;
-
-    Parser *getParser() const;
-
     QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
     QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
-
-    QVector<InferenceTactic *> getInferenceTactics() const;
 
     QString getName() const;
     void setName(const QString &value);
@@ -48,43 +43,51 @@ public:
     QString getDescription() const;
     void setDescription(const QString &value);
 
-    QStringList getInferenceTacticsPluginsNameList() const;
+    const Signature *getSignature() const;
+    SignaturePlugin *getSignaturePlugin();
+    void setSignaturePlugin(SignaturePlugin * const value);
 
-    QStringList getPreProcessorPluginsNameList() const;
+    QLinkedList<Formula> getAxioms() const;
+    void setAxioms(const QLinkedList<Formula> &value);
 
-    QStringList getPostProcessorPluginsNameList() const;
+    QVector<InferenceTactic *> getInferenceTactics() const;
+    void setInferenceTactics(const QVector<InferenceTactic *> &value);
+
+    QVector<StringProcessorPlugin *> getPreProcessors() const;
+    void setPreProcessors(const QVector<StringProcessorPlugin *> &value);
+
+    QVector<StringProcessorPlugin *> getPostProcessors() const;
+    void setPostProcessors(const QVector<StringProcessorPlugin *> &value);
+
+
 
 private:
     void serializePlugins(QDataStream &stream) const;
     void unserializePlugins(QDataStream &stream);
 
-    void loadPlugins();
+//    void loadPlugins();
 
     const LogicalSystem *parentLogic;
 
     QString name;
     QString description;
     unique_ptr<Parser> parser;
+    SignaturePlugin *signaturePlugin;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
-    QString signaturePluginName; //FIXME Move this to the logical system!
-    QStringList inferenceTacticsPluginsNameList;
-    QStringList preProcessorPluginsNameList;
-    QStringList postProcessorPluginsNameList;
 
     //I'm using raw pointers here because QPluginLoader already deletes the plugin object when application terminates
-    SignaturePlugin *signaturePlugin;
     QVector<InferenceTactic *> inferenceTactics;
-    QVector<StringProcessorPlugin *> preProcessorPlugins;
-    QVector<StringProcessorPlugin *> postProcessorPlugins;
+    QVector<StringProcessorPlugin *> preProcessors;
+    QVector<StringProcessorPlugin *> postProcessors;
     Formatter preFormatter;
     Formatter postFormatter;
 
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Theory &theory);
-    friend QDataStream &operator >>(QDataStream &stream, Theory &theory);
+   // friend QDataStream &operator >>(QDataStream &stream, Theory &theory);
 };
 
 QDataStream &operator <<(QDataStream &stream, const Theory &theory);
-QDataStream &operator >>(QDataStream &stream, Theory &theory);
+//QDataStream &operator >>(QDataStream &stream, Theory &theory);
 
 #endif // THEORY_H

@@ -21,9 +21,12 @@ public:
     LogicalSystem();
     LogicalSystem(const QString &name,
                   const QString &description,
-                  const QString &signaturePluginName,
-                  const QStringList &inferenceRulesPluginsNames,
+                  const QVector<const InferenceRule *> inferenceRules,
                   const Type &wffType);
+
+    LogicalSystem(QDataStream &stream, QVector<const InferenceRule *> &inferenceRules);
+
+    void serialize(QDataStream &stream) const;
 
     QString getName() const;
     void setName(const QString &value);
@@ -31,34 +34,20 @@ public:
     QString getDescription() const;
     void setDescription(const QString &value);
 
-    QString getSignaturePluginName() const;
-    void setSignaturePluginName(const QString &value);
-
-    QStringList getInferenceRulesPluginsNames() const;
-    void setInferenceRulesPluginsNames(const QStringList &value);
-    void addInferenceRulePluginName(const QString &pluginName);
-
-    void loadInferenceRules();
-
-    QVector<InferenceRule *> getInferenceRules() const;
+    QVector<const InferenceRule *> getInferenceRules() const;
 
     Type getWffType() const;
-    void setWffType(const Type &value);
 
 protected:
     QString name;
     QString description;
-    QString signaturePluginName;
-    QStringList inferenceRulesPluginsNames;
-    QVector<InferenceRule *> inferenceRules; //I'm using raw pointers here because QPluginLoader already deletes
-                                             //the plugin object when application terminates
+    QVector<const InferenceRule *> inferenceRules; //Does not own inference rules, must be owned by somebody else
     unique_ptr<const Type> wffType;
 
-    friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
-    friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);
+    friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
 };
 
-QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
-QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);
+QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
+
 
 #endif // LOGICALSYSTEM_H

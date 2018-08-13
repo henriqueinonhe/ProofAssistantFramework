@@ -8,6 +8,7 @@
 #include "lineofproofsectionmanager.h"
 #include "storagemanager.h"
 #include "programmanager.h"
+#include <QBuffer>
 
 TEST_CASE("Trees")
 {
@@ -123,47 +124,248 @@ TEST_CASE("Trees")
     }
 }
 
-TEST_CASE("Logical Systems")
+class DummyInferenceRule : virtual public InferenceRule
 {
-    StorageManager::setRootPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
-
-
-    SECTION("Basic")
+public:
+    QString name() const
     {
-        LogicalSystem logicalSystem;
+        return "Dummy Inference Rule";
+    }
+    QString callCommand() const
+    {
+        return "Dummy Call Command";
+    }
+    LineOfProof apply(const Proof &proof, const QStringList &argumentList) const
+    {
+        //Does Nothing
+        return LineOfProof();
+    }
+};
 
-        logicalSystem.setWffType(Type("o"));
+class DummySignaturePlugin : virtual public SignaturePlugin
+{
+public:
+    const Token *getTokenPointer(const QString &token) const
+    {
+        return signature->getTokenPointer(token);
+    }
 
-        logicalSystem.addInferenceRulePluginName("LogosClassicalAndElimination");
+    TableSignature *getSignature()
+    {
+        return signature;
+    }
 
-        logicalSystem.loadInferenceRules();
-
-        CHECK(logicalSystem.getWffType() == Type("o"));
-
-        CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
-        CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
-        CHECK(logicalSystem.getInferenceRules()[0]->version() == 0);
-        CHECK(logicalSystem.getInferenceRules()[0]->id() == "Logos Classical And Elimination");
+    void setSignature(TableSignature *value)
+    {
+        signature = value;
     }
 
 
-    SECTION("Serialization")
+protected:
+    void serialize(QDataStream &stream) const
     {
-        QStringList inferenceRules;
-        inferenceRules << "LogosClassicalAndElimination";
-
-        LogicalSystem logicalSystem("Some system",
-                                    "Some description",
-                                    "Some signature plugin",
-                                    inferenceRules,
-                                    Type("o"));
-
-        QFile file(StorageManager::getRootPath());
+        stream << *signature;
     }
-}
+    void unserialize(QDataStream &stream)
+    {
+        stream >> *signature;
+    }
 
-TEST_CASE("Theories")
+private:
+    TableSignature *signature;
+
+};
+
+class DummyInferenceTactic : virtual public InferenceTactic
 {
+public:
+    QString name() const
+    {
+        return "Dummy Inference Tactic";
+    }
+    QString callCommand() const
+    {
+        return "Dummy Call Command";
+    }
+    void apply(const ProofAssistant * const assistant, const QStringList &argumentList)
+    {
+        //Do Nothing
+    }
+};
+
+class DummyPreProcessor : virtual public StringProcessorPlugin
+{
+public:
+    DummyPreProcessor() :
+        dummyAttribute(10)
+    {
+
+    }
+
+    QString processString(const QString &string) const
+    {
+        //Do Nothing
+        return QString();
+    }
+    QString toString() const
+    {
+        return "Dummy Pre Processor";
+    }
+
+protected:
+    void serialize(QDataStream &stream) const
+    {
+        stream << dummyAttribute;
+    }
+    void unserialize(QDataStream &stream)
+    {
+        stream >> dummyAttribute;
+    }
+
+private:
+    int dummyAttribute;
+};
+
+class DummyPostProcessor : virtual public StringProcessorPlugin
+{
+public:
+    DummyPostProcessor() :
+        dummyAttribute(10)
+    {
+
+    }
+
+    QString processString(const QString &string) const
+    {
+        //Do Nothing
+        return QString();
+    }
+    QString toString() const
+    {
+        return "Dummy Post Processor";
+    }
+
+protected:
+    void serialize(QDataStream &stream) const
+    {
+        stream << dummyAttribute;
+    }
+    void unserialize(QDataStream &stream)
+    {
+        stream >> dummyAttribute;
+    }
+
+private:
+    int dummyAttribute;
+};
+
+TEST_CASE("Framework Components")
+{
+    unique_ptr<const InferenceRule> rule(new DummyInferenceRule);
+    QVector<const InferenceRule *> rules;
+    rules.push_back(rule.get());
+
+    LogicalSystem logicalSystem("Dummy Logical System",
+                                "Lorem Ipsum",
+                                rules,
+                                Type("o"));
+
+    SECTION("Logical System")
+    {
+        SECTION("Basic")
+        {
+            CHECK(logicalSystem.getName() == "Dummy Logical System");
+            CHECK(logicalSystem.getDescription() == "Lorem Ipsum");
+            CHECK(logicalSystem.getInferenceRules()[0]->name() == "Dummy Inference Rule");
+            CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "Dummy Call Command");
+            CHECK(logicalSystem.getWffType() == Type("o"));
+        }
+
+        SECTION("Serialization")
+        {
+            QBuffer buffer;
+            buffer.open(QIODevice::WriteOnly);
+            QDataStream stream(&buffer);
+
+            logicalSystem.serialize(stream);
+
+            buffer.close();
+            buffer.open(QIODevice::ReadOnly);
+            LogicalSystem logicalSystem2(stream, rules);
+
+            CHECK(logicalSystem2.getName() == "Dummy Logical System");
+            CHECK(logicalSystem2.getDescription() == "Lorem Ipsum");
+            CHECK(logicalSystem2.getInferenceRules()[0]->name() == "Dummy Inference Rule");
+            CHECK(logicalSystem2.getInferenceRules()[0]->callCommand() == "Dummy Call Command");
+            CHECK(logicalSystem2.getWffType() == Type("o"));
+        }
+    }
+
+    SECTION("Theory")
+    {
+        TableSignature signature;
+        DummySignaturePlugin signaturePlugin;
+        signaturePlugin.setSignature(&signature);
+        QLinkedList<Formula> axioms;
+        QVector<InferenceTactic *> tactics;
+        QVector<StringProcessorPlugin *> preProcessors;
+        QVector<StringProcessorPlugin *> postProcessors;
+
+        signature.addToken(CoreToken("P", Type("o")));
+        signature.addToken(CoreToken("~", Type("o->o")));
+
+        Parser parser(&signature, Type("o"));
+
+        Formula axiom1(parser.parse("P")), axiom2(parser.parse("(~ P)"));
+        unique_ptr<InferenceTactic> tactic(new DummyInferenceTactic);
+        unique_ptr<StringProcessorPlugin> preProcessor(new DummyPreProcessor);
+        unique_ptr<StringProcessorPlugin> postProcessor(new DummyPostProcessor);
+
+        axioms.push_back(axiom1);
+        axioms.push_back(axiom2);
+        tactics.push_back(tactic.get());
+        preProcessors.push_back(preProcessor.get());
+        postProcessors.push_back(postProcessor.get());
+
+        Theory theory(&logicalSystem,
+                      "Dummy Theory",
+                      "Lorem Ipsum",
+                      &signaturePlugin,
+                      axioms);
+        theory.setInferenceTactics(tactics);
+        theory.setPreProcessors(preProcessors);
+        theory.setPostProcessors(postProcessors);
+
+        SECTION("Basic")
+        {
+            CHECK(theory.getName() == "Dummy Theory");
+            CHECK(theory.getDescription() == "Lorem Ipsum");
+            CHECK(*dynamic_cast<DummySignaturePlugin *>(theory.getSignaturePlugin())->getSignature() == signature);
+            CHECK(theory.getAxioms() == axioms);
+            CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Tactic");
+            CHECK(theory.getInferenceTactics()[0]->callCommand() == "Dummy Call Command");
+            CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor");
+            CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor");
+        }
+
+        SECTION("Serialization")
+        {
+//            QBuffer buffer;
+//            buffer.open(QIODevice::WriteOnly);
+//            QDataStream stream(&buffer);
+
+//            stream << theory;
+
+//            Theory theory2(&logicalSystem);
+
+//            buffer.close();
+//            buffer.open(QIODevice::ReadOnly);
+//            stream >> theory2;
+
+        }
+    }
+
+
 }
 
 TEST_CASE("Line of Proof Section")
@@ -326,3 +528,6 @@ TEST_CASE("Dirty Fix")
 {
     DirtyFix::fix();
 }
+
+
+

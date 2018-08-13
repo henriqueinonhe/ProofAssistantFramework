@@ -232,7 +232,7 @@ void StorageManager::saveLogicalSystem(const LogicalSystem &system)
 
 void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem)
 {
-    loadComponent(logicalSystemDataFilePath(systemName), loadedSystem);
+    //loadComponent(logicalSystemDataFilePath(systemName), loadedSystem); //FIXME!
 }
 
 QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)
@@ -267,7 +267,7 @@ void StorageManager::saveTheory(Theory &theory)
 
 void StorageManager::loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory)
 {
-    loadComponent(theoryDataFilePath(logicalSystemName, theoryName), theory);
+    //loadComponent(theoryDataFilePath(logicalSystemName, theoryName), theory); FIXME!
 }
 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)

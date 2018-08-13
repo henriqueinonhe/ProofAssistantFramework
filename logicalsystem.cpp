@@ -5,14 +5,24 @@ LogicalSystem::LogicalSystem()
 
 }
 
-LogicalSystem::LogicalSystem(const QString &name, const QString &description, const QString &signaturePluginName, const QStringList &inferenceRulesPluginsNames, const Type &wffType) :
+LogicalSystem::LogicalSystem(const QString &name, const QString &description, const QVector<const InferenceRule *> inferenceRules, const Type &wffType) :
     name(name),
     description(description),
-    signaturePluginName(signaturePluginName),
-    inferenceRulesPluginsNames(inferenceRulesPluginsNames),
+    inferenceRules(inferenceRules),
     wffType(new Type(wffType))
 {
-    loadInferenceRules();
+}
+
+LogicalSystem::LogicalSystem(QDataStream &stream, QVector<const InferenceRule *> &inferenceRules)
+{
+    stream >> name >> description;
+    wffType.reset(new Type(stream));
+    this->inferenceRules = inferenceRules;
+}
+
+void LogicalSystem::serialize(QDataStream &stream) const
+{
+    stream << name << description << *wffType;
 }
 
 QString LogicalSystem::getName() const
@@ -25,29 +35,8 @@ void LogicalSystem::setName(const QString &value)
     name = value;
 }
 
-QStringList LogicalSystem::getInferenceRulesPluginsNames() const
-{
-    return inferenceRulesPluginsNames;
-}
 
-void LogicalSystem::setInferenceRulesPluginsNames(const QStringList &value)
-{
-    inferenceRulesPluginsNames = value;
-}
-
-void LogicalSystem::addInferenceRulePluginName(const QString &pluginName)
-{
-    inferenceRulesPluginsNames.push_back(pluginName);
-}
-
-void LogicalSystem::loadInferenceRules()
-{
-    PluginManager::loadPluginVector<InferenceRule>(inferenceRules,
-                                                   inferenceRulesPluginsNames,
-                                                   StorageManager::inferenceRulePluginPath);
-}
-
-QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
+QVector<const InferenceRule *> LogicalSystem::getInferenceRules() const
 {
     return inferenceRules;
 }
@@ -55,21 +44,6 @@ QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
 Type LogicalSystem::getWffType() const
 {
     return *wffType;
-}
-
-void LogicalSystem::setWffType(const Type &value)
-{
-    wffType.reset(new Type(value));
-}
-
-QString LogicalSystem::getSignaturePluginName() const
-{
-    return signaturePluginName;
-}
-
-void LogicalSystem::setSignaturePluginName(const QString &value)
-{
-    signaturePluginName = value;
 }
 
 QString LogicalSystem::getDescription() const
@@ -83,17 +57,10 @@ void LogicalSystem::setDescription(const QString &value)
 }
 
 
-QDataStream & operator <<(QDataStream &stream, const LogicalSystem &system)
-{
-    stream << system.name << system.description << system.signaturePluginName << system.inferenceRulesPluginsNames << system.getWffType();
 
-    return stream;
-}
-
-QDataStream & operator >>(QDataStream &stream, LogicalSystem &system)
+QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem)
 {
-    stream >> system.name >> system.description >> system.signaturePluginName >> system.inferenceRulesPluginsNames;
-    system.setWffType(Type(stream));
+    logicalSystem.serialize(stream);
 
     return stream;
 }

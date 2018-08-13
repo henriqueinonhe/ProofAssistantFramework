@@ -51,14 +51,14 @@ void ProgramManager::createTheory(const QString &name, const QString &descriptio
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-    StorageManager::createTheoryDir(activeLogicalSystemName, Theory(activeLogicalSystem.get(),
-                                                                    name,
-                                                                    description,
-                                                                    axioms,
-                                                                    activeLogicalSystem->getSignaturePluginName(),
-                                                                    inferenceTacticsPluginsNameList,
-                                                                    preProcessorPluginsNameList,
-                                                                    postProcessorPluginsNameList));
+//    StorageManager::createTheoryDir(activeLogicalSystemName, Theory(activeLogicalSystem.get(),
+//                                                                    name,
+//                                                                    description,
+//                                                                    axioms,
+//                                                                    activeLogicalSystem->getSignaturePluginName(),
+//                                                                    inferenceTacticsPluginsNameList,
+//                                                                    preProcessorPluginsNameList,
+//                                                                    postProcessorPluginsNameList)); FIXME!
 }
 
 void ProgramManager::removeTheory(const QString &theoryName) const
@@ -122,7 +122,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //File management
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, signaturePluginName, inferenceRuleNamesList, wffType));
+//    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, signaturePluginName, inferenceRuleNamesList, wffType)); FIXME!
 
 }
 

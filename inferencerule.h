@@ -8,7 +8,7 @@
 class InferenceRule : virtual public InferenceProcedure
 {
 public:
-    virtual LineOfProof apply(const Proof &proof, const QStringList &argumentList) = 0;
+    virtual LineOfProof apply(const Proof &proof, const QStringList &argumentList) const = 0;
 };
 
 Q_DECLARE_INTERFACE(InferenceRule, "InferenceRule")

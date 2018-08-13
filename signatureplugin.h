@@ -5,11 +5,10 @@
 #include <memory>
 #include <QDataStream>
 
-class SignaturePlugin
+class SignaturePlugin : virtual public Signature
 {
 public:
-    virtual const Signature *getSignature() const = 0;
-    virtual void interfaceWithSignature() = 0;
+    virtual const Token *getTokenPointer(const QString &token) const = 0;
 
 protected:
     virtual void serialize(QDataStream &stream) const = 0;
@@ -17,6 +16,7 @@ protected:
 
     friend QDataStream &operator <<(QDataStream &stream, const SignaturePlugin &signature);
     friend QDataStream &operator >>(QDataStream &stream, SignaturePlugin &signature);
+
 };
 
 QDataStream &operator <<(QDataStream &stream, const SignaturePlugin &signature);
