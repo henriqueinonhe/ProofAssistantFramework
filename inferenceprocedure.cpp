@@ -1,2 +1,3 @@
-﻿#include "inferenceprocedure.h"
+#include "inferenceprocedure.h"
+
 

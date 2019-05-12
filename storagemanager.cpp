@@ -1,6 +1,6 @@
-﻿#include "storagemanager.h"
+#include "storagemanager.h"
 
-QString StorageManager::rootPath = "";
+QString StorageManager::rootPath = "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox";
 const QString StorageManager::storageFilesSuffix = ".dat";
 const QString StorageManager::storageDirName = "data";
 
@@ -16,7 +16,7 @@ const QString StorageManager::theoryDataFileName = "theory";
 
 //Proof
 const QString StorageManager::proofsDirName = "Proofs";
-const QString StorageManager::proofsRecordsFileName = "proofrecords";
+const QString StorageManager::proofsRecordsFileName = "proofsrecords";
 
 //Plugins
 const QString StorageManager::pluginsDirName = "plugins";
@@ -68,7 +68,7 @@ QString StorageManager::proofsDirPath(const QString &logicalSystemName, const QS
 
 QString StorageManager::proofsRecordsFilePath(const QString &logicalSystemName, const QString &theoryName)
 {
-    return proofsDirPath(logicalSystemName, theoryName) + "/" + proofsRecordsFileName;
+    return proofsDirPath(logicalSystemName, theoryName) + "/" + proofsRecordsFileName + storageFilesSuffix;
 }
 
 QString StorageManager::pluginsDirPath()
@@ -81,22 +81,22 @@ QString StorageManager::inferenceRulesPluginsDirPath()
     return pluginsDirPath() + "/" + inferenceRulesPluginsDirName;
 }
 
-QString StorageManager::signaturePluginsDirPath()
+QString StorageManager::signaturesPluginsDirPath()
 {
     return pluginsDirPath() + "/" + signaturePluginsDirName;
 }
 
 QString StorageManager::inferenceTacticsPluginsDirPath()
 {
-    return pluginsDirPath() + "/" + inferenceRulesPluginsDirName;
+    return pluginsDirPath() + "/" + inferenceTacticsPluginsDirName;
 }
 
-QString StorageManager::preProcessorPluginsDirPath()
+QString StorageManager::preProcessorsPluginsDirPath()
 {
     return pluginsDirPath() + "/" + preProcessorPluginsDirName;
 }
 
-QString StorageManager::postProcessorPluginsDirPath()
+QString StorageManager::postProcessorsPluginsDirPath()
 {
     return pluginsDirPath() + "/" + postProcessorPluginsDirName;
 }
@@ -108,7 +108,7 @@ QString StorageManager::inferenceRulePluginPath(const QString &pluginName)
 
 QString StorageManager::signaturePluginPath(const QString &pluginName)
 {
-    return signaturePluginsDirPath() + "/" + pluginName + ".dll";
+    return signaturesPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::inferenceTacticPluginPath(const QString &pluginName)
@@ -118,12 +118,12 @@ QString StorageManager::inferenceTacticPluginPath(const QString &pluginName)
 
 QString StorageManager::preProcessorPluginPath(const QString &pluginName)
 {
-    return preProcessorPluginsDirPath() + "/" + pluginName + ".dll";
+    return preProcessorsPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::postProcessorPluginPath(const QString &pluginName)
 {
-    return postProcessorPluginsDirPath() + "/" + pluginName + ".dll";
+    return postProcessorsPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 void StorageManager::accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode)
@@ -138,7 +138,7 @@ void StorageManager::accessFile(QFile &file, const QIODevice::OpenModeFlag &open
     }
 }
 
-void StorageManager::accessDir(const QDir &dir)
+void StorageManager::checkDirExistence(const QDir &dir)
 {
     if(!dir.exists())
     {
@@ -204,14 +204,14 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
     QDir dir(logicalSystemsDirPath());
     const QString logicalSystemName = system.getName();
     //Logical Systems Directory
-    accessDir(dir);
+    checkDirExistence(dir);
     mkDir(dir, logicalSystemName);
 
     //New Logical System Directory
     dir.cd(logicalSystemName);
     mkDir(dir, "Theories");
 
-    saveComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
+    saveComponent<LogicalSystem>(logicalSystemDataFilePath(logicalSystemName), system);
 
     //Theories Directory
     dir.cd("Theories");
@@ -227,12 +227,13 @@ void StorageManager::deleteLogicalSystemDir(const QString &systemName)
 
 void StorageManager::saveLogicalSystem(const LogicalSystem &system)
 {
+    //NOTE What is the purpose of this function?
     saveComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
 }
 
 void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem)
 {
-    //loadComponent(logicalSystemDataFilePath(systemName), loadedSystem); //FIXME!
+    loadComponent(logicalSystemDataFilePath(systemName), loadedSystem);
 }
 
 QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)

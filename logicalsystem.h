@@ -1,4 +1,4 @@
-﻿#ifndef LOGICALSYSTEM_H
+#ifndef LOGICALSYSTEM_H
 #define LOGICALSYSTEM_H
 
 #include <QString>
@@ -10,41 +10,50 @@
 #include "type.h"
 #include <QFile>
 #include <QDataStream>
-#include "storagemanager.h"
-#include "pluginmanager.h"
 
 using namespace std;
 
 class LogicalSystem
 {
 public:
-    LogicalSystem();
     LogicalSystem(const QString &name,
                   const QString &description,
-                  const QVector<const InferenceRule *> inferenceRules,
+                  QStringList inferenceRulesNamesList,
+                  const QString &signatureName,
                   const Type &wffType);
 
-    LogicalSystem(QDataStream &stream, QVector<const InferenceRule *> &inferenceRules);
+    LogicalSystem(QDataStream &stream);
 
     void serialize(QDataStream &stream) const;
 
     QString getName() const;
-    void setName(const QString &value);
 
     QString getDescription() const;
-    void setDescription(const QString &value);
 
-    QVector<const InferenceRule *> getInferenceRules() const;
+    QVector<InferenceRule *> getInferenceRules() const;
 
     Type getWffType() const;
 
+    QString getSignatureName() const;
+
 protected:
+    LogicalSystem();
+
+    void setName(const QString &value);
+    void setDescription(const QString &value);
+
+    void loadInferenceRuleList();
+
     QString name;
     QString description;
-    QVector<const InferenceRule *> inferenceRules; //Does not own inference rules, must be owned by somebody else
+    QStringList inferenceRulesNamesList;
+    QVector<InferenceRule *> inferenceRules; //Does not own inference rules, must be owned by somebody else, most likely by the plugin loader
+    QString signatureName;
     unique_ptr<const Type> wffType;
 
+    friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);
     friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
+    friend class ProgramManager;
 };
 
 QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);

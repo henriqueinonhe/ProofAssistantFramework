@@ -1,13 +1,16 @@
-﻿#ifndef PLUGINMANAGER_H
+#ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
 #include <QPluginLoader>
 #include <QVector>
+#include "storagemanager.h"
 
 class PluginManager
 {
 public:
     PluginManager();
+
+
 
     template<class T>
     static void serializePluginVector(QDataStream &stream, const QVector<T *> &pluginVector)

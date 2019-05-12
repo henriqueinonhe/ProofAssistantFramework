@@ -1,4 +1,4 @@
-﻿#include "programmanager.h"
+#include "programmanager.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
@@ -105,8 +105,8 @@ void ProgramManager::checkActiveTheory() const
 
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
-                                         const QString &signaturePluginName,
-                                         const QStringList &inferenceRuleNamesList,
+                                         const QString &signatureName,
+                                         const QStringList &inferenceRulesNamesList,
                                          const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -114,7 +114,9 @@ void ProgramManager::createLogicalSystem(const QString &name,
         throw std::invalid_argument("There already exists a logical system with this name!");
     }
 
-    //TODO Refactor
+    //Logical System
+    LogicalSystem logicalSystem(name, description, inferenceRulesNamesList, signatureName, wffType); //If Logical System creation is unsuccesfull for whatever reason it will throw an exception and the directories and records creation won't be carried out
+
     //LogicalSystemRecord
     LogicalSystemRecord newSystemRecord(name, description);
     QVector<LogicalSystemRecord> records = StorageManager::retrieveLogicalSystemsRecords();
@@ -122,7 +124,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //File management
     StorageManager::storeLogicalSystemsRecords(records);
-//    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, signaturePluginName, inferenceRuleNamesList, wffType)); FIXME!
+    StorageManager::createLogicalSystemDir(logicalSystem);
 
 }
 
@@ -176,11 +178,9 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
-    LogicalSystem *system = new LogicalSystem;
+    LogicalSystem *system = new LogicalSystem();
     StorageManager::loadLogicalSystem(name, *system);
-
     activeLogicalSystem.reset(system);
-    //system->loadInferenceRules(); //FIXME!
 }
 
 

@@ -1,5 +1,6 @@
-﻿#include "theory.h"
+#include "theory.h"
 #include "logicalsystem.h"
+#include "pluginmanager.h"
 
 Theory::Theory(const LogicalSystem * const parentLogic) :
     parentLogic(parentLogic)

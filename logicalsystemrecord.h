@@ -16,6 +16,7 @@ public:
     QString getDescription() const;
     void setDescription(const QString &value);
 
+
 private:
     QString name;
     QString description;

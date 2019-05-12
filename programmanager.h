@@ -21,7 +21,7 @@ public:
     void createLogicalSystem(const QString &name,
                              const QString &description,
                              const QString &signaturePluginName,
-                             const QStringList &inferenceRuleNamesList,
+                             const QStringList &inferenceRulesNamesList,
                              const Type &wffType) const;
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;

@@ -1,4 +1,4 @@
-﻿#ifndef THEORY_H
+#ifndef THEORY_H
 #define THEORY_H
 
 #include "formula.h"
@@ -10,7 +10,7 @@
 #include "stringprocessorplugin.h"
 #include "formatter.h"
 #include <QDataStream>
-#include "pluginmanager.h"
+
 
 class LogicalSystem;
 class ProofAssistant;

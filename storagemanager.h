@@ -1,4 +1,4 @@
-﻿#ifndef STORAGEMANAGER_H
+#ifndef STORAGEMANAGER_H
 #define STORAGEMANAGER_H
 
 #include <QFile>
@@ -76,13 +76,13 @@ public:
     static const QString preProcessorPluginsDirName;
     static const QString postProcessorPluginsDirName;
     static QString pluginsDirPath();
+    static QString signaturesPluginsDirPath();
     static QString inferenceRulesPluginsDirPath();
-    static QString signaturePluginsDirPath();
     static QString inferenceTacticsPluginsDirPath();
-    static QString preProcessorPluginsDirPath();
-    static QString postProcessorPluginsDirPath();
-    static QString inferenceRulePluginPath(const QString &pluginName);
+    static QString preProcessorsPluginsDirPath();
+    static QString postProcessorsPluginsDirPath();
     static QString signaturePluginPath(const QString &pluginName);
+    static QString inferenceRulePluginPath(const QString &pluginName);
     static QString inferenceTacticPluginPath(const QString &pluginName);
     static QString preProcessorPluginPath(const QString &pluginName);
     static QString postProcessorPluginPath(const QString &pluginName);
@@ -133,11 +133,9 @@ private:
         stream >> component;
     }
 
-
-
     //Files and Directories
     static void accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode);
-    static void accessDir(const QDir &dir);
+    static void checkDirExistence(const QDir &dir);
     static void mkDir(const QDir &dir, const QString &dirName);
     static void rmDir(QDir &dir);
 
