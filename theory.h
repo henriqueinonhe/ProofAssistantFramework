@@ -13,7 +13,9 @@
 #include "pluginwrapper.h"
 
 typedef PluginWrapper<SignaturePlugin> SignaturePluginWrapper;
-typedef PluginWrapper<InferenceTactic> InferenceTacticPlugin;
+typedef PluginWrapper<InferenceTactic> InferenceTacticPluginWrapper;
+typedef PluginWrapper<StringProcessorPlugin> StringProcessorPluginWrapper;
+typedef PluginWrapper<StringProcessorPlugin> StringProcessorPluginWrapper;
 
 class LogicalSystem;
 class ProofAssistant;
@@ -21,45 +23,34 @@ class ProofAssistant;
 class Theory
 {
 public:
-    Theory(const LogicalSystem * const parentLogic, QDataStream &stream);
 
     const LogicalSystem *getParentLogic() const;
-
-    QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
-    QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
     QString getName() const;
     QString getDescription() const;
     Signature *getSignature();
     QLinkedList<Formula> getAxioms() const;
 
-    QVector<InferenceTacticPlugin> getInferenceTactics() const;
+    void addInferenceTactic(const QString &pluginName);
+    void removeInferenceTactic(const QString &pluginName);
+    QVector<InferenceTacticPluginWrapper> getInferenceTactics() const;
 
-    QVector<StringProcessorPlugin *> getPreProcessors() const;
-    void setPreProcessors(const QVector<StringProcessorPlugin *> &value);
+    void addPreProcessor(const QString &pluginName);
+    void removePreProcessor(const QString &pluginName);
+    QVector<StringProcessorPluginWrapper> getPreProcessors() const;
 
-    QVector<StringProcessorPlugin *> getPostProcessors() const;
-    void setPostProcessors(const QVector<StringProcessorPlugin *> &value);
+    void addPostProcessor(const QString &pluginName);
+    void removePostProcessor(const QString &pluginName);
+    QVector<StringProcessorPluginWrapper> getPostProcessors() const;
 
-    QString getSignaturePluginName() const;
-    void setSignaturePluginName(const QString &value);
+    QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
+    QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
 protected:
     Theory(const LogicalSystem * const parentLogic);
-    Theory(const LogicalSystem * const parentLogic,
-           const QString &name,
-           const QString &description,
-           const QLinkedList<Formula> &axioms);
-
-    void serializePlugins(QDataStream &stream) const;
-    void unserializePlugins(QDataStream &stream);
+    Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> &axioms);
 
     void loadSignaturePlugin();
-//    void loadPlugins();
-
-    void setName(const QString &value);
-    void setDescription(const QString &value);
-    void setAxioms(const QLinkedList<Formula> &value);
 
     const LogicalSystem *parentLogic;
 
@@ -69,10 +60,9 @@ protected:
     SignaturePluginWrapper signaturePlugin;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
 
-    //I'm using raw pointers here because QPluginLoader already deletes the plugin object when application terminates
-    QVector<InferenceTacticPlugin> inferenceTactics;
-    QVector<StringProcessorPlugin *> preProcessors;
-    QVector<StringProcessorPlugin *> postProcessors;
+    QVector<InferenceTacticPluginWrapper> inferenceTactics;
+    QVector<StringProcessorPluginWrapper> preProcessors;
+    QVector<StringProcessorPluginWrapper> postProcessors;
     Formatter preFormatter;
     Formatter postFormatter;
 
@@ -80,10 +70,10 @@ protected:
     friend class TheoryBuilder;
     friend class ProgramManager;
     friend QDataStream &operator <<(QDataStream &stream, const Theory &theory);
-   // friend QDataStream &operator >>(QDataStream &stream, Theory &theory);
+    friend QDataStream &operator >>(QDataStream &stream, Theory &theory);
 };
 
 QDataStream &operator <<(QDataStream &stream, const Theory &theory);
-//QDataStream &operator >>(QDataStream &stream, Theory &theory);
+QDataStream &operator >>(QDataStream &stream, Theory &theory);
 
 #endif // THEORY_H

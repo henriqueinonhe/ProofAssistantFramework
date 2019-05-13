@@ -178,12 +178,9 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
-//    LogicalSystem *system = new LogicalSystem();
-//    StorageManager::loadLogicalSystem(name, *system);
-//    activeLogicalSystem.reset(system);
-
-    LogicalSystem *logicalSystem = new LogicalSystem(stream);
-    activeLogicalSystem.reset(logicalSystem);
+    LogicalSystem *system = new LogicalSystem();
+    StorageManager::loadLogicalSystem(name, *system);
+    activeLogicalSystem.reset(system);
 }
 
 

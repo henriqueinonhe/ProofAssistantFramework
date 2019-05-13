@@ -10,8 +10,6 @@ class PluginManager
 public:
     PluginManager();
 
-
-
     template<class T>
     static void serializePluginVector(QDataStream &stream, const QVector<T *> &pluginVector)
     {

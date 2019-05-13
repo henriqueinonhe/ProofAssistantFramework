@@ -9,8 +9,29 @@ Theory::Theory(const LogicalSystem * const parentLogic) :
 
 void Theory::loadSignaturePlugin()
 {
-    const QString signaturePluginPath = StorageManager::signaturePluginPath(parentLogic->getSignatureName());
+    const QString signatureName = parentLogic->getSignatureName();
+    const QString signaturePluginPath = StorageManager::signaturePluginPath(signatureName);
     signaturePlugin.load(signaturePluginPath);
+}
+
+QVector<StringProcessorPluginWrapper> Theory::getPostProcessors() const
+{
+    return postProcessors;
+}
+
+QVector<StringProcessorPluginWrapper> Theory::getPreProcessors() const
+{
+    return preProcessors;
+}
+
+void Theory::addPostProcessor(const QString &pluginName)
+{
+
+}
+
+void Theory::removePostProcessor(const QString &pluginName)
+{
+
 }
 
 Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> &axioms) :
@@ -19,32 +40,14 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
     description(description),
     axioms(axioms)
 {
-    //Gotta do some validation! Axioms for instance, there cannot be duplicates!
-    //Maybe this needs a builder...
-
     loadSignaturePlugin();
     parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
-
-}
-
-Theory::Theory(const LogicalSystem * const parentLogic, QDataStream &stream) :
-    parentLogic(parentLogic)
-{
-    stream >> name >> description;
-    unserializePlugins(stream);
-    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
-    axioms = Formula::unserializeList(stream, getSignature());
 }
 
 const LogicalSystem *Theory::getParentLogic() const
 {
     return parentLogic;
 }
-
-//void Theory::setParentLogic(const LogicalSystem * const value)
-//{
-//    parentLogic = value;
-//}
 
 Signature *Theory::getSignature()
 {
@@ -89,9 +92,20 @@ QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) con
     //FIXME
 }
 
-QVector<InferenceTacticPlugin> Theory::getInferenceTactics() const
+QVector<InferenceTacticPluginWrapper> Theory::getInferenceTactics() const
 {
     return inferenceTactics;
+}
+
+void Theory::addPreProcessor(const QString &pluginName)
+{
+
+    PluginWrapper<StringProcessorPlugin>::checkContainerPluginCollision
+}
+
+void Theory::removePreProcessor(const QString &pluginName)
+{
+
 }
 
 QString Theory::getName() const
@@ -99,100 +113,57 @@ QString Theory::getName() const
     return name;
 }
 
-void Theory::setName(const QString &value)
-{
-    name = value;
-}
-
 QString Theory::getDescription() const
 {
     return description;
 }
 
-void Theory::setDescription(const QString &value)
-{
-    description = value;
-}
-
-QVector<StringProcessorPlugin *> Theory::getPreProcessors() const
-{
-    return preProcessors;
-}
-
-void Theory::setPreProcessors(const QVector<StringProcessorPlugin *> &value)
-{
-    preProcessors = value;
-}
-
-QVector<StringProcessorPlugin *> Theory::getPostProcessors() const
-{
-    return postProcessors;
-}
-
-void Theory::setPostProcessors(const QVector<StringProcessorPlugin *> &value)
-{
-    postProcessors = value;
-}
-
-void Theory::setAxioms(const QLinkedList<Formula> &value)
-{
-    axioms = value;
-}
-
-void Theory::serializePlugins(QDataStream &stream) const
-{
-    //stream << signaturePlugin->ptr();
-    PluginManager::serializePluginVector<StringProcessorPlugin>(stream, preProcessors);
-    PluginManager::serializePluginVector<StringProcessorPlugin>(stream, postProcessors);
-}
-
-void Theory::unserializePlugins(QDataStream &stream)
-{
-    //stream >> signaturePlugin->ptr();
-    PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, preProcessors);
-    PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, postProcessors);
-}
-
-//void Theory::loadPlugins()
-//{
-//    //Load Signature
-//    PluginManager::loadSinglePlugin<SignaturePlugin>(signaturePlugin, signaturePluginName, StorageManager::signaturePluginPath);
-
-//    //Load Inference Tactics
-//    PluginManager::loadPluginVector<InferenceTactic>(inferenceTactics,
-//                                                     inferenceTacticsPluginsNameList,
-//                                                     StorageManager::inferenceTacticPluginPath);
-
-//    //Load Pre Processors
-//    PluginManager::loadPluginVector<StringProcessorPlugin>(preProcessorPlugins,
-//                                                           preProcessorPluginsNameList,
-//                                                           StorageManager::preProcessorPluginPath);
-
-//    //Load Post Processors
-//    PluginManager::loadPluginVector<StringProcessorPlugin>(postProcessorPlugins,
-//                                                           postProcessorPluginsNameList,
-//                                                           StorageManager::postProcessorPluginPath);
-//}
-
 QDataStream &operator <<(QDataStream &stream, const Theory &theory)
 {
-    stream << theory.name << theory.description;
-    theory.serializePlugins(stream);
-    stream << theory.axioms;
+    stream << theory.name
+           << theory.description
+           << theory.signaturePlugin
+           << theory.axioms
+           << theory.inferenceTactics
+           << theory.preProcessors
+           << theory.postProcessors
+           << theory.preFormatter
+           << theory.postFormatter;
 
     return stream;
 }
 
-//QDataStream &operator >>(QDataStream &stream, Theory &theory)
-//{
-//    stream >> theory.name >> theory.description;
+QDataStream &operator >>(QDataStream &stream, Theory &theory)
+{
+    stream >> theory.name
+           >> theory.description
+           >> theory.signaturePlugin;
+    theory.axioms = Formula::unserializeList(stream, theory.signaturePlugin.ptr());
+    stream >> theory.inferenceTactics
+           >> theory.preProcessors
+           >> theory.postProcessors
+           >> theory.preFormatter
+           >> theory.postFormatter;
 
-//    return stream;
-//}
+    return stream;
+}
 
 QLinkedList<Formula> Theory::getAxioms() const
 {
     return axioms;
+}
+
+void Theory::addInferenceTactic(const QString &pluginName)
+{
+    const QString pluginPath = StorageManager::inferenceTacticPluginPath(pluginName);
+    PluginWrapper<InferenceTactic>::checkContainerPluginCollision(inferenceTactics, pluginPath);
+    inferenceTactics.push_back(InferenceTacticPluginWrapper(pluginPath));
+}
+
+void Theory::removeInferenceTactic(const QString &pluginName)
+{
+    const QString pluginPath = StorageManager::inferenceTacticPluginPath(pluginName);
+    PluginWrapper<InferenceTactic>::removePluginFromContainer(inferenceTactics, pluginPath);
 }
 
 

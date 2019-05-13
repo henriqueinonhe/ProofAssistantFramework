@@ -125,151 +125,6 @@ TEST_CASE("Trees")
     }
 }
 
-class DummyInferenceRule : virtual public InferenceRule
-{
-public:
-    QString name() const
-    {
-        return "Dummy Inference Rule";
-    }
-    QString callCommand() const
-    {
-        return "Dummy Call Command";
-    }
-    LineOfProof apply(const Proof &proof, const QStringList &argumentList) const
-    {
-        //Does Nothing
-        return LineOfProof();
-    }
-};
-
-class DummySignaturePlugin : virtual public SignaturePlugin
-{
-public:
-    const Token *getTokenPointer(const QString &token) const
-    {
-        return signature->getTokenPointer(token);
-    }
-
-    void addToken(const Token &token) {
-        //Do nothing
-    }
-
-    TableSignature *getSignature()
-    {
-        return signature;
-    }
-
-    void setSignature(TableSignature *value)
-    {
-        signature = value;
-    }
-
-
-protected:
-    void serialize(QDataStream &stream) const
-    {
-        stream << *signature;
-    }
-    void unserialize(QDataStream &stream)
-    {
-        stream >> *signature;
-    }
-
-private:
-    TableSignature *signature;
-
-};
-
-class DummyInferenceTactic : virtual public InferenceTactic
-{
-public:
-    QString name() const
-    {
-        return "Dummy Inference Tactic";
-    }
-    QString callCommand() const
-    {
-        return "Dummy Call Command";
-    }
-    void apply(const ProofAssistant * const assistant, const QStringList &argumentList)
-    {
-        //Do Nothing
-    }
-
-    virtual ~DummyInferenceTactic() {}
-};
-
-class DummyPreProcessor : virtual public StringProcessorPlugin
-{
-public:
-    DummyPreProcessor() :
-        dummyAttribute(10)
-    {
-
-    }
-
-    QString processString(const QString &string) const
-    {
-        //Do Nothing
-        return QString();
-    }
-    QString toString() const
-    {
-        return "Dummy Pre Processor";
-    }
-
-    virtual ~DummyPreProcessor() {}
-
-protected:
-    void serialize(QDataStream &stream) const
-    {
-        stream << dummyAttribute;
-    }
-    void unserialize(QDataStream &stream)
-    {
-        stream >> dummyAttribute;
-    }
-
-private:
-    int dummyAttribute;
-};
-
-class DummyPostProcessor : virtual public StringProcessorPlugin
-{
-public:
-    DummyPostProcessor() :
-        dummyAttribute(10)
-    {
-
-    }
-
-    QString processString(const QString &string) const
-    {
-        //Do Nothing
-        return QString();
-    }
-    QString toString() const
-    {
-        return "Dummy Post Processor";
-    }
-
-    virtual ~DummyPostProcessor() {}
-
-protected:
-    void serialize(QDataStream &stream) const
-    {
-        stream << dummyAttribute;
-    }
-    void unserialize(QDataStream &stream)
-    {
-        stream >> dummyAttribute;
-    }
-
-private:
-    int dummyAttribute;
-};
-
 TEST_CASE("Plugin Wrapper")
 {
     {
@@ -368,31 +223,22 @@ TEST_CASE("Framework Components (some bug, needs to split test case)")
 
     TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum");
 
-    QVector<InferenceTactic *> tactics;
-    QVector<StringProcessorPlugin *> preProcessors;
-    QVector<StringProcessorPlugin *> postProcessors;
-
-
-    unique_ptr<InferenceTactic> tactic(new DummyInferenceTactic);
-    unique_ptr<StringProcessorPlugin> preProcessor(new DummyPreProcessor);
-    unique_ptr<StringProcessorPlugin> postProcessor(new DummyPostProcessor);
-
     Signature *signature = theoryBuilder.getSignature();
     signature->addToken(CoreToken("P", Type("o")));
     signature->addToken(CoreToken("~", Type("o->o")));
-
 
     theoryBuilder.addAxiom("P");
     theoryBuilder.addAxiom("(~ P)");
     CHECK_THROWS(theoryBuilder.addAxiom("(~ P"));
 
-    tactics.push_back(tactic.get());
-    preProcessors.push_back(preProcessor.get());
-    postProcessors.push_back(postProcessor.get());
-
     Theory theory = theoryBuilder.build();
-    theory.setPreProcessors(preProcessors);
-    theory.setPostProcessors(postProcessors);
+
+    CHECK_NOTHROW(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
+    CHECK_THROWS(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
+    CHECK_NOTHROW(theory.removeInferenceTactic("DummyInferenceTacticPlugin"));
+    CHECK(theory.getInferenceTactics().isEmpty());
+    CHECK_THROWS(theory.removeInferenceTactic("DummyInferenceTacticPlugin"));
+    CHECK_NOTHROW(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
 
     SECTION("Theory")
     {
@@ -402,10 +248,8 @@ TEST_CASE("Framework Components (some bug, needs to split test case)")
             CHECK(theory.getDescription() == "Lorem Ipsum");
             CHECK(theory.getAxioms().first().formattedString() == "P");
             CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
-            //CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Tactic");
-            //CHECK(theory.getInferenceTactics()[0]->callCommand() == "Dummy Call Command");
-            CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor");
-            CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor");
+            CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Rule");//FIX Plugin
+            CHECK(theory.getInferenceTactics()[0]->callCommand() == "DM");
         }
 
 //        SECTION("Serialization")

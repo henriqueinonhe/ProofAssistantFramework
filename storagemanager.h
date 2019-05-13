@@ -90,17 +90,11 @@ public:
 private:
     //Templates
 
-    //Maybe I can make this even dryer
-    //FIXME
     template<class T>
     static QVector<T> retrieveRecords(const QString &recordsFilePath)
     {
-        QFile recordsFile(recordsFilePath);
-        accessFile(recordsFile, QIODevice::ReadOnly);
-        QDataStream in(&recordsFile);
-
         QVector<T> records;
-        in >> records;
+        retrieveComponent<QVector<T>>(recordsFilePath, records);
 
         return records;
     }
@@ -108,15 +102,11 @@ private:
     template<class T>
     static void storeRecords(const QVector<T> &records, const QString &recordsFilePath)
     {
-        QFile recordsFile(recordsFilePath);
-        accessFile(recordsFile, QIODevice::WriteOnly);
-        QDataStream out(&recordsFile);
-
-        out << records;
+        storeComponent<QVector<T>>(recordsFilePath, records);
     }
 
     template<class T>
-    static void saveComponent(const QString &dataFilePath, const T &component)
+    static void storeComponent(const QString &dataFilePath, const T &component)
     {
         QFile dataFile(dataFilePath);
         accessFile(dataFile, QIODevice::WriteOnly);
@@ -125,7 +115,7 @@ private:
     }
 
     template<class T>
-    static void loadComponent(const QString &dataFilePath, T &component)
+    static void retrieveComponent(const QString &dataFilePath, T &component)
     {
         QFile dataFile(dataFilePath);
         accessFile(dataFile, QIODevice::ReadOnly);

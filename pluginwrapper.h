@@ -6,6 +6,7 @@
 
 template <class T> class PluginWrapper;
 class InferenceRule;
+class InferenceTactic;
 template <class T> QDataStream &operator<<(QDataStream&, const PluginWrapper<T>&);
 template <class T> QDataStream &operator>>(QDataStream&, PluginWrapper<T>&);
 
@@ -74,6 +75,39 @@ public:
         return pluginPointer;
     }
 
+    template <class C> static void checkContainerPluginCollision(const C &container, const QString &pluginPath)
+    {
+        std::for_each(container.begin(), container.end(), [&](const PluginWrapper &plugin)
+        {
+            if(plugin.getPluginPath() == pluginPath)
+            {
+                QString errorMsg;
+                errorMsg += "This plugin is already in use.";
+
+                throw std::invalid_argument(errorMsg.toStdString());
+            }
+        });
+    }
+
+    template <class C> static void removePluginFromContainer(C &container, const QString &pluginPath)
+    {
+        for(auto iter = container.begin(); iter != container.end(); iter++)
+        {
+            if(iter->getPluginPath() == pluginPath)
+            {
+                container.erase(iter);
+                return;
+            }
+        }
+
+        throw std::invalid_argument("This plugin is not in the container!");
+    }
+
+    QString getPluginPath() const
+    {
+        return pluginPath;
+    }
+
 private:
     T *pluginPointer;
     QPluginLoader loader;
@@ -115,5 +149,19 @@ QDataStream &operator>> <InferenceRule>(QDataStream &stream, PluginWrapper<Infer
     return stream;
 }
 
+template <> inline
+QDataStream &operator<< <InferenceTactic>(QDataStream &stream, const PluginWrapper<InferenceTactic> &plugin)
+{
+    stream << plugin.pluginPath;
+    return stream;
+}
+
+template <> inline
+QDataStream &operator>> <InferenceTactic>(QDataStream &stream, PluginWrapper<InferenceTactic> &plugin)
+{
+    stream >> plugin.pluginPath;
+    plugin.load(plugin.pluginPath);
+    return stream;
+}
 
 #endif // PLUGINWRAPPER_H

@@ -121,6 +121,7 @@ HEADERS += \
     ../Language/Utils/dirtyfix.h \
     ../Language/Utils/parsingauxiliarytools.h \
     ../Language/Utils/pool.h \
+    containermanager.h \
     logicalsystem.h \
     pluginwrapper.h \
     theory.h \

@@ -203,6 +203,7 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
 {
     QDir dir(logicalSystemsDirPath());
     const QString logicalSystemName = system.getName();
+
     //Logical Systems Directory
     checkDirExistence(dir);
     mkDir(dir, logicalSystemName);
@@ -211,7 +212,7 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
     dir.cd(logicalSystemName);
     mkDir(dir, "Theories");
 
-    saveComponent<LogicalSystem>(logicalSystemDataFilePath(logicalSystemName), system);
+    storeComponent<LogicalSystem>(logicalSystemDataFilePath(logicalSystemName), system);
 
     //Theories Directory
     dir.cd("Theories");
@@ -228,12 +229,12 @@ void StorageManager::deleteLogicalSystemDir(const QString &systemName)
 void StorageManager::saveLogicalSystem(const LogicalSystem &system)
 {
     //NOTE What is the purpose of this function?
-    saveComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
+    storeComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
 }
 
 void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem)
 {
-    loadComponent(logicalSystemDataFilePath(systemName), loadedSystem);
+    retrieveComponent(logicalSystemDataFilePath(systemName), loadedSystem);
 }
 
 QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)
@@ -252,7 +253,7 @@ void StorageManager::createTheoryDir(const QString &logicalSystemName, const The
     QDir theoriesDir(theoriesDirPath(logicalSystemName));
     mkDir(theoriesDir, theoryName);
 
-    saveComponent<Theory>(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
+    storeComponent<Theory>(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
 }
 
 void StorageManager::deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName)
@@ -263,7 +264,7 @@ void StorageManager::deleteTheoryDir(const QString &logicalSystemName, const QSt
 
 void StorageManager::saveTheory(Theory &theory)
 {
-    saveComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
+    storeComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
 }
 
 void StorageManager::loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory)
