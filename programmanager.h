@@ -1,4 +1,4 @@
-﻿#ifndef PROGRAMMANAGER_H
+#ifndef PROGRAMMANAGER_H
 #define PROGRAMMANAGER_H
 
 #include "logicalsystem.h"
@@ -16,15 +16,15 @@ public:
     ProgramManager();
 
     //Logical System
-    void loadLogicalSystem(const QString &name);
-    LogicalSystem *getActiveLogicalSystem() const;
     void createLogicalSystem(const QString &name,
                              const QString &description,
                              const QString &signaturePluginName,
                              const QStringList &inferenceRulesNamesList,
                              const Type &wffType) const;
+    void loadLogicalSystem(const QString &name);
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;
+    LogicalSystem *getActiveLogicalSystem() const;
     //TODO Edit Logical System
 
     //Theory

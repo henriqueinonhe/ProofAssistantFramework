@@ -7,30 +7,33 @@ Theory::Theory(const LogicalSystem * const parentLogic) :
 {
 }
 
-Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, SignaturePlugin * const signaturePlugin, const QLinkedList<Formula> &axioms) :
+void Theory::loadSignaturePlugin()
+{
+    const QString signaturePluginPath = StorageManager::signaturePluginPath(parentLogic->getSignatureName());
+    signaturePlugin.load(signaturePluginPath);
+}
+
+Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> &axioms) :
     parentLogic(parentLogic),
     name(name),
     description(description),
-    signaturePlugin(signaturePlugin),
     axioms(axioms)
 {
     //Gotta do some validation! Axioms for instance, there cannot be duplicates!
     //Maybe this needs a builder...
 
-    parser.reset(new Parser(signaturePlugin, parentLogic->getWffType()));
+    loadSignaturePlugin();
+    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
+
 }
 
-Theory::Theory(const LogicalSystem * const parentLogic, QDataStream &stream, SignaturePlugin * const signaturePlugin, const QVector<InferenceTactic *> &inferenceTactics, const QVector<StringProcessorPlugin *> &preProcessors, const QVector<StringProcessorPlugin *> &postProcessors) :
-    parentLogic(parentLogic),
-    signaturePlugin(signaturePlugin),
-    inferenceTactics(inferenceTactics),
-    preProcessors(preProcessors),
-    postProcessors(postProcessors)
+Theory::Theory(const LogicalSystem * const parentLogic, QDataStream &stream) :
+    parentLogic(parentLogic)
 {
     stream >> name >> description;
     unserializePlugins(stream);
-    parser.reset(new Parser(signaturePlugin, parentLogic->getWffType()));
-    axioms = Formula::unserializeList(stream, signaturePlugin);
+    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
+    axioms = Formula::unserializeList(stream, getSignature());
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -43,9 +46,9 @@ const LogicalSystem *Theory::getParentLogic() const
 //    parentLogic = value;
 //}
 
-const Signature *Theory::getSignature() const
+Signature *Theory::getSignature()
 {
-    return signaturePlugin;
+    return signaturePlugin.ptr();
 }
 
 QVector<const Proof *> Theory::findProofsWithConclusion(const QString &formula) const
@@ -86,7 +89,7 @@ QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) con
     //FIXME
 }
 
-QVector<InferenceTactic *> Theory::getInferenceTactics() const
+QVector<InferenceTacticPlugin> Theory::getInferenceTactics() const
 {
     return inferenceTactics;
 }
@@ -111,11 +114,6 @@ void Theory::setDescription(const QString &value)
     description = value;
 }
 
-void Theory::setInferenceTactics(const QVector<InferenceTactic *> &value)
-{
-    inferenceTactics = value;
-}
-
 QVector<StringProcessorPlugin *> Theory::getPreProcessors() const
 {
     return preProcessors;
@@ -136,32 +134,21 @@ void Theory::setPostProcessors(const QVector<StringProcessorPlugin *> &value)
     postProcessors = value;
 }
 
-SignaturePlugin *Theory::getSignaturePlugin()
-{
-    return signaturePlugin;
-}
-
 void Theory::setAxioms(const QLinkedList<Formula> &value)
 {
     axioms = value;
 }
 
-void Theory::setSignaturePlugin(SignaturePlugin * const value)
-{
-    signaturePlugin = value;
-    parser.reset(new Parser(signaturePlugin, parentLogic->getWffType()));
-}
-
 void Theory::serializePlugins(QDataStream &stream) const
 {
-    stream << *signaturePlugin;
+    //stream << signaturePlugin->ptr();
     PluginManager::serializePluginVector<StringProcessorPlugin>(stream, preProcessors);
     PluginManager::serializePluginVector<StringProcessorPlugin>(stream, postProcessors);
 }
 
 void Theory::unserializePlugins(QDataStream &stream)
 {
-    stream >> *signaturePlugin;
+    //stream >> signaturePlugin->ptr();
     PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, preProcessors);
     PluginManager::unserializePluginVector<StringProcessorPlugin>(stream, postProcessors);
 }

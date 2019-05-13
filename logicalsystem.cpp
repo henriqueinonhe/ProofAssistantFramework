@@ -4,11 +4,10 @@
 LogicalSystem::LogicalSystem(const QString &name, const QString &description, QStringList inferenceRulesNamesList, const QString &signatureName, const Type &wffType) :
     name(name),
     description(description),
-    inferenceRulesNamesList(inferenceRulesNamesList),
     signatureName(signatureName),
     wffType(new Type(wffType))
 {
-    loadInferenceRuleList();
+    loadInferenceRuleList(inferenceRulesNamesList);
 }
 
 LogicalSystem::LogicalSystem(QDataStream &stream)
@@ -18,7 +17,7 @@ LogicalSystem::LogicalSystem(QDataStream &stream)
 
 void LogicalSystem::serialize(QDataStream &stream) const
 {
-    stream << name << description << inferenceRulesNamesList << signatureName << *wffType;
+    stream << name << description << inferenceRules << signatureName << *wffType;
 }
 
 QString LogicalSystem::getName() const
@@ -32,7 +31,7 @@ void LogicalSystem::setName(const QString &value)
 }
 
 
-QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
+QVector<InferenceRulePlugin> LogicalSystem::getInferenceRules() const
 {
     return inferenceRules;
 }
@@ -52,16 +51,14 @@ void LogicalSystem::setDescription(const QString &value)
     description = value;
 }
 
-void LogicalSystem::loadInferenceRuleList()
+void LogicalSystem::loadInferenceRuleList(const QStringList &inferenceRulesNamesList)
 {
-    PluginManager::loadPluginVector(inferenceRules, inferenceRulesNamesList, StorageManager::inferenceRulePluginPath);
-//    QString path = StorageManager::inferenceRulePluginPath("LogosClassicAndElimination");
-//    QPluginLoader loader(path);
-//    bool b = loader.load();
-
-//    const InferenceRule *ptr = qobject_cast<InferenceRule *>(loader.instance());
-//    std::cout << ptr->name().toStdString();
-    //    std::cout << ptr->callCommand().toStdString();
+    for(int index = 0; index < inferenceRulesNamesList.size(); index++)
+    {
+        const QString inferenceRulePluginPath = StorageManager::inferenceRulePluginPath(inferenceRulesNamesList[index]);
+        InferenceRulePlugin plugin(inferenceRulePluginPath);
+        inferenceRules.push_back(plugin);
+    }
 }
 
 QString LogicalSystem::getSignatureName() const
@@ -76,9 +73,8 @@ LogicalSystem::LogicalSystem()
 
 QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem)
 {
-    stream >> logicalSystem.name >> logicalSystem.description >> logicalSystem.inferenceRulesNamesList >> logicalSystem.signatureName;
+    stream >> logicalSystem.name >> logicalSystem.description >> logicalSystem.inferenceRules >> logicalSystem.signatureName;
     logicalSystem.wffType.reset(new Type(stream));
-    logicalSystem.loadInferenceRuleList();
 
     return stream;
 }

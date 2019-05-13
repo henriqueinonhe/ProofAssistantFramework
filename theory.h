@@ -10,7 +10,10 @@
 #include "stringprocessorplugin.h"
 #include "formatter.h"
 #include <QDataStream>
+#include "pluginwrapper.h"
 
+typedef PluginWrapper<SignaturePlugin> SignaturePluginWrapper;
+typedef PluginWrapper<InferenceTactic> InferenceTacticPlugin;
 
 class LogicalSystem;
 class ProofAssistant;
@@ -18,40 +21,19 @@ class ProofAssistant;
 class Theory
 {
 public:
-    Theory(const LogicalSystem * const parentLogic);
-    Theory(const LogicalSystem * const parentLogic,
-           const QString &name,
-           const QString &description,
-           SignaturePlugin * const signaturePlugin,
-           const QLinkedList<Formula> &axioms);
-    Theory(const LogicalSystem * const parentLogic,
-           QDataStream &stream,
-           SignaturePlugin * const signaturePlugin,
-           const QVector<InferenceTactic *> &inferenceTactics,
-           const QVector<StringProcessorPlugin *> &preProcessors,
-           const QVector<StringProcessorPlugin *> &postProcessors);
+    Theory(const LogicalSystem * const parentLogic, QDataStream &stream);
 
     const LogicalSystem *getParentLogic() const;
-    void setParentLogic(const LogicalSystem * const value);
 
     QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
     QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
     QString getName() const;
-    void setName(const QString &value);
-
     QString getDescription() const;
-    void setDescription(const QString &value);
-
-    const Signature *getSignature() const;
-    SignaturePlugin *getSignaturePlugin();
-    void setSignaturePlugin(SignaturePlugin * const value);
-
+    Signature *getSignature();
     QLinkedList<Formula> getAxioms() const;
-    void setAxioms(const QLinkedList<Formula> &value);
 
-    QVector<InferenceTactic *> getInferenceTactics() const;
-    void setInferenceTactics(const QVector<InferenceTactic *> &value);
+    QVector<InferenceTacticPlugin> getInferenceTactics() const;
 
     QVector<StringProcessorPlugin *> getPreProcessors() const;
     void setPreProcessors(const QVector<StringProcessorPlugin *> &value);
@@ -59,30 +41,44 @@ public:
     QVector<StringProcessorPlugin *> getPostProcessors() const;
     void setPostProcessors(const QVector<StringProcessorPlugin *> &value);
 
+    QString getSignaturePluginName() const;
+    void setSignaturePluginName(const QString &value);
 
+protected:
+    Theory(const LogicalSystem * const parentLogic);
+    Theory(const LogicalSystem * const parentLogic,
+           const QString &name,
+           const QString &description,
+           const QLinkedList<Formula> &axioms);
 
-private:
     void serializePlugins(QDataStream &stream) const;
     void unserializePlugins(QDataStream &stream);
 
+    void loadSignaturePlugin();
 //    void loadPlugins();
+
+    void setName(const QString &value);
+    void setDescription(const QString &value);
+    void setAxioms(const QLinkedList<Formula> &value);
 
     const LogicalSystem *parentLogic;
 
     QString name;
     QString description;
     unique_ptr<Parser> parser;
-    SignaturePlugin *signaturePlugin;
+    SignaturePluginWrapper signaturePlugin;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
 
     //I'm using raw pointers here because QPluginLoader already deletes the plugin object when application terminates
-    QVector<InferenceTactic *> inferenceTactics;
+    QVector<InferenceTacticPlugin> inferenceTactics;
     QVector<StringProcessorPlugin *> preProcessors;
     QVector<StringProcessorPlugin *> postProcessors;
     Formatter preFormatter;
     Formatter postFormatter;
 
     friend class ProofAssistant;
+    friend class TheoryBuilder;
+    friend class ProgramManager;
     friend QDataStream &operator <<(QDataStream &stream, const Theory &theory);
    // friend QDataStream &operator >>(QDataStream &stream, Theory &theory);
 };

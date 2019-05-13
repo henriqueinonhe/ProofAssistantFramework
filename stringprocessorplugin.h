@@ -1,10 +1,10 @@
-﻿#ifndef STRINGPROCESSORPLUGIN_H
+#ifndef STRINGPROCESSORPLUGIN_H
 #define STRINGPROCESSORPLUGIN_H
 
 #include "stringprocessor.h"
 #include <QDataStream>
 
-class StringProcessorPlugin : virtual public StringProcessor
+class StringProcessorPlugin : public StringProcessor
 {
 public:
     virtual QString processString(const QString &string) const = 0;

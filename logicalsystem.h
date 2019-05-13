@@ -10,6 +10,9 @@
 #include "type.h"
 #include <QFile>
 #include <QDataStream>
+#include "pluginwrapper.h"
+
+typedef PluginWrapper<InferenceRule> InferenceRulePlugin;
 
 using namespace std;
 
@@ -27,14 +30,10 @@ public:
     void serialize(QDataStream &stream) const;
 
     QString getName() const;
-
     QString getDescription() const;
-
-    QVector<InferenceRule *> getInferenceRules() const;
-
-    Type getWffType() const;
-
+    QVector<InferenceRulePlugin> getInferenceRules() const;
     QString getSignatureName() const;
+    Type getWffType() const;
 
 protected:
     LogicalSystem();
@@ -42,12 +41,11 @@ protected:
     void setName(const QString &value);
     void setDescription(const QString &value);
 
-    void loadInferenceRuleList();
+    void loadInferenceRuleList(const QStringList &inferenceRulesNamesList);
 
     QString name;
     QString description;
-    QStringList inferenceRulesNamesList;
-    QVector<InferenceRule *> inferenceRules; //Does not own inference rules, must be owned by somebody else, most likely by the plugin loader
+    QVector<InferenceRulePlugin> inferenceRules;
     QString signatureName;
     unique_ptr<const Type> wffType;
 
@@ -56,7 +54,9 @@ protected:
     friend class ProgramManager;
 };
 
+QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);
 QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
+
 
 
 #endif // LOGICALSYSTEM_H

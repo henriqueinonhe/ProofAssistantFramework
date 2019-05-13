@@ -8,6 +8,7 @@
 #include "lineofproofsectionmanager.h"
 #include "storagemanager.h"
 #include "programmanager.h"
+#include "theorybuilder.h"
 #include <QBuffer>
 
 TEST_CASE("Trees")
@@ -269,6 +270,26 @@ private:
     int dummyAttribute;
 };
 
+TEST_CASE("Plugin Wrapper")
+{
+    {
+        PluginWrapper<SignaturePlugin> signature(StorageManager::signaturePluginPath("TableSignaturePlugin"));
+        signature->addToken(CoreToken("a", Type("i")));
+    }
+    {
+        PluginWrapper<SignaturePlugin> signature(StorageManager::signaturePluginPath("TableSignaturePlugin"));
+        CHECK_NOTHROW(signature->addToken(CoreToken("a", Type("i"))));
+    }
+    {
+        PluginWrapper<SignaturePlugin> signature(StorageManager::signaturePluginPath("TableSignaturePlugin"));
+        signature->addToken(CoreToken("a", Type("i")));
+
+        PluginWrapper<SignaturePlugin> signature2;
+        signature2 = signature;
+        CHECK_THROWS(signature2->addToken(CoreToken("a", Type("i"))));
+    }
+}
+
 TEST_CASE("Framework Components")
 {
     QStringList inferenceRulesNamesList;
@@ -277,23 +298,23 @@ TEST_CASE("Framework Components")
     LogicalSystem logicalSystem("Dummy Logical System",
                                 "Lorem Ipsum",
                                 inferenceRulesNamesList,
-                                "Dummy Signature",
+                                "TableSignaturePlugin",
                                 Type("o"));
 
-    SECTION("Logical System")
-    {
-        SECTION("Basic")
-        {
+//    SECTION("Logical System")
+//    {
+//        SECTION("Basic")
+//        {
             CHECK(logicalSystem.getName() == "Dummy Logical System");
             CHECK(logicalSystem.getDescription() == "Lorem Ipsum");
             CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
             CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
-            CHECK(logicalSystem.getSignatureName() == "Dummy Signature");
+            CHECK(logicalSystem.getSignatureName() == "TableSignaturePlugin");
             CHECK(logicalSystem.getWffType() == Type("o"));
-        }
+//        }
 
-        SECTION("Serialization")
-        {
+//        SECTION("Serialization")
+//        {
             QBuffer buffer;
             buffer.open(QIODevice::WriteOnly);
             QDataStream stream(&buffer);
@@ -308,10 +329,10 @@ TEST_CASE("Framework Components")
             CHECK(logicalSystem2.getDescription() == "Lorem Ipsum");
             CHECK(logicalSystem2.getInferenceRules()[0]->name() == "And Elimination");
             CHECK(logicalSystem2.getInferenceRules()[0]->callCommand() == "AndE");
-            CHECK(logicalSystem2.getSignatureName() == "Dummy Signature");
+            CHECK(logicalSystem2.getSignatureName() == "TableSignaturePlugin");
             CHECK(logicalSystem2.getWffType() == Type("o"));
-        }
-    }
+//        }
+//    }
 
 
     SECTION("Logical System Record")
@@ -339,56 +360,56 @@ TEST_CASE("Framework Components")
         CHECK(record2.getName() == "Dummy Logical System");
         CHECK(record2.getDescription() == "Lorem Ipsum");
     }
+}
 
-//    SECTION("Theory")
-//    {
-//        TableSignature signature;
-//        DummySignaturePlugin signaturePlugin;
-//        signaturePlugin.setSignature(&signature);
-//        QLinkedList<Formula> axioms;
-//        QVector<InferenceTactic *> tactics;
-//        QVector<StringProcessorPlugin *> preProcessors;
-//        QVector<StringProcessorPlugin *> postProcessors;
+TEST_CASE("Framework Components (some bug, needs to split test case)")
+{
+    LogicalSystem logicalSystem("A", "A", QStringList(), "TableSignaturePlugin", Type("o"));
 
-//        signature.addToken(CoreToken("P", Type("o")));
-//        signature.addToken(CoreToken("~", Type("o->o")));
+    TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum");
 
-//        Parser parser(&signature, Type("o"));
+    QVector<InferenceTactic *> tactics;
+    QVector<StringProcessorPlugin *> preProcessors;
+    QVector<StringProcessorPlugin *> postProcessors;
 
-//        Formula axiom1(parser.parse("P")), axiom2(parser.parse("(~ P)"));
-//        unique_ptr<InferenceTactic> tactic(new DummyInferenceTactic);
-//        unique_ptr<StringProcessorPlugin> preProcessor(new DummyPreProcessor);
-//        unique_ptr<StringProcessorPlugin> postProcessor(new DummyPostProcessor);
 
-//        axioms.push_back(axiom1);
-//        axioms.push_back(axiom2);
-//        tactics.push_back(tactic.get());
-//        preProcessors.push_back(preProcessor.get());
-//        postProcessors.push_back(postProcessor.get());
+    unique_ptr<InferenceTactic> tactic(new DummyInferenceTactic);
+    unique_ptr<StringProcessorPlugin> preProcessor(new DummyPreProcessor);
+    unique_ptr<StringProcessorPlugin> postProcessor(new DummyPostProcessor);
 
-//        Theory theory(&logicalSystem,
-//                      "Dummy Theory",
-//                      "Lorem Ipsum",
-//                      &signaturePlugin,
-//                      axioms);
-//        theory.setInferenceTactics(tactics);
-//        theory.setPreProcessors(preProcessors);
-//        theory.setPostProcessors(postProcessors);
+    Signature *signature = theoryBuilder.getSignature();
+    signature->addToken(CoreToken("P", Type("o")));
+    signature->addToken(CoreToken("~", Type("o->o")));
 
-//        SECTION("Basic")
-//        {
-//            CHECK(theory.getName() == "Dummy Theory");
-//            CHECK(theory.getDescription() == "Lorem Ipsum");
-//            CHECK(*dynamic_cast<DummySignaturePlugin *>(theory.getSignaturePlugin())->getSignature() == signature);
-//            CHECK(theory.getAxioms() == axioms);
-//            CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Tactic");
-//            CHECK(theory.getInferenceTactics()[0]->callCommand() == "Dummy Call Command");
-//            CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor");
-//            CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor");
-//        }
 
-        SECTION("Serialization")
+    theoryBuilder.addAxiom("P");
+    theoryBuilder.addAxiom("(~ P)");
+    CHECK_THROWS(theoryBuilder.addAxiom("(~ P"));
+
+    tactics.push_back(tactic.get());
+    preProcessors.push_back(preProcessor.get());
+    postProcessors.push_back(postProcessor.get());
+
+    Theory theory = theoryBuilder.build();
+    theory.setPreProcessors(preProcessors);
+    theory.setPostProcessors(postProcessors);
+
+    SECTION("Theory")
+    {
+        SECTION("Basic")
         {
+            CHECK(theory.getName() == "Dummy Theory");
+            CHECK(theory.getDescription() == "Lorem Ipsum");
+            CHECK(theory.getAxioms().first().formattedString() == "P");
+            CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
+            //CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Tactic");
+            //CHECK(theory.getInferenceTactics()[0]->callCommand() == "Dummy Call Command");
+            CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor");
+            CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor");
+        }
+
+//        SECTION("Serialization")
+//        {
 //            QBuffer buffer;
 //            buffer.open(QIODevice::WriteOnly);
 //            QDataStream stream(&buffer);
@@ -401,10 +422,23 @@ TEST_CASE("Framework Components")
 //            buffer.open(QIODevice::ReadOnly);
 //            stream >> theory2;
 
-        }
-//    }
+//        }
+    }
 
 
+}
+
+TEST_CASE("Plugins")
+{
+    SECTION("SignaturePlugin")
+    {
+        QPluginLoader loader("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Signatures/TableSignaturePlugin.dll");
+        CHECK(loader.load());
+
+        SignaturePlugin *ptr = qobject_cast<SignaturePlugin *>(loader.instance());
+        ptr->addToken(CoreToken("Chabaduba", Type("i")));
+        CHECK(ptr->getTokenPointer("Chabaduba")->tokenClass() == "CoreToken");
+    }
 }
 
 TEST_CASE("Line of Proof Section")
