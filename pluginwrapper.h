@@ -75,7 +75,7 @@ public:
         return pluginPointer;
     }
 
-    template <class C> static void checkContainerPluginCollision(const C &container, const QString &pluginPath)
+    template <class C> static void addPluginInContainer(C &container, const QString &pluginPath)
     {
         std::for_each(container.begin(), container.end(), [&](const PluginWrapper &plugin)
         {
@@ -87,6 +87,8 @@ public:
                 throw std::invalid_argument(errorMsg.toStdString());
             }
         });
+
+        container.push_back(PluginWrapper(pluginPath));
     }
 
     template <class C> static void removePluginFromContainer(C &container, const QString &pluginPath)

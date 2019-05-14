@@ -26,12 +26,14 @@ QVector<StringProcessorPluginWrapper> Theory::getPreProcessors() const
 
 void Theory::addPostProcessor(const QString &pluginName)
 {
-
+    const QString pluginPath = StorageManager::postProcessorPluginPath(pluginName);
+    PluginWrapper<StringProcessorPlugin>::addPluginInContainer(postProcessors, pluginPath);
 }
 
 void Theory::removePostProcessor(const QString &pluginName)
 {
-
+    const QString pluginPath = StorageManager::postProcessorPluginPath(pluginName);
+    PluginWrapper<StringProcessorPlugin>::removePluginFromContainer(postProcessors, pluginPath);
 }
 
 Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> &axioms) :
@@ -42,6 +44,12 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
 {
     loadSignaturePlugin();
     parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
+}
+
+Theory::Theory(const LogicalSystem *parentLogic, QDataStream &stream) :
+    parentLogic(parentLogic)
+{
+    stream >> *this;
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -99,13 +107,14 @@ QVector<InferenceTacticPluginWrapper> Theory::getInferenceTactics() const
 
 void Theory::addPreProcessor(const QString &pluginName)
 {
-
-    PluginWrapper<StringProcessorPlugin>::checkContainerPluginCollision
+    const QString pluginPath = StorageManager::preProcessorPluginPath(pluginName);
+    PluginWrapper<StringProcessorPlugin>::addPluginInContainer(preProcessors, pluginPath);
 }
 
 void Theory::removePreProcessor(const QString &pluginName)
 {
-
+    const QString pluginPath = StorageManager::preProcessorPluginPath(pluginName);
+    PluginWrapper<StringProcessorPlugin>::removePluginFromContainer(preProcessors, pluginPath);
 }
 
 QString Theory::getName() const
@@ -156,8 +165,7 @@ QLinkedList<Formula> Theory::getAxioms() const
 void Theory::addInferenceTactic(const QString &pluginName)
 {
     const QString pluginPath = StorageManager::inferenceTacticPluginPath(pluginName);
-    PluginWrapper<InferenceTactic>::checkContainerPluginCollision(inferenceTactics, pluginPath);
-    inferenceTactics.push_back(InferenceTacticPluginWrapper(pluginPath));
+    PluginWrapper<InferenceTactic>::addPluginInContainer(inferenceTactics, pluginPath);
 }
 
 void Theory::removeInferenceTactic(const QString &pluginName)

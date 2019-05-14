@@ -240,6 +240,20 @@ TEST_CASE("Framework Components (some bug, needs to split test case)")
     CHECK_THROWS(theory.removeInferenceTactic("DummyInferenceTacticPlugin"));
     CHECK_NOTHROW(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
 
+    CHECK_NOTHROW(theory.addPreProcessor("DummyPreProcessorPlugin"));
+    CHECK_THROWS(theory.addPreProcessor("DummyPreProcessorPlugin"));
+    CHECK_NOTHROW(theory.removePreProcessor("DummyPreProcessorPlugin"));
+    CHECK(theory.getPreProcessors().isEmpty());
+    CHECK_THROWS(theory.removePreProcessor("DummyPreProcessorPlugin"));
+    CHECK_NOTHROW(theory.addPreProcessor("DummyPreProcessorPlugin"));
+
+    CHECK_NOTHROW(theory.addPostProcessor("DummyPostProcessorPlugin"));
+    CHECK_THROWS(theory.addPostProcessor("DummyPostProcessorPlugin"));
+    CHECK_NOTHROW(theory.removePostProcessor("DummyPostProcessorPlugin"));
+    CHECK(theory.getPostProcessors().isEmpty());
+    CHECK_THROWS(theory.removePostProcessor("DummyPostProcessorPlugin"));
+    CHECK_NOTHROW(theory.addPostProcessor("DummyPostProcessorPlugin"));
+
     SECTION("Theory")
     {
         SECTION("Basic")
@@ -248,28 +262,35 @@ TEST_CASE("Framework Components (some bug, needs to split test case)")
             CHECK(theory.getDescription() == "Lorem Ipsum");
             CHECK(theory.getAxioms().first().formattedString() == "P");
             CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
-            CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Rule");//FIX Plugin
+            CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
             CHECK(theory.getInferenceTactics()[0]->callCommand() == "DM");
+            CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
+            CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
         }
 
-//        SECTION("Serialization")
-//        {
-//            QBuffer buffer;
-//            buffer.open(QIODevice::WriteOnly);
-//            QDataStream stream(&buffer);
+        SECTION("Serialization")
+        {
+            QBuffer buffer;
+            buffer.open(QIODevice::WriteOnly);
+            QDataStream stream(&buffer);
+            stream << theory;
 
-//            stream << theory;
+            buffer.close();
+            buffer.open(QIODevice::ReadOnly);
+            Theory theory2(&logicalSystem, stream);
 
-//            Theory theory2(&logicalSystem);
-
-//            buffer.close();
-//            buffer.open(QIODevice::ReadOnly);
-//            stream >> theory2;
-
-//        }
+            CHECK(theory2.getName() == "Dummy Theory");
+            CHECK(theory2.getDescription() == "Lorem Ipsum");
+            CHECK(theory2.getAxioms().first().formattedString() == "P");
+            CHECK(theory2.getAxioms().last().formattedString() == "(~ P)");
+            CHECK(theory2.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
+            CHECK(theory2.getInferenceTactics()[0]->callCommand() == "DM");
+            CHECK(theory2.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
+            CHECK(theory2.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
+            CHECK(*theory2.getSignature()->getTokenPointer("P") == CoreToken("P", Type("o")));
+            //Maybe I should test the other members as well like the parser
+        }
     }
-
-
 }
 
 TEST_CASE("Plugins")
@@ -332,116 +353,6 @@ TEST_CASE("Line of Proof Section Manager")
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(2, 7, "")));
 }
 
-
-
-TEST_CASE("Proofs")
-{
-    //TODO Gotta test those proofs really hard!
-}
-
-//TEST_CASE("Program Manager and Storage Manager")
-//{
-//    StorageManager::setRootPath("C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
-
-//    CHECK(StorageManager::getRootPath() == "C:/Users/Henrique/Documents/Qt Projects/ProofAssistantFramework");
-
-//    ProgramManager manager;
-
-//    SECTION("Logical System Management")
-//    {
-//        QStringList inferenceRulesNameList;
-//        inferenceRulesNameList << "rule1" << "rule2" << "rule3";
-
-//        CHECK_NOTHROW(manager.createLogicalSystem("Pure First Order Logic",
-//                                                  "First order logic without equality or functions.",
-//                                                  "TableSignaturePlugin",
-//                                                  inferenceRulesNameList,
-//                                                  Type("o")));
-
-//        CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
-//        CHECK(manager.getActiveLogicalSystem()->getName() == "Pure First Order Logic");
-//        CHECK(manager.getActiveLogicalSystem()->getDescription() == "First order logic without equality or functions.");
-//        CHECK(manager.getActiveLogicalSystem()->getSignaturePluginName() == "TableSignaturePlugin");
-//        CHECK(manager.getActiveLogicalSystem()->getInferenceRulesPluginsNames() == inferenceRulesNameList);
-//        CHECK(manager.getActiveLogicalSystem()->getWffType() == Type("o"));
-
-//        CHECK_THROWS(manager.createLogicalSystem("Pure First Order Logic",
-//                                                 "First order logic without equality or functions.",
-//                                                 "TableSignaturePlugin",
-//                                                 inferenceRulesNameList,
-//                                                 Type("o")));
-
-//        CHECK_NOTHROW(manager.removeLogicalSystem("Pure First Order Logic"));
-//    }
-
-//    SECTION("Theory Management")
-//    {
-//        //Logical System Setup
-//        QStringList inferenceRulesNameList;
-//        inferenceRulesNameList << "rule1" << "rule2" << "rule3";
-
-//        manager.createLogicalSystem("Pure First Order Logic",
-//                                    "First order logic without equality or functions.",
-//                                    "TableSignaturePlugin",
-//                                    inferenceRulesNameList,
-//                                    Type("o"));
-
-//        manager.loadLogicalSystem("Pure First Order Logic");
-
-//        CHECK_NOTHROW(manager.loadLogicalSystem("Pure First Order Logic"));
-
-//        //Theory
-//        //This is temporary
-//        TableSignature signature;
-//        signature.addToken(CoreToken("P", Type("o")));
-//        signature.addToken(CoreToken("~", Type("o->o")));
-
-//        Parser parser(&signature, Type("o"));
-
-//        QLinkedList<Formula> axiomsList;
-////        axiomsList.push_back(parser.parse("P"));
-////        axiomsList.push_back(parser.parse("(~ P)"));
-////        axiomsList.push_back(parser.parse("(~(~ P))"));
-
-//        QStringList dummyInferenceTacticsPluginNameList;
-//        QStringList dummyPreProcessorsPluginNameList;
-//        QStringList dummyPostProcessorsPluginNameList;
-
-//        CHECK_NOTHROW(manager.createTheory("Dummy Theory",
-//                                           "This is just an ordinary dummy theory.",
-//                                           axiomsList,
-//                                           dummyInferenceTacticsPluginNameList,
-//                                           dummyPreProcessorsPluginNameList,
-//                                           dummyPostProcessorsPluginNameList));
-
-//        CHECK_THROWS(manager.createTheory("Dummy Theory",
-//                                          "This is just an ordinary dummy theory.",
-//                                          axiomsList,
-//                                          dummyInferenceTacticsPluginNameList,
-//                                          dummyPreProcessorsPluginNameList,
-//                                          dummyPostProcessorsPluginNameList));
-
-//        CHECK_NOTHROW(manager.loadTheory("Dummy Theory"));
-
-//        CHECK(manager.getActiveTheory()->getName() == "Dummy Theory");
-//        CHECK(manager.getActiveTheory()->getDescription() == "This is just an ordinary dummy theory.");
-//        CHECK(manager.getActiveTheory()->getAxioms() == axiomsList);
-//        CHECK(manager.getActiveTheory()->getInferenceTacticsPluginsNameList() == QStringList());
-//        CHECK(manager.getActiveTheory()->getPreProcessorPluginsNameList() == QStringList());
-//        CHECK(manager.getActiveTheory()->getPostProcessorPluginsNameList() == QStringList());
-
-//        CHECK_NOTHROW(manager.removeTheory("Dummy Theory"));
-
-//        //Cleanup
-//        manager.removeLogicalSystem("Pure First Order Logic");
-//    }
-
-//    SECTION("Proof Management")
-//    {
-
-//    }
-
-//}
 
 TEST_CASE("Storage Manager")
 {
@@ -516,6 +427,8 @@ TEST_CASE("Framework Integration")
         CHECK_THROWS_WITH(LogicalSystem("Name", "Description", inferenceList, "Signature", Type("o")), "Couldn't load plugin named \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\".");
         CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
     }
+
+    //Create Theory
 }
 
 TEST_CASE("Dirty Fix")

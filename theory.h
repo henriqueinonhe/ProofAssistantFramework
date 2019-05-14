@@ -23,6 +23,7 @@ class ProofAssistant;
 class Theory
 {
 public:
+    Theory(const LogicalSystem *logicalSystem, QDataStream &stream);
 
     const LogicalSystem *getParentLogic() const;
 
