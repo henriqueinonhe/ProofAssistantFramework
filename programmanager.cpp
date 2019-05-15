@@ -34,31 +34,29 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
-void ProgramManager::createTheory(const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) const
+void ProgramManager::createTheory(const TheoryBuilder &builder) const
 {
+    const QString theoryName = builder.getName();
+    const QString theoryDescription = builder.getDescription();
+
     checkActiveLogicalSystem();
     const QString activeLogicalSystemName = activeLogicalSystem->getName();
-    if(checkTheoryNameCollision(activeLogicalSystemName, name))
+    if(checkTheoryNameCollision(activeLogicalSystemName, theoryName))
     {
         throw std::invalid_argument("There already exists a theory with this name!");
     }
 
+    //Theory
+    const Theory theory = builder.build();
 
     //TheoryRecord
-    TheoryRecord newTheoryRecord(name, description);
+    TheoryRecord newTheoryRecord(theoryName, theoryDescription);
     QVector<TheoryRecord> records = StorageManager::retrieveTheoriesRecords(activeLogicalSystemName);
     records.append(newTheoryRecord);
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-//    StorageManager::createTheoryDir(activeLogicalSystemName, Theory(activeLogicalSystem.get(),
-//                                                                    name,
-//                                                                    description,
-//                                                                    axioms,
-//                                                                    activeLogicalSystem->getSignaturePluginName(),
-//                                                                    inferenceTacticsPluginsNameList,
-//                                                                    preProcessorPluginsNameList,
-//                                                                    postProcessorPluginsNameList)); FIXME!
+    StorageManager::createTheoryDir(activeLogicalSystemName, theory);
 }
 
 void ProgramManager::removeTheory(const QString &theoryName) const
@@ -115,7 +113,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    LogicalSystem logicalSystem(name, description, inferenceRulesNamesList, signatureName, wffType); //If Logical System creation is unsuccesfull for whatever reason it will throw an exception and the directories and records creation won't be carried out
+    LogicalSystem logicalSystem(name, description, inferenceRulesNamesList, signatureName, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
 
     //LogicalSystemRecord
     LogicalSystemRecord newSystemRecord(name, description);

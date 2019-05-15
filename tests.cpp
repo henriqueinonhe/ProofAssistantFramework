@@ -13,11 +13,11 @@
 
 TEST_CASE("Trees")
 {
+    Tree<QString> tree;
+    TreeIterator<QString> iter(&tree);
+
     SECTION("Trees Nodes methods work")
     {
-        Tree<QString> tree;
-        TreeIterator<QString> iter(&tree);
-
         CHECK(iter->coordinatesToString() == QString("()"));
         CHECK(iter->getHeight() == 0);
         CHECK(iter->isRoot());
@@ -53,9 +53,6 @@ TEST_CASE("Trees")
 
     SECTION("Tree methods and Tree Height")
     {
-        Tree<QString> tree;
-        TreeIterator<QString> iter(&tree);
-
         CHECK(iter.getTree().getHeight() == 0);
 
         iter->appendChild("xolob");
@@ -77,9 +74,6 @@ TEST_CASE("Trees")
 
     SECTION("Tree Iterator Paths")
     {
-        Tree<QString> tree;
-        TreeIterator<QString> iter(&tree);
-
         iter->appendChild("Xuleebi");
         iter->appendChild("ASKdas");
 
@@ -145,7 +139,7 @@ TEST_CASE("Plugin Wrapper")
     }
 }
 
-TEST_CASE("Framework Components")
+TEST_CASE("Logical System")
 {
     QStringList inferenceRulesNamesList;
     inferenceRulesNamesList << "LogosClassicAndElimination";
@@ -156,71 +150,59 @@ TEST_CASE("Framework Components")
                                 "TableSignaturePlugin",
                                 Type("o"));
 
-//    SECTION("Logical System")
-//    {
-//        SECTION("Basic")
-//        {
-            CHECK(logicalSystem.getName() == "Dummy Logical System");
-            CHECK(logicalSystem.getDescription() == "Lorem Ipsum");
-            CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
-            CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
-            CHECK(logicalSystem.getSignatureName() == "TableSignaturePlugin");
-            CHECK(logicalSystem.getWffType() == Type("o"));
-//        }
+    CHECK(logicalSystem.getName() == "Dummy Logical System");
+    CHECK(logicalSystem.getDescription() == "Lorem Ipsum");
+    CHECK(logicalSystem.getInferenceRules()[0]->name() == "And Elimination");
+    CHECK(logicalSystem.getInferenceRules()[0]->callCommand() == "AndE");
+    CHECK(logicalSystem.getSignatureName() == "TableSignaturePlugin");
+    CHECK(logicalSystem.getWffType() == Type("o"));
 
-//        SECTION("Serialization")
-//        {
-            QBuffer buffer;
-            buffer.open(QIODevice::WriteOnly);
-            QDataStream stream(&buffer);
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
 
-            logicalSystem.serialize(stream);
+    logicalSystem.serialize(stream);
 
-            buffer.close();
-            buffer.open(QIODevice::ReadOnly);
-            LogicalSystem logicalSystem2(stream);
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    LogicalSystem logicalSystem2(stream);
 
-            CHECK(logicalSystem2.getName() == "Dummy Logical System");
-            CHECK(logicalSystem2.getDescription() == "Lorem Ipsum");
-            CHECK(logicalSystem2.getInferenceRules()[0]->name() == "And Elimination");
-            CHECK(logicalSystem2.getInferenceRules()[0]->callCommand() == "AndE");
-            CHECK(logicalSystem2.getSignatureName() == "TableSignaturePlugin");
-            CHECK(logicalSystem2.getWffType() == Type("o"));
-//        }
-//    }
-
-
-    SECTION("Logical System Record")
-    {
-        QString signatureName = "Dummy Signature";
-
-        LogicalSystemRecord record("Dummy Logical System", "Lorem Ipsum");
-
-        CHECK(record.getName() == "Dummy Logical System");
-        CHECK(record.getDescription() == "Lorem Ipsum");
-
-        //Serialization
-        QBuffer buffer;
-        buffer.open(QIODevice::WriteOnly);
-        QDataStream stream(&buffer);
-
-        stream << record;
-
-        buffer.close();
-        buffer.open(QIODevice::ReadOnly);
-        LogicalSystemRecord record2;
-
-        stream >> record2;
-
-        CHECK(record2.getName() == "Dummy Logical System");
-        CHECK(record2.getDescription() == "Lorem Ipsum");
-    }
+    CHECK(logicalSystem2.getName() == "Dummy Logical System");
+    CHECK(logicalSystem2.getDescription() == "Lorem Ipsum");
+    CHECK(logicalSystem2.getInferenceRules()[0]->name() == "And Elimination");
+    CHECK(logicalSystem2.getInferenceRules()[0]->callCommand() == "AndE");
+    CHECK(logicalSystem2.getSignatureName() == "TableSignaturePlugin");
+    CHECK(logicalSystem2.getWffType() == Type("o"));
 }
 
-TEST_CASE("Framework Components (some bug, needs to split test case)")
+TEST_CASE("Logical System Record")
+{
+    LogicalSystemRecord record("Dummy Logical System", "Lorem Ipsum");
+
+    CHECK(record.getName() == "Dummy Logical System");
+    CHECK(record.getDescription() == "Lorem Ipsum");
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+
+    stream << record;
+
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    LogicalSystemRecord record2;
+
+    stream >> record2;
+
+    CHECK(record2.getName() == "Dummy Logical System");
+    CHECK(record2.getDescription() == "Lorem Ipsum");
+}
+
+TEST_CASE("Theory")
 {
     LogicalSystem logicalSystem("A", "A", QStringList(), "TableSignaturePlugin", Type("o"));
-
     TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum");
 
     Signature *signature = theoryBuilder.getSignature();
@@ -229,7 +211,7 @@ TEST_CASE("Framework Components (some bug, needs to split test case)")
 
     theoryBuilder.addAxiom("P");
     theoryBuilder.addAxiom("(~ P)");
-    CHECK_THROWS(theoryBuilder.addAxiom("(~ P"));
+    CHECK_THROWS(theoryBuilder.addAxiom("(~ P")); //Testing anti axiom collision
 
     Theory theory = theoryBuilder.build();
 
@@ -254,56 +236,70 @@ TEST_CASE("Framework Components (some bug, needs to split test case)")
     CHECK_THROWS(theory.removePostProcessor("DummyPostProcessorPlugin"));
     CHECK_NOTHROW(theory.addPostProcessor("DummyPostProcessorPlugin"));
 
-    SECTION("Theory")
-    {
-        SECTION("Basic")
-        {
-            CHECK(theory.getName() == "Dummy Theory");
-            CHECK(theory.getDescription() == "Lorem Ipsum");
-            CHECK(theory.getAxioms().first().formattedString() == "P");
-            CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
-            CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
-            CHECK(theory.getInferenceTactics()[0]->callCommand() == "DM");
-            CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
-            CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
-        }
+    CHECK(theory.getName() == "Dummy Theory");
+    CHECK(theory.getDescription() == "Lorem Ipsum");
+    CHECK(theory.getAxioms().first().formattedString() == "P");
+    CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
+    CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
+    CHECK(theory.getInferenceTactics()[0]->callCommand() == "DM");
+    CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
+    CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
 
-        SECTION("Serialization")
-        {
-            QBuffer buffer;
-            buffer.open(QIODevice::WriteOnly);
-            QDataStream stream(&buffer);
-            stream << theory;
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << theory;
 
-            buffer.close();
-            buffer.open(QIODevice::ReadOnly);
-            Theory theory2(&logicalSystem, stream);
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    Theory theory2(&logicalSystem, stream);
 
-            CHECK(theory2.getName() == "Dummy Theory");
-            CHECK(theory2.getDescription() == "Lorem Ipsum");
-            CHECK(theory2.getAxioms().first().formattedString() == "P");
-            CHECK(theory2.getAxioms().last().formattedString() == "(~ P)");
-            CHECK(theory2.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
-            CHECK(theory2.getInferenceTactics()[0]->callCommand() == "DM");
-            CHECK(theory2.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
-            CHECK(theory2.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
-            CHECK(*theory2.getSignature()->getTokenPointer("P") == CoreToken("P", Type("o")));
-            //Maybe I should test the other members as well like the parser
-        }
-    }
+    CHECK(theory2.getName() == "Dummy Theory");
+    CHECK(theory2.getDescription() == "Lorem Ipsum");
+    CHECK(theory2.getAxioms().first().formattedString() == "P");
+    CHECK(theory2.getAxioms().last().formattedString() == "(~ P)");
+    CHECK(theory2.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
+    CHECK(theory2.getInferenceTactics()[0]->callCommand() == "DM");
+    CHECK(theory2.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
+    CHECK(theory2.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
+    CHECK(*theory2.getSignature()->getTokenPointer("P") == CoreToken("P", Type("o")));
+    //Maybe I should test the other members as well like the parser
+}
+
+TEST_CASE("Theory Records")
+{
+    TheoryRecord record("Dummy Theory", "Lorem Ipsum");
+
+    CHECK(record.getName() == "Dummy Theory");
+    CHECK(record.getDescription() == "Lorem Ipsum");
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+
+    stream << record;
+
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    LogicalSystemRecord record2;
+
+    stream >> record2;
+
+    CHECK(record2.getName() == record.getName());
+    CHECK(record2.getDescription() == record.getDescription());
 }
 
 TEST_CASE("Plugins")
 {
-    SECTION("SignaturePlugin")
-    {
-        QPluginLoader loader("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Signatures/TableSignaturePlugin.dll");
-        CHECK(loader.load());
+    //Signature Plugin
+    QPluginLoader loader("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Signatures/TableSignaturePlugin.dll");
+    CHECK(loader.load());
 
-        SignaturePlugin *ptr = qobject_cast<SignaturePlugin *>(loader.instance());
-        ptr->addToken(CoreToken("Chabaduba", Type("i")));
-        CHECK(ptr->getTokenPointer("Chabaduba")->tokenClass() == "CoreToken");
-    }
+    SignaturePlugin *ptr = qobject_cast<SignaturePlugin *>(loader.instance());
+    ptr->addToken(CoreToken("Chabaduba", Type("i")));
+    CHECK(ptr->getTokenPointer("Chabaduba")->tokenClass() == "CoreToken");
 }
 
 TEST_CASE("Line of Proof Section")
@@ -387,48 +383,81 @@ TEST_CASE("Framework Integration")
 {
     ProgramManager manager;
 
-    CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
-
-    //Create Logical System
-    QStringList inferenceRulesNamesList;
-    inferenceRulesNamesList << "LogosClassicAndElimination";
-    manager.createLogicalSystem("First Order Logic",
-                                "Predicate Logic With Quantifiers",
-                                "Table Signature",
-                                inferenceRulesNamesList,
-                                Type("o"));
-
-    const LogicalSystemRecord logicalSystemRecord = StorageManager::retrieveLogicalSystemsRecords().first();
-
-    CHECK(logicalSystemRecord.getName() == "First Order Logic");
-    CHECK(logicalSystemRecord.getDescription() == "Predicate Logic With Quantifiers");
-
-    //Load Logical System
-    manager.loadLogicalSystem("First Order Logic");
-    LogicalSystem *ptr = manager.getActiveLogicalSystem();
-
-    CHECK(ptr->getName() == "First Order Logic");
-    CHECK(ptr->getDescription() == "Predicate Logic With Quantifiers");
-    CHECK(ptr->getSignatureName() == "Table Signature");
-    CHECK(ptr->getInferenceRules()[0]->name() == "And Elimination");
-    CHECK(ptr->getInferenceRules()[0]->callCommand() == "AndE");
-    CHECK(ptr->getWffType() == Type("o"));
-
-    //Remove Logical System
-    manager.removeLogicalSystem("First Order Logic");
-
-    CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
-    CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/Logical Systems/First Order Logic").exists());
-
-    SECTION("Failing to Create Logical System")
+    SECTION("Logical System")
     {
-        QStringList inferenceList;
-        inferenceList << "YadayadaRule";
-        CHECK_THROWS_WITH(LogicalSystem("Name", "Description", inferenceList, "Signature", Type("o")), "Couldn't load plugin named \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\".");
-        CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
+        CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
+
+        //Create Logical System
+        QStringList inferenceRulesNamesList;
+        inferenceRulesNamesList << "LogosClassicAndElimination";
+        manager.createLogicalSystem("First Order Logic",
+                                    "Predicate Logic With Quantifiers",
+                                    "Table Signature",
+                                    inferenceRulesNamesList,
+                                    Type("o"));
+
+        const LogicalSystemRecord logicalSystemRecord = StorageManager::retrieveLogicalSystemsRecords().first();
+
+        CHECK(logicalSystemRecord.getName() == "First Order Logic");
+        CHECK(logicalSystemRecord.getDescription() == "Predicate Logic With Quantifiers");
+
+        //Load Logical System
+        manager.loadLogicalSystem("First Order Logic");
+        LogicalSystem *ptr = manager.getActiveLogicalSystem();
+
+        CHECK(ptr->getName() == "First Order Logic");
+        CHECK(ptr->getDescription() == "Predicate Logic With Quantifiers");
+        CHECK(ptr->getSignatureName() == "Table Signature");
+        CHECK(ptr->getInferenceRules()[0]->name() == "And Elimination");
+        CHECK(ptr->getInferenceRules()[0]->callCommand() == "AndE");
+        CHECK(ptr->getWffType() == Type("o"));
+
+        //Remove Logical System
+        manager.removeLogicalSystem("First Order Logic");
+
+        CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
+        CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/Logical Systems/First Order Logic").exists());
+
+        SECTION("Failing to Create Logical System")
+        {
+            QStringList inferenceList;
+            inferenceList << "YadayadaRule";
+            CHECK_THROWS_WITH(LogicalSystem("Name", "Description", inferenceList, "Signature", Type("o")), "Couldn't load plugin named \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\".");
+            CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
+        }
     }
 
-    //Create Theory
+    SECTION("Theory")
+    {
+        //Setup
+        ProgramManager manager;
+
+        QStringList inferenceRulesNamesList;
+        inferenceRulesNamesList << "LogosClassicAndElimination";
+        manager.createLogicalSystem("Propositional Logic",
+                                    "Classical Propositional Logic",
+                                    "TableSignaturePlugin",
+                                    inferenceRulesNamesList,
+                                    Type("o"));
+
+        CHECK(StorageManager::retrieveTheoriesRecords("Propositional Logic").isEmpty());
+
+        //Create Theory
+        TheoryBuilder builder(manager.getActiveLogicalSystem());
+        builder.setName("Graph Theory");
+        builder.setDescription("Some graph theory.");
+        builder.getSignature()->addToken(CoreToken("P", Type("o")));
+        builder.getSignature()->addToken(CoreToken("~", Type("o")));
+        builder.addAxiom("P");
+        builder.addAxiom("(~ (~ P))");
+
+        manager.createTheory(builder);
+
+        const TheoryRecord record = StorageManager::retrieveTheoriesRecords("Propositional Logic").first();
+        CHECK(record.getName() == "Graph Theory");
+        CHECK(record.getDescription() == "Some graph theory.");
+    }
+
 }
 
 TEST_CASE("Dirty Fix")

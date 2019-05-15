@@ -1,15 +1,20 @@
 #include "theorybuilder.h"
 
-TheoryBuilder::TheoryBuilder(LogicalSystem *parentLogic, const QString &name, const QString &description) :
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic) :
+    parentLogic(parentLogic)
+{
+    loadSignaturePlugin();
+}
+
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description) :
     parentLogic(parentLogic),
     name(name),
     description(description)
 {
-    signaturePlugin.load(StorageManager::signaturePluginPath(parentLogic->getSignatureName()));
-    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
+    loadSignaturePlugin();
 }
 
-Theory TheoryBuilder::build()
+Theory TheoryBuilder::build() const
 {
     return Theory(parentLogic, name, description, axioms);
 }
@@ -54,4 +59,20 @@ void TheoryBuilder::addAxiom(const QString &axiom)
 void TheoryBuilder::removeAxiom(const QString &axiom)
 {
     //TODO
+}
+
+void TheoryBuilder::loadSignaturePlugin()
+{
+    signaturePlugin.load(StorageManager::signaturePluginPath(parentLogic->getSignatureName()));
+    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
+}
+
+void TheoryBuilder::setName(const QString &value)
+{
+    name = value;
+}
+
+void TheoryBuilder::setDescription(const QString &value)
+{
+    description = value;
 }
