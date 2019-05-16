@@ -1,4 +1,5 @@
-﻿#include "lineofproofsectionmanager.h"
+#include "lineofproofsectionmanager.h"
+#include <QDataStream>
 
 LineOfProofSectionManager::LineOfProofSectionManager()
 {
@@ -79,4 +80,16 @@ LineOfProofSection LineOfProofSectionManager::getSection(const unsigned int begi
     //TODO
     //The searching method is really close to the addSection method
     //I do not need this now, so I will wait till this is necessary!
+}
+
+QDataStream &operator <<(QDataStream &stream, const LineOfProofSectionManager &sectionManager)
+{
+    stream << sectionManager.sections;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, LineOfProofSectionManager &sectionManager)
+{
+    stream >> sectionManager.sections;
+    return stream;
 }

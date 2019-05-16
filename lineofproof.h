@@ -1,11 +1,11 @@
-﻿#ifndef LINEOFPROOF_H
+#ifndef LINEOFPROOF_H
 #define LINEOFPROOF_H
 
 #include <QString>
 #include <memory>
-#include "formula.h"
 #include "justification.h"
 
+class Formula;
 class ProofAssistant;
 
 using namespace std;
@@ -32,6 +32,11 @@ protected:
     QString comment;
 
     friend class ProofAssistant;
+    friend QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
+    friend QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof);
 };
+
+QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
+QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof);
 
 #endif // LINEOFPROOF_H

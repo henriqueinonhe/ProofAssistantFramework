@@ -1,4 +1,8 @@
-﻿#include "programmanager.h"
+#include "programmanager.h"
+#include "logicalsystemrecord.h"
+#include "theoryrecord.h"
+#include "storagemanager.h"
+#include "theorybuilder.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
@@ -24,8 +28,8 @@ bool ProgramManager::checkLogicalSystemNameCollision(const QString &name) const
 void ProgramManager::loadTheory(const QString &name)
 {
     checkActiveLogicalSystem();
-    Theory *theory = new Theory(activeLogicalSystem.get());
-    StorageManager::loadTheory(activeLogicalSystem->getName(), name, theory);
+    Theory *theory = new Theory(activeLogicalSystem.get()); //FIXME Use smart ptr!
+    StorageManager::loadTheory(activeLogicalSystem->getName(), name, *theory);
     activeTheory.reset(theory);
 }
 
@@ -34,31 +38,29 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
-void ProgramManager::createTheory(const QString &name, const QString &description, const QLinkedList<Formula> axioms, const QString &signaturePluginName, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorPluginsNameList, const QStringList &postProcessorPluginsNameList) const
+void ProgramManager::createTheory(const TheoryBuilder &builder) const
 {
+    const QString theoryName = builder.getName();
+    const QString theoryDescription = builder.getDescription();
+
     checkActiveLogicalSystem();
     const QString activeLogicalSystemName = activeLogicalSystem->getName();
-    if(checkTheoryNameCollision(activeLogicalSystemName, name))
+    if(checkTheoryNameCollision(activeLogicalSystemName, theoryName))
     {
         throw std::invalid_argument("There already exists a theory with this name!");
     }
 
+    //Theory
+    const Theory theory = builder.build();
 
     //TheoryRecord
-    TheoryRecord newTheoryRecord(name, description);
+    TheoryRecord newTheoryRecord(theoryName, theoryDescription);
     QVector<TheoryRecord> records = StorageManager::retrieveTheoriesRecords(activeLogicalSystemName);
     records.append(newTheoryRecord);
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-    StorageManager::createTheoryDir(activeLogicalSystemName, Theory(activeLogicalSystem.get(),
-                                                                    name,
-                                                                    description,
-                                                                    axioms,
-                                                                    signaturePluginName,
-                                                                    inferenceTacticsPluginsNameList,
-                                                                    preProcessorPluginsNameList,
-                                                                    postProcessorPluginsNameList));
+    StorageManager::createTheoryDir(activeLogicalSystemName, theory);
 }
 
 void ProgramManager::removeTheory(const QString &theoryName) const
@@ -105,7 +107,8 @@ void ProgramManager::checkActiveTheory() const
 
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
-                                         const QStringList &inferenceRuleNamesList,
+                                         const QString &signatureName,
+                                         const QStringList &inferenceRulesNamesList,
                                          const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -113,7 +116,9 @@ void ProgramManager::createLogicalSystem(const QString &name,
         throw std::invalid_argument("There already exists a logical system with this name!");
     }
 
-    //TODO Refactor
+    //Logical System
+    LogicalSystem logicalSystem(name, description, inferenceRulesNamesList, signatureName, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
+
     //LogicalSystemRecord
     LogicalSystemRecord newSystemRecord(name, description);
     QVector<LogicalSystemRecord> records = StorageManager::retrieveLogicalSystemsRecords();
@@ -121,7 +126,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //File management
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::createLogicalSystemDir(LogicalSystem(name, description, inferenceRuleNamesList, wffType));
+    StorageManager::createLogicalSystemDir(logicalSystem);
 
 }
 
@@ -175,11 +180,9 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
-    LogicalSystem *system = new LogicalSystem;
-    StorageManager::loadLogicalSystem(name, system);
-
+    LogicalSystem *system = new LogicalSystem();
+    StorageManager::loadLogicalSystem(name, *system);
     activeLogicalSystem.reset(system);
-    //system->loadInferenceRules(); //FIXME!
 }
 
 

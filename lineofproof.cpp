@@ -1,4 +1,6 @@
-﻿#include "lineofproof.h"
+#include "lineofproof.h"
+#include "formula.h"
+#include <QDataStream>
 
 LineOfProof::LineOfProof()
 {
@@ -41,4 +43,14 @@ Formula LineOfProof::getFormula() const
 void LineOfProof::setFormula(const Formula &formula)
 {
     this->formula.reset(new Formula(formula));
+}
+
+QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof)
+{
+    stream << *lineOfProof.formula << lineOfProof.justification << lineOfProof.comment;
+}
+
+QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof)
+{
+    //TODO
 }

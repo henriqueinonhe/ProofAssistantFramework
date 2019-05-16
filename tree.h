@@ -5,6 +5,7 @@
 #include <QVector>
 #include <memory>
 #include <QRegularExpression>
+#include <QDataStream>
 
 using namespace std;
 
@@ -29,6 +30,21 @@ private:
 
 friend class TreeNode<T>;
 friend class TreeIterator<T>;
+friend QDataStream &operator <<(QDataStream &stream, const Tree<T> &tree)
+{
+    //TODO
+
+//    stream << tree.root;
+//    return stream;
+}
+
+friend QDataStream &operator >>(QDataStream &stream, Tree<T> &tree)
+{
+    //TODO
+//    stream >> tree.root;
+//    return stream;
+}
+
 };
 
 template <class T>
@@ -156,6 +172,28 @@ private:
         parent(parent),
         obj(obj)
     {
+    }
+
+    void serialize(QDataStream &stream)
+    {
+        stream << obj;
+
+        std::for_each(children.begin(), children.end(), [&stream](const shared_ptr<TreeNode<T>> &node)
+        {
+            node->serialize(stream);
+        });
+    }
+
+    void unserialize(QDataStream &stream, const Tree<T> * const tree, const TreeNode<T> * const parent)
+    {
+        this->tree = tree;
+        this->parent = parent;
+        stream >> obj;
+
+        std::for_each(children.begin(), children.end(), [&stream, this](const shared_ptr<TreeNode<T>> &node)
+        {
+            node->unserialize(stream, this->tree, this);
+        });
     }
 
     Tree<T> *tree;

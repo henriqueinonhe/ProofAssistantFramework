@@ -1,12 +1,11 @@
-﻿#ifndef PROOF_H
+#ifndef PROOF_H
 #define PROOF_H
 
-#include "formula.h"
 #include "lineofproof.h"
 #include "prooflinks.h"
-#include "lineofproofsection.h"
 #include "lineofproofsectionmanager.h"
 
+class Formula;
 class ProofAssistant;
 
 class Proof
@@ -22,18 +21,25 @@ public:
     QString getName() const;
     void setName(const QString &value);
 
-    QVector<const Formula *> getPremises() const;
-    const Formula *getConclusion() const;
+    QVector<Formula> getPremises() const;
+    Formula getConclusion() const;
 
 private:
+    unsigned int id;
     QString name;
+    QString description;
     QVector<ProofLinks> premisesLinks;
     ProofLinks conclusionLinks;
-    QVector<shared_ptr<LineOfProof>> linesOfProof;
+    QVector<LineOfProof> linesOfProof;
     LineOfProofSectionManager sectioning;
-    bool linkedWithAxioms; //NOTE Maybe find a better name
+    bool linkedWithAxioms;
 
     friend class ProofAssistant;
+    friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);
+    friend QDataStream &operator >>(QDataStream &stream, Proof &proof);
 };
+
+QDataStream &operator <<(QDataStream &stream, const Proof &proof);
+QDataStream &operator >>(QDataStream &stream, Proof &proof);
 
 #endif // PROOF_H

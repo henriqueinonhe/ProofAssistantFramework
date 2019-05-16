@@ -1,4 +1,4 @@
-﻿#ifndef JUSTIFICATION_H
+#ifndef JUSTIFICATION_H
 #define JUSTIFICATION_H
 
 #include <QString>
@@ -19,6 +19,12 @@ public:
 private:
     QString inferenceRuleCallCommand;
     QStringList argumentList;
+
+    friend QDataStream &operator <<(QDataStream &stream, const Justification &justification);
+    friend QDataStream &operator >>(QDataStream &stream, Justification &justification);
 };
+
+QDataStream &operator <<(QDataStream &stream, const Justification &justification);
+QDataStream &operator >>(QDataStream &stream, Justification &justification);
 
 #endif // JUSTIFICATION_H

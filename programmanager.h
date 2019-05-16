@@ -1,11 +1,16 @@
-﻿#ifndef PROGRAMMANAGER_H
+#ifndef PROGRAMMANAGER_H
 #define PROGRAMMANAGER_H
 
-#include "logicalsystem.h"
-#include "theory.h"
-#include "proof.h"
-#include "storagemanager.h"
 #include <memory>
+#include "theory.h"
+#include "logicalsystem.h"
+
+class LogicalSystem;
+class Type;
+class Theory;
+class TheoryBuilder;
+class LogicalSystemRecord;
+class TheoryRecord;
 
 using namespace std;
 
@@ -15,26 +20,27 @@ public:
     ProgramManager();
 
     //Logical System
-    void loadLogicalSystem(const QString &name);
-    LogicalSystem *getActiveLogicalSystem() const;
     void createLogicalSystem(const QString &name,
                              const QString &description,
-                             const QStringList &inferenceRuleNamesList, const Type &wffType) const;
+                             const QString &signaturePluginName,
+                             const QStringList &inferenceRulesNamesList,
+                             const Type &wffType) const;
+    void loadLogicalSystem(const QString &name);
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;
+    LogicalSystem *getActiveLogicalSystem() const;
     //TODO Edit Logical System
 
     //Theory
+    void createTheory(const TheoryBuilder &builder) const;
     void loadTheory(const QString &name);
-    Theory *getActiveTheory() const;
-    void createTheory(const QString &name,
-                      const QString &description,
-                      const QLinkedList<Formula> axioms, const QString &signaturePluginName,
-                      const QStringList &inferenceTacticsPluginsNameList,
-                      const QStringList &preProcessorPluginsNameList,
-                      const QStringList &postProcessorPluginsNameList) const;
     void removeTheory(const QString &theoryName) const;
     bool checkTheoryNameCollision(const QString &logicalSystemName, const QString &name) const;
+    Theory *getActiveTheory() const;
+    //TODO Edit Theory
+
+    //Proof
+    //void createProof(const QString &string);
 
 private:
     void checkActiveLogicalSystem() const;

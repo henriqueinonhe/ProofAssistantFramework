@@ -1,1 +1,3 @@
-﻿#include "inferencerule.h"
+#include "inferencerule.h"
+
+

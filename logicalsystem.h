@@ -1,50 +1,56 @@
-﻿#ifndef LOGICALSYSTEM_H
+#ifndef LOGICALSYSTEM_H
 #define LOGICALSYSTEM_H
 
 #include <QString>
-#include "parser.h"
 #include <memory>
-#include "theory.h"
-#include "inferencerule.h"
-#include <QPluginLoader>
 #include "type.h"
-#include <QFile>
-#include <QDataStream>
-#include "storagemanager.h"
-#include "pluginmanager.h"
+#include "pluginwrapper.h"
+
+typedef PluginWrapper<InferenceRule> InferenceRulePlugin;
 
 using namespace std;
 
 class LogicalSystem
 {
 public:
-    LogicalSystem();
     LogicalSystem(const QString &name,
                   const QString &description,
+                  QStringList inferenceRulesNamesList,
+                  const QString &signatureName,
                   const Type &wffType);
 
+    LogicalSystem(QDataStream &stream);
+
+    void serialize(QDataStream &stream) const;
+
     QString getName() const;
-    void setName(const QString &value);
-
     QString getDescription() const;
-    void setDescription(const QString &value);
-
-    QVector<InferenceRule *> getInferenceRules() const;
-
+    QVector<InferenceRulePlugin> getInferenceRules() const;
+    QString getSignatureName() const;
     Type getWffType() const;
-    void setWffType(const Type &value);
 
 protected:
+    LogicalSystem();
+
+    void setName(const QString &value);
+    void setDescription(const QString &value);
+
+    void loadInferenceRuleList(const QStringList &inferenceRulesNamesList);
+
     QString name;
     QString description;
-    QVector<InferenceRule *> inferenceRules; //Does not own inference rules, thus they must be owned by an external object
+    QVector<InferenceRulePlugin> inferenceRules;
+    QString signatureName;
     unique_ptr<const Type> wffType;
 
-    friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
-    friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);
+    friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);
+    friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
+    friend class ProgramManager;
 };
 
-QDataStream &operator <<(QDataStream &stream, const LogicalSystem &system);
-QDataStream &operator >>(QDataStream &stream, LogicalSystem &system);
+QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);
+QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
+
+
 
 #endif // LOGICALSYSTEM_H

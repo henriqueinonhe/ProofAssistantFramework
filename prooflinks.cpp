@@ -1,26 +1,23 @@
 ﻿#include "prooflinks.h"
 
-ProofLinks::ProofLinks()
-{
+//ProofLinks::ProofLinks(const Formula &formula, const QVector<unsigned int> linkedProofsIds) :
+//    formula(formula),
+//    linkedProofsIds(linkedProofsIds)
+//{
 
+//}
+
+//Formula ProofLinks::getFormula() const
+//{
+//    return formula;
+//}
+
+QDataStream &operator <<(QDataStream &stream, const ProofLinks &links)
+{
+    //TODO
 }
 
-const Formula *ProofLinks::getFormulaPtr() const
+QDataStream &operator >>(QDataStream &stream, ProofLinks &links)
 {
-    return formulaPtr;
-}
-
-void ProofLinks::setFormulaPtr(const Formula * const value)
-{
-    formulaPtr = value;
-}
-
-QVector<const Proof *> ProofLinks::getLinks() const
-{
-    return links;
-}
-
-void ProofLinks::setLinks(const QVector<const Proof *> &value)
-{
-    links = value;
+    //TODO
 }

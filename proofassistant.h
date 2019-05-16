@@ -6,16 +6,12 @@
 #include "prooflinks.h"
 #include <memory>
 
+//FIXME Gotta rework whole class!
+
 class ProofAssistant
 {
 public:
     ProofAssistant();
-
-    const Theory *getCurrentTheory() const;
-    void setCurrentTheory(Theory *value);
-
-    const Proof *getCurrentProof() const;
-    void setCurrentProof(Proof *value);
 
     void createProof();
     void setProofName(const QString &name);
@@ -28,9 +24,6 @@ public:
     void setLineOfProofComment(const unsigned int lineNumber, const QString &comment) const;
 
 private:
-    void checkCurrentTheoryIsNull() const;
-    void checkCurrentProofIsNull() const;
-
     template <class T>
     T *queryInferenceProcedure(const QVector<T *> &procedureList, const QString &callCommand) const
     {
@@ -49,11 +42,6 @@ private:
 
     void createPremiseLineOfProof(const Formula &parsedPremise);
     void linkPremise(const QString &premise);
-
-    Theory *currentTheory;
-    Proof *currentProof;
-    bool proofOwner; //WTF! What is this again?
-    //bool proofInProgress; Maybe ...
 };
 
 #endif // PROOFASSISTANT_H

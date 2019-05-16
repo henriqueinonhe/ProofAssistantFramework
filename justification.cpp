@@ -1,4 +1,5 @@
-﻿#include "justification.h"
+#include "justification.h"
+#include <QDataStream>
 
 Justification::Justification()
 {
@@ -30,4 +31,14 @@ QStringList Justification::getArgumentList() const
 void Justification::setArgumentList(const QStringList &value)
 {
     argumentList = value;
+}
+
+QDataStream &operator <<(QDataStream &stream, const Justification &justification)
+{
+    stream << justification.inferenceRuleCallCommand << justification.argumentList;
+}
+
+QDataStream &operator >>(QDataStream &stream, Justification &justification)
+{
+    stream >> justification.inferenceRuleCallCommand >> justification.argumentList;
 }

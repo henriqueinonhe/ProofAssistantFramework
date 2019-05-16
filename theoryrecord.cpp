@@ -1,4 +1,5 @@
-﻿#include "theoryrecord.h"
+#include "theoryrecord.h"
+#include <QDataStream>
 
 TheoryRecord::TheoryRecord()
 {

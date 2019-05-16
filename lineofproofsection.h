@@ -1,4 +1,4 @@
-﻿#ifndef LINEOFPROOFSECTION_H
+#ifndef LINEOFPROOFSECTION_H
 #define LINEOFPROOFSECTION_H
 
 #include <QString>
@@ -36,6 +36,11 @@ private:
     QString label;
     bool collapsed;
 
+    friend QDataStream &operator <<(QDataStream &stream, const LineOfProofSection &section);
+    friend QDataStream &operator >>(QDataStream &stream, LineOfProofSection &section);
 };
+
+QDataStream &operator <<(QDataStream &stream, const LineOfProofSection &section);
+QDataStream &operator >>(QDataStream &stream, LineOfProofSection &section);
 
 #endif // LINEOFPROOFSECTION_H

@@ -1,16 +1,23 @@
-﻿#include "logicalsystem.h"
+#include "logicalsystem.h"
+#include "storagemanager.h"
 
-LogicalSystem::LogicalSystem()
-{
-
-}
-
-LogicalSystem::LogicalSystem(const QString &name, const QString &description, const Type &wffType) :
+LogicalSystem::LogicalSystem(const QString &name, const QString &description, QStringList inferenceRulesNamesList, const QString &signatureName, const Type &wffType) :
     name(name),
     description(description),
+    signatureName(signatureName),
     wffType(new Type(wffType))
 {
+    loadInferenceRuleList(inferenceRulesNamesList);
+}
 
+LogicalSystem::LogicalSystem(QDataStream &stream)
+{
+    stream >> *this;
+}
+
+void LogicalSystem::serialize(QDataStream &stream) const
+{
+    stream << name << description << inferenceRules << signatureName << *wffType;
 }
 
 QString LogicalSystem::getName() const
@@ -23,7 +30,8 @@ void LogicalSystem::setName(const QString &value)
     name = value;
 }
 
-QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
+
+QVector<InferenceRulePlugin> LogicalSystem::getInferenceRules() const
 {
     return inferenceRules;
 }
@@ -31,11 +39,6 @@ QVector<InferenceRule *> LogicalSystem::getInferenceRules() const
 Type LogicalSystem::getWffType() const
 {
     return *wffType;
-}
-
-void LogicalSystem::setWffType(const Type &value)
-{
-    wffType.reset(new Type(value));
 }
 
 QString LogicalSystem::getDescription() const
@@ -48,18 +51,38 @@ void LogicalSystem::setDescription(const QString &value)
     description = value;
 }
 
-
-QDataStream & operator <<(QDataStream &stream, const LogicalSystem &system)
+void LogicalSystem::loadInferenceRuleList(const QStringList &inferenceRulesNamesList)
 {
-    stream << system.name << system.description << system.getWffType();
+    for(int index = 0; index < inferenceRulesNamesList.size(); index++)
+    {
+        const QString inferenceRulePluginPath = StorageManager::inferenceRulePluginPath(inferenceRulesNamesList[index]);
+        InferenceRulePlugin plugin(inferenceRulePluginPath);
+        inferenceRules.push_back(plugin);
+    }
+}
+
+QString LogicalSystem::getSignatureName() const
+{
+    return signatureName;
+}
+
+LogicalSystem::LogicalSystem()
+{
+
+}
+
+QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem)
+{
+    stream >> logicalSystem.name >> logicalSystem.description >> logicalSystem.inferenceRules >> logicalSystem.signatureName;
+    logicalSystem.wffType.reset(new Type(stream));
 
     return stream;
 }
 
-QDataStream & operator >>(QDataStream &stream, LogicalSystem &system)
+
+QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem)
 {
-    stream >> system.name >> system.description ;
-    system.setWffType(Type(stream));
+    logicalSystem.serialize(stream);
 
     return stream;
 }

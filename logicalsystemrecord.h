@@ -1,8 +1,7 @@
-﻿#ifndef LOGICALSYSTEMRECORD_H
+#ifndef LOGICALSYSTEMRECORD_H
 #define LOGICALSYSTEMRECORD_H
 
 #include <QString>
-#include <QDataStream>
 
 class LogicalSystemRecord
 {
@@ -15,6 +14,7 @@ public:
 
     QString getDescription() const;
     void setDescription(const QString &value);
+
 
 private:
     QString name;

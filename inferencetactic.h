@@ -1,12 +1,14 @@
-﻿#ifndef INFERENCETACTIC_H
+#ifndef INFERENCETACTIC_H
 #define INFERENCETACTIC_H
 
 #include "inferenceprocedure.h"
 
-class InferenceTactic : virtual public InferenceProcedure
+class ProofAssistant;
+
+class InferenceTactic : public InferenceProcedure
 {
 public:
-    virtual void apply(const ProofAssistant *assistant, const QStringList &argumentList) = 0;
+    virtual void apply(const ProofAssistant * const assistant, const QStringList &argumentList) = 0;
 
 };
 

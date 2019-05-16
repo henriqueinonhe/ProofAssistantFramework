@@ -1,13 +1,14 @@
-﻿#ifndef STRINGPROCESSORPLUGIN_H
+#ifndef STRINGPROCESSORPLUGIN_H
 #define STRINGPROCESSORPLUGIN_H
 
 #include "stringprocessor.h"
 #include <QDataStream>
 
-class StringProcessorPlugin
+class StringProcessorPlugin : public StringProcessor
 {
 public:
-    virtual const StringProcessor *getStringProcessor() const = 0;
+    virtual QString processString(const QString &string) const = 0;
+    virtual QString toString() const = 0;
 
 protected:
     virtual void serialize(QDataStream &stream) const = 0;
@@ -15,6 +16,7 @@ protected:
 
     friend QDataStream &operator <<(QDataStream &stream, const StringProcessorPlugin &plugin);
     friend QDataStream &operator >>(QDataStream &stream, StringProcessorPlugin &plugin);
+
 };
 
 QDataStream &operator <<(QDataStream &stream, const StringProcessorPlugin &plugin);

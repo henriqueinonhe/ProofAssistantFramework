@@ -7,6 +7,8 @@ TARGET = ProofAssistantFramework
 CONFIG += console
 CONFIG -= app_bundle
 
+PRECOMPILED_HEADER = pch.h
+
 TEMPLATE = app
 
 INCLUDEPATH += ../Language/Parser \
@@ -64,12 +66,14 @@ SOURCES += main.cpp \
     storagemanager.cpp \
     logicalsystemrecord.cpp \
     programmanager.cpp \
+    theorybuilder.cpp \
     theoryrecord.cpp \
     logosprogrammanager.cpp \
     ../Language/Parser/parsingtreeconstiterator.cpp \
     signatureplugin.cpp \
     stringprocessorplugin.cpp \
-    pluginmanager.cpp
+    pluginmanager.cpp \
+    proofrecord.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -119,12 +123,16 @@ HEADERS += \
     ../Language/Utils/dirtyfix.h \
     ../Language/Utils/parsingauxiliarytools.h \
     ../Language/Utils/pool.h \
+    containermanager.h \
     logicalsystem.h \
+    pch.h \
+    pluginwrapper.h \
     theory.h \
     proof.h \
     lineofproof.h \
     prooflinks.h \
     inferencerule.h \
+    theorybuilder.h \
     tree.h \
     proofassistant.h \
     justification.h \
@@ -140,4 +148,5 @@ HEADERS += \
     ../Language/Parser/parsingtreeconstiterator.h \
     signatureplugin.h \
     stringprocessorplugin.h \
-    pluginmanager.h
+    pluginmanager.h \
+    proofrecord.h
