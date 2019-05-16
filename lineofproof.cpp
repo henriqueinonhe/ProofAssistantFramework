@@ -1,4 +1,6 @@
-﻿#include "lineofproof.h"
+#include "lineofproof.h"
+#include "formula.h"
+#include <QDataStream>
 
 LineOfProof::LineOfProof()
 {

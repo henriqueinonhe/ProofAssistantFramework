@@ -1,4 +1,5 @@
-﻿#include "lineofproofsectionmanager.h"
+#include "lineofproofsectionmanager.h"
+#include <QDataStream>
 
 LineOfProofSectionManager::LineOfProofSectionManager()
 {

@@ -7,6 +7,8 @@ TARGET = ProofAssistantFramework
 CONFIG += console
 CONFIG -= app_bundle
 
+PRECOMPILED_HEADER = pch.h
+
 TEMPLATE = app
 
 INCLUDEPATH += ../Language/Parser \
@@ -123,6 +125,7 @@ HEADERS += \
     ../Language/Utils/pool.h \
     containermanager.h \
     logicalsystem.h \
+    pch.h \
     pluginwrapper.h \
     theory.h \
     proof.h \

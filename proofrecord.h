@@ -1,9 +1,10 @@
-﻿#ifndef PROOFRECORD_H
+#ifndef PROOFRECORD_H
 #define PROOFRECORD_H
 
 #include <QString>
 #include <QStringList>
-#include <QDataStream>
+
+class QDataStream;
 
 //NOTE Maybe use formulas here...
 

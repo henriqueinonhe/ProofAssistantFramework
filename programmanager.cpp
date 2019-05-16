@@ -1,4 +1,8 @@
 #include "programmanager.h"
+#include "logicalsystemrecord.h"
+#include "theoryrecord.h"
+#include "storagemanager.h"
+#include "theorybuilder.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),

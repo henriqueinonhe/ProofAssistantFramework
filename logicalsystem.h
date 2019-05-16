@@ -2,14 +2,8 @@
 #define LOGICALSYSTEM_H
 
 #include <QString>
-#include "parser.h"
 #include <memory>
-#include "theory.h"
-#include "inferencerule.h"
-#include <QPluginLoader>
 #include "type.h"
-#include <QFile>
-#include <QDataStream>
 #include "pluginwrapper.h"
 
 typedef PluginWrapper<InferenceRule> InferenceRulePlugin;

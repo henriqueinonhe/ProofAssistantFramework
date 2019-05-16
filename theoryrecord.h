@@ -1,8 +1,7 @@
-﻿#ifndef THEORYRECORD_H
+#ifndef THEORYRECORD_H
 #define THEORYRECORD_H
 
 #include <QString>
-#include <QDataStream>
 
 class TheoryRecord
 {

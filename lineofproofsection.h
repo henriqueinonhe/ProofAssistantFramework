@@ -1,8 +1,7 @@
-﻿#ifndef LINEOFPROOFSECTION_H
+#ifndef LINEOFPROOFSECTION_H
 #define LINEOFPROOFSECTION_H
 
 #include <QString>
-#include <QDataStream>
 
 class LineOfProofSection
 {

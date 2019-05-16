@@ -1,7 +1,7 @@
-﻿#ifndef PROOFLINKS_H
+#ifndef PROOFLINKS_H
 #define PROOFLINKS_H
 
-#include "formula.h"
+class Formula;
 
 using namespace std;
 

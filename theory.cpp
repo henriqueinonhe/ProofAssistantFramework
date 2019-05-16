@@ -1,6 +1,7 @@
 #include "theory.h"
 #include "logicalsystem.h"
-#include "pluginmanager.h"
+#include "storagemanager.h"
+#include <QDataStream>
 
 Theory::Theory(const LogicalSystem * const parentLogic) :
     parentLogic(parentLogic)

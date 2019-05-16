@@ -1,4 +1,9 @@
 #include "storagemanager.h"
+#include "logicalsystem.h"
+#include "logicalsystemrecord.h"
+#include "theoryrecord.h"
+#include "proofrecord.h"
+#include "theory.h"
 
 QString StorageManager::rootPath = "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox";
 const QString StorageManager::storageFilesSuffix = ".dat";

@@ -1,4 +1,6 @@
-﻿#include "proof.h"
+#include "proof.h"
+#include <QDataStream>
+#include "formula.h"
 
 Proof::Proof() :
     linkedWithAxioms(true) //Empty premises are valid formulas and thus linked with axioms!

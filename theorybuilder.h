@@ -2,8 +2,6 @@
 #define THEORYBUILDER_H
 
 #include "theory.h"
-#include "pluginmanager.h"
-#include "pluginmanager.h"
 
 typedef PluginWrapper<SignaturePlugin> SignaturePluginWrapper;
 
@@ -37,8 +35,9 @@ protected:
     QLinkedList<Formula> axioms;
 
 private:
+    void checkParentLogicPointer(const LogicalSystem *parentLogic) const;
     void loadSignaturePlugin();
-    void checkAxiomCollision(const Formula &newAxiom);
+    void checkAxiomCollision(const Formula &newAxiom) const;
 };
 
 #endif // THEORYBUILDER_H

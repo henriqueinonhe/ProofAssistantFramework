@@ -1,4 +1,5 @@
-﻿#include "proofrecord.h"
+#include "proofrecord.h"
+#include <QDataStream>
 
 ProofRecord::ProofRecord()
 {

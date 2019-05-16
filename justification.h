@@ -1,9 +1,8 @@
-﻿#ifndef JUSTIFICATION_H
+#ifndef JUSTIFICATION_H
 #define JUSTIFICATION_H
 
 #include <QString>
 #include <QStringList>
-#include <QDataStream>
 
 class Justification
 {

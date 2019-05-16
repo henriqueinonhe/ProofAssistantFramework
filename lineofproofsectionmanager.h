@@ -1,9 +1,8 @@
-﻿#ifndef LINEOFPROOFSECTIONMANAGER_H
+#ifndef LINEOFPROOFSECTIONMANAGER_H
 #define LINEOFPROOFSECTIONMANAGER_H
 
 #include "lineofproofsection.h"
 #include "tree.h"
-#include <QDataStream>
 
 class LineOfProofSectionManager
 {

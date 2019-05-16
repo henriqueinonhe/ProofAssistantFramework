@@ -3,6 +3,8 @@
 
 #include <QPluginLoader>
 #include <QDataStream>
+#include "inferencerule.h"
+#include "inferencetactic.h"
 
 template <class T> class PluginWrapper;
 class InferenceRule;

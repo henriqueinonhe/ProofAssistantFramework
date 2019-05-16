@@ -9,6 +9,10 @@
 #include "storagemanager.h"
 #include "programmanager.h"
 #include "theorybuilder.h"
+#include "coretoken.h"
+#include "inferencerule.h"
+#include "logicalsystemrecord.h"
+#include "theoryrecord.h"
 #include <QBuffer>
 
 TEST_CASE("Trees")
@@ -440,6 +444,8 @@ TEST_CASE("Framework Integration")
                                     inferenceRulesNamesList,
                                     Type("o"));
 
+        manager.loadLogicalSystem("Propositional Logic");
+
         CHECK(StorageManager::retrieveTheoriesRecords("Propositional Logic").isEmpty());
 
         //Create Theory
@@ -447,7 +453,7 @@ TEST_CASE("Framework Integration")
         builder.setName("Graph Theory");
         builder.setDescription("Some graph theory.");
         builder.getSignature()->addToken(CoreToken("P", Type("o")));
-        builder.getSignature()->addToken(CoreToken("~", Type("o")));
+        builder.getSignature()->addToken(CoreToken("~", Type("o->o")));
         builder.addAxiom("P");
         builder.addAxiom("(~ (~ P))");
 
@@ -456,6 +462,8 @@ TEST_CASE("Framework Integration")
         const TheoryRecord record = StorageManager::retrieveTheoriesRecords("Propositional Logic").first();
         CHECK(record.getName() == "Graph Theory");
         CHECK(record.getDescription() == "Some graph theory.");
+
+        Theory *theory = manager.getActiveTheory();
     }
 
 }

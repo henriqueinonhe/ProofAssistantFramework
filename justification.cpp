@@ -1,4 +1,5 @@
-﻿#include "justification.h"
+#include "justification.h"
+#include <QDataStream>
 
 Justification::Justification()
 {

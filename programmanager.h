@@ -1,13 +1,16 @@
 #ifndef PROGRAMMANAGER_H
 #define PROGRAMMANAGER_H
 
-#include "logicalsystem.h"
-#include "theory.h"
-#include "theorybuilder.h"
-#include "proof.h"
-#include "storagemanager.h"
-#include "proofassistant.h"
 #include <memory>
+#include "theory.h"
+#include "logicalsystem.h"
+
+class LogicalSystem;
+class Type;
+class Theory;
+class TheoryBuilder;
+class LogicalSystemRecord;
+class TheoryRecord;
 
 using namespace std;
 

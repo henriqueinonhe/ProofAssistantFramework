@@ -3,14 +3,11 @@
 
 #include "formula.h"
 #include <QString>
-#include "proof.h"
-#include "parser.h"
-#include "inferencetactic.h"
 #include "signatureplugin.h"
 #include "stringprocessorplugin.h"
 #include "formatter.h"
-#include <QDataStream>
 #include "pluginwrapper.h"
+#include "parser.h"
 
 typedef PluginWrapper<SignaturePlugin> SignaturePluginWrapper;
 typedef PluginWrapper<InferenceTactic> InferenceTacticPluginWrapper;

@@ -1,12 +1,11 @@
-﻿#ifndef LINEOFPROOF_H
+#ifndef LINEOFPROOF_H
 #define LINEOFPROOF_H
 
 #include <QString>
 #include <memory>
-#include "formula.h"
 #include "justification.h"
-#include <QDataStream>
 
+class Formula;
 class ProofAssistant;
 
 using namespace std;

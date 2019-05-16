@@ -1,13 +1,11 @@
-﻿#ifndef PROOF_H
+#ifndef PROOF_H
 #define PROOF_H
 
-#include "formula.h"
 #include "lineofproof.h"
 #include "prooflinks.h"
-#include "lineofproofsection.h"
 #include "lineofproofsectionmanager.h"
-#include <QDataStream>
 
+class Formula;
 class ProofAssistant;
 
 class Proof

@@ -2,7 +2,6 @@
 #define INFERENCEPROCEDURE_H
 
 #include <QString>
-#include "proof.h"
 
 class InferenceProcedure
 {

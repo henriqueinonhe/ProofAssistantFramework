@@ -3,6 +3,8 @@
 
 #include "inferenceprocedure.h"
 
+class ProofAssistant;
+
 class InferenceTactic : public InferenceProcedure
 {
 public:

@@ -1,4 +1,5 @@
-﻿#include "signatureplugin.h"
+#include "signatureplugin.h"
+#include <QDataStream>
 
 QDataStream &operator <<(QDataStream &stream, const SignaturePlugin &signature)
 {

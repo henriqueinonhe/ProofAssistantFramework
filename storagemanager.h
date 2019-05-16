@@ -3,10 +3,13 @@
 
 #include <QFile>
 #include <QDir>
-#include "logicalsystemrecord.h"
-#include "logicalsystem.h"
-#include "theoryrecord.h"
-#include "proofrecord.h"
+#include <QDataStream>
+
+class LogicalSystem;
+class Theory;
+class TheoryRecord;
+class LogicalSystemRecord;
+class ProofRecord;
 
 class StorageManager
 {

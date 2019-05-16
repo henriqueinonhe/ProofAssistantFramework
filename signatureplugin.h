@@ -2,8 +2,6 @@
 #define SIGNATUREPLUGIN_H
 
 #include "signature.h"
-#include <memory>
-#include <QDataStream>
 
 class SignaturePlugin : public Signature
 {

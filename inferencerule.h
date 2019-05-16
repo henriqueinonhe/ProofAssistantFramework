@@ -1,9 +1,11 @@
 #ifndef INFERENCERULE_H
 #define INFERENCERULE_H
 
-#include <QString>
-#include "proof.h"
 #include "inferenceprocedure.h"
+
+class Proof;
+class LineOfProof;
+class QStringList;
 
 class InferenceRule : public InferenceProcedure
 {

@@ -1,8 +1,7 @@
-﻿#ifndef LOGICALSYSTEMRECORD_H
+#ifndef LOGICALSYSTEMRECORD_H
 #define LOGICALSYSTEMRECORD_H
 
 #include <QString>
-#include <QDataStream>
 
 class LogicalSystemRecord
 {

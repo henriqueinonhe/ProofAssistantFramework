@@ -1,5 +1,5 @@
 #include "logicalsystem.h"
-#include "pluginmanager.h"
+#include "storagemanager.h"
 
 LogicalSystem::LogicalSystem(const QString &name, const QString &description, QStringList inferenceRulesNamesList, const QString &signatureName, const Type &wffType) :
     name(name),
