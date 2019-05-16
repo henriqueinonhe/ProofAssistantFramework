@@ -3,24 +3,20 @@
 
 #include "formula.h"
 #include <QString>
-#include "signatureplugin.h"
-#include "stringprocessorplugin.h"
 #include "formatter.h"
-#include "pluginwrapper.h"
 #include "parser.h"
+#include "signature.h"
 
-typedef PluginWrapper<SignaturePlugin> SignaturePluginWrapper;
-typedef PluginWrapper<InferenceTactic> InferenceTacticPluginWrapper;
-typedef PluginWrapper<StringProcessorPlugin> StringProcessorPluginWrapper;
-typedef PluginWrapper<StringProcessorPlugin> StringProcessorPluginWrapper;
-
+class StringProcessor;
+class InferenceTactic;
 class LogicalSystem;
 class ProofAssistant;
+class Proof;
 
 class Theory
 {
 public:
-    Theory(const LogicalSystem *logicalSystem, QDataStream &stream);
+    Theory(const LogicalSystem *logicalSystem, Signature *signature, QDataStream &stream);
 
     const LogicalSystem *getParentLogic() const;
 
@@ -29,38 +25,32 @@ public:
     Signature *getSignature();
     QLinkedList<Formula> getAxioms() const;
 
-    void addInferenceTactic(const QString &pluginName);
-    void removeInferenceTactic(const QString &pluginName);
-    QVector<InferenceTacticPluginWrapper> getInferenceTactics() const;
+    QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
 
-    void addPreProcessor(const QString &pluginName);
-    void removePreProcessor(const QString &pluginName);
-    QVector<StringProcessorPluginWrapper> getPreProcessors() const;
+    QVector<shared_ptr<StringProcessor>> &getPreProcessors();
 
-    void addPostProcessor(const QString &pluginName);
-    void removePostProcessor(const QString &pluginName);
-    QVector<StringProcessorPluginWrapper> getPostProcessors() const;
+    QVector<shared_ptr<StringProcessor>> &getPostProcessors();
 
     QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
     QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
 protected:
     Theory(const LogicalSystem * const parentLogic);
-    Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const QLinkedList<Formula> &axioms);
+    Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, Signature *signature, const QLinkedList<Formula> &axioms);
 
-    void loadSignaturePlugin();
+    void serializePlugins() const;
 
     const LogicalSystem *parentLogic;
 
     QString name;
     QString description;
     unique_ptr<Parser> parser;
-    SignaturePluginWrapper signaturePlugin;
+    shared_ptr<Signature> signature;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
 
-    QVector<InferenceTacticPluginWrapper> inferenceTactics;
-    QVector<StringProcessorPluginWrapper> preProcessors;
-    QVector<StringProcessorPluginWrapper> postProcessors;
+    QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
+    QVector<shared_ptr<StringProcessor>> preProcessors;
+    QVector<shared_ptr<StringProcessor>> postProcessors;
     Formatter preFormatter;
     Formatter postFormatter;
 
@@ -73,5 +63,9 @@ protected:
 
 QDataStream &operator <<(QDataStream &stream, const Theory &theory);
 QDataStream &operator >>(QDataStream &stream, Theory &theory);
+QDataStream &operator <<(QDataStream &stream, const shared_ptr<Signature> &signature);
+QDataStream &operator >>(QDataStream &stream,  shared_ptr<Signature> &signature);
+QDataStream &operator <<(QDataStream &stream, const shared_ptr<StringProcessor> &processor);
+QDataStream &operator >>(QDataStream &stream, shared_ptr<StringProcessor> &processor);
 
 #endif // THEORY_H

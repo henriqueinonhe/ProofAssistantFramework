@@ -1,0 +1,8 @@
+#ifndef SMARTPOINTERSSERIALIZATION_H
+#define SMARTPOINTERSSERIALIZATION_H
+#include <QDataStream>
+#include <memory>
+
+
+
+#endif // SMARTPOINTERSSERIALIZATION_H

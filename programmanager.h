@@ -22,7 +22,6 @@ public:
     //Logical System
     void createLogicalSystem(const QString &name,
                              const QString &description,
-                             const QString &signaturePluginName,
                              const QStringList &inferenceRulesNamesList,
                              const Type &wffType) const;
     void loadLogicalSystem(const QString &name);

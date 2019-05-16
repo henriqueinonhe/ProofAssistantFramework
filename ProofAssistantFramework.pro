@@ -123,10 +123,13 @@ HEADERS += \
     ../Language/Utils/dirtyfix.h \
     ../Language/Utils/parsingauxiliarytools.h \
     ../Language/Utils/pool.h \
-    containermanager.h \
+    dummyclasses.h \
+    inferenceruleplugin.h \
+    inferencetacticplugin.h \
     logicalsystem.h \
     pch.h \
-    pluginwrapper.h \
+    pluginfactoryinterface.h \
+    smartpointersserialization.h \
     theory.h \
     proof.h \
     lineofproof.h \

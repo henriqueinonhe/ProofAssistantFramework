@@ -20,10 +20,10 @@ public:
     //Logical System
     static QVector<LogicalSystemRecord> retrieveLogicalSystemsRecords();
     static void storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records);
-    static void createLogicalSystemDir(const LogicalSystem &system);
+    static void createLogicalSystemDir(const LogicalSystem &system, const QStringList inferenceRulesNamesList);
     static void deleteLogicalSystemDir(const QString &systemName);
     static void saveLogicalSystem(const LogicalSystem &system);
-    static void loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem);
+    static void loadLogicalSystem(const QString &systemName, LogicalSystem *loadedSystem);
 
     //Theory
     static QVector<TheoryRecord> retrieveTheoriesRecords(const QString &logicalSystemName);
@@ -31,7 +31,7 @@ public:
     static void createTheoryDir(const QString &logicalSystemName, const Theory &theory);
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
     static void saveTheory(Theory &theory);
-    static void loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory);
+    static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *theory);
 
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName,
@@ -89,8 +89,10 @@ public:
     static QString inferenceTacticPluginPath(const QString &pluginName);
     static QString preProcessorPluginPath(const QString &pluginName);
     static QString postProcessorPluginPath(const QString &pluginName);
+    static QStringList convertPluginNamesToPaths(const QStringList &pluginNamesList, QString pluginPathFunction(const QString &));
 
 private:
+
     //Templates
 
     template<class T>

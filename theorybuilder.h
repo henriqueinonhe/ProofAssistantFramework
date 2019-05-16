@@ -3,15 +3,13 @@
 
 #include "theory.h"
 
-typedef PluginWrapper<SignaturePlugin> SignaturePluginWrapper;
-
 class TheoryBuilder
 {
 public:
     TheoryBuilder(const LogicalSystem *parentLogic);
     TheoryBuilder(const LogicalSystem *parentLogic,
                   const QString &name,
-                  const QString &description);
+                  const QString &description, Signature *signature);
 
     Theory build() const;
 
@@ -30,13 +28,12 @@ protected:
     const LogicalSystem *parentLogic;
     QString name;
     QString description;
-    SignaturePluginWrapper signaturePlugin;
+    Signature *signature;
     unique_ptr<Parser> parser;
     QLinkedList<Formula> axioms;
 
 private:
     void checkParentLogicPointer(const LogicalSystem *parentLogic) const;
-    void loadSignaturePlugin();
     void checkAxiomCollision(const Formula &newAxiom) const;
 };
 

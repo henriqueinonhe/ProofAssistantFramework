@@ -8,21 +8,20 @@ TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic)
 {
     checkParentLogicPointer(parentLogic);
     this->parentLogic = parentLogic;
-    loadSignaturePlugin();
 }
 
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description) :
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, Signature *signature) :
     name(name),
-    description(description)
+    description(description),
+    signature(signature)
 {
     checkParentLogicPointer(parentLogic);
     this->parentLogic = parentLogic;
-    loadSignaturePlugin();
 }
 
 Theory TheoryBuilder::build() const
 {
-    return Theory(parentLogic, name, description, axioms);
+    return Theory(parentLogic, name, description, signature, axioms);
 }
 
 QString TheoryBuilder::getName() const
@@ -37,7 +36,7 @@ QString TheoryBuilder::getDescription() const
 
 Signature *TheoryBuilder::getSignature()
 {
-    return signaturePlugin.ptr();
+    return signature;
 }
 
 void TheoryBuilder::checkAxiomCollision(const Formula &newAxiom) const
@@ -73,12 +72,6 @@ void TheoryBuilder::checkParentLogicPointer(const LogicalSystem *parentLogic) co
     {
         throw std::runtime_error("Parent logic pointer is null!");
     }
-}
-
-void TheoryBuilder::loadSignaturePlugin()
-{
-    signaturePlugin.load(StorageManager::signaturePluginPath(parentLogic->getSignatureName()));
-    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
 }
 
 void TheoryBuilder::setName(const QString &value)

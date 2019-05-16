@@ -14,6 +14,6 @@ public:
 
 };
 
-Q_DECLARE_INTERFACE(InferenceRule, "InferenceRule")
+
 
 #endif // INFERENCERULE_H

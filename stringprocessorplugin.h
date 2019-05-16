@@ -1,26 +1,15 @@
 #ifndef STRINGPROCESSORPLUGIN_H
 #define STRINGPROCESSORPLUGIN_H
 
-#include "stringprocessor.h"
-#include <QDataStream>
+#include "pluginfactoryinterface.h"
 
-class StringProcessorPlugin : public StringProcessor
+class StringProcessor;
+
+class StringProcessorPlugin : public PluginFactoryInterface<StringProcessor>
 {
-public:
-    virtual QString processString(const QString &string) const = 0;
-    virtual QString toString() const = 0;
-
-protected:
-    virtual void serialize(QDataStream &stream) const = 0;
-    virtual void unserialize(QDataStream &stream) = 0;
-
-    friend QDataStream &operator <<(QDataStream &stream, const StringProcessorPlugin &plugin);
-    friend QDataStream &operator >>(QDataStream &stream, StringProcessorPlugin &plugin);
 
 };
 
-QDataStream &operator <<(QDataStream &stream, const StringProcessorPlugin &plugin);
-QDataStream &operator >>(QDataStream &stream, StringProcessorPlugin &plugin);
 
 Q_DECLARE_INTERFACE(StringProcessorPlugin, "StringProcessorPlugin")
 

@@ -4,9 +4,7 @@
 #include <QString>
 #include <memory>
 #include "type.h"
-#include "pluginwrapper.h"
-
-typedef PluginWrapper<InferenceRule> InferenceRulePlugin;
+#include "inferencerule.h"
 
 using namespace std;
 
@@ -15,32 +13,23 @@ class LogicalSystem
 public:
     LogicalSystem(const QString &name,
                   const QString &description,
-                  QStringList inferenceRulesNamesList,
-                  const QString &signatureName,
+                  const QVector<const InferenceRule *> &inferenceRules,
                   const Type &wffType);
 
-    LogicalSystem(QDataStream &stream);
-
-    void serialize(QDataStream &stream) const;
+    LogicalSystem(QDataStream &stream, const QVector<const InferenceRule *> &inferenceRules);
 
     QString getName() const;
     QString getDescription() const;
-    QVector<InferenceRulePlugin> getInferenceRules() const;
-    QString getSignatureName() const;
+    QVector<shared_ptr<const InferenceRule>> getInferenceRules() const;
     Type getWffType() const;
 
 protected:
-    LogicalSystem();
-
     void setName(const QString &value);
     void setDescription(const QString &value);
 
-    void loadInferenceRuleList(const QStringList &inferenceRulesNamesList);
-
     QString name;
     QString description;
-    QVector<InferenceRulePlugin> inferenceRules;
-    QString signatureName;
+    QVector<shared_ptr<const InferenceRule>> inferenceRules;
     unique_ptr<const Type> wffType;
 
     friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);

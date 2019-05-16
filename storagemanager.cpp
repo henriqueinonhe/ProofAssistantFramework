@@ -4,6 +4,7 @@
 #include "theoryrecord.h"
 #include "proofrecord.h"
 #include "theory.h"
+#include "pluginmanager.h"
 
 QString StorageManager::rootPath = "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox";
 const QString StorageManager::storageFilesSuffix = ".dat";
@@ -131,6 +132,18 @@ QString StorageManager::postProcessorPluginPath(const QString &pluginName)
     return postProcessorsPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
+QStringList StorageManager::convertPluginNamesToPaths(const QStringList &pluginNamesList, QString pluginPathFunction(const QString&))
+{
+    QStringList pathList;
+
+    std::for_each(pluginNamesList.begin(), pluginNamesList.end(), [&pathList, pluginPathFunction](const QString &pluginName)
+    {
+        pathList << pluginPathFunction(pluginName);
+    });
+
+    return pathList;
+}
+
 void StorageManager::accessFile(QFile &file, const QIODevice::OpenModeFlag &openMode)
 {
     if(!file.open(openMode))
@@ -204,7 +217,7 @@ QString StorageManager::logicalSystemsDirPath()
     return storageDirPath() + "/"  + logicalSystemsDirName;
 }
 
-void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
+void StorageManager::createLogicalSystemDir(const LogicalSystem &system, const QStringList inferenceRulesNamesList)
 {
     QDir dir(logicalSystemsDirPath());
     const QString logicalSystemName = system.getName();
@@ -217,6 +230,7 @@ void StorageManager::createLogicalSystemDir(const LogicalSystem &system)
     dir.cd(logicalSystemName);
     mkDir(dir, "Theories");
 
+    storeComponent<QStringList>(logicalSystemDataFilePath(logicalSystemName), inferenceRulesNamesList); //Inference Rules Names MUST be stored first!
     storeComponent<LogicalSystem>(logicalSystemDataFilePath(logicalSystemName), system);
 
     //Theories Directory
@@ -237,9 +251,17 @@ void StorageManager::saveLogicalSystem(const LogicalSystem &system)
     storeComponent<LogicalSystem>(logicalSystemDataFilePath(system.getName()), system);
 }
 
-void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem &loadedSystem)
+void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem *loadedSystem)
 {
-    retrieveComponent(logicalSystemDataFilePath(systemName), loadedSystem);
+    QStringList inferenceRulesNames;
+    retrieveComponent(logicalSystemDataFilePath(systemName), inferenceRulesNames);
+    const QStringList inferenceRulesPaths = convertPluginNamesToPaths(inferenceRulesNames, inferenceRulePluginPath);
+    QVector<const InferenceRule *> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPaths);
+
+    QFile dataFile(logicalSystemDataFilePath(systemName));
+    accessFile(dataFile, QIODevice::ReadOnly);
+    QDataStream stream(&dataFile);
+    loadedSystem = new LogicalSystem(stream, inferenceRules);
 }
 
 QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)
@@ -272,9 +294,23 @@ void StorageManager::saveTheory(Theory &theory)
     storeComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
 }
 
-void StorageManager::loadTheory(const QString &logicalSystemName, const QString &theoryName, Theory &theory)
+void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *theory)
 {
-    //loadComponent(theoryDataFilePath(logicalSystemName, theoryName), theory); FIXME!
+    //Load Signature Plugin
+    const QString logicalSystemName = parentLogic.getName();
+    QString signaturePluginName;
+    retrieveComponent(theoryDataFilePath(logicalSystemName, theoryName), signaturePluginName);
+    const QString signaturePluginPath = StorageManager::signaturePluginPath(signaturePluginName);
+    Signature *signature = PluginManager::fetchPlugin<Signature>(signaturePluginPath);
+
+    //Load Theory
+    QFile dataFile(StorageManager::theoryDataFilePath(logicalSystemName, theoryName));
+    accessFile(dataFile, QIODevice::ReadOnly);
+    QDataStream stream(&dataFile);
+    theory = new Theory(&parentLogic, signature, stream);
+
+    //Load Inference Tactics
+
 }
 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)

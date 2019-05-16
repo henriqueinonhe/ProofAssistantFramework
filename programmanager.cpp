@@ -3,6 +3,7 @@
 #include "theoryrecord.h"
 #include "storagemanager.h"
 #include "theorybuilder.h"
+#include "pluginmanager.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
@@ -28,8 +29,8 @@ bool ProgramManager::checkLogicalSystemNameCollision(const QString &name) const
 void ProgramManager::loadTheory(const QString &name)
 {
     checkActiveLogicalSystem();
-    Theory *theory = new Theory(activeLogicalSystem.get()); //FIXME Use smart ptr!
-    StorageManager::loadTheory(activeLogicalSystem->getName(), name, *theory);
+    Theory *theory;
+    StorageManager::loadTheory(*activeLogicalSystem, name, theory);
     activeTheory.reset(theory);
 }
 
@@ -40,10 +41,12 @@ Theory *ProgramManager::getActiveTheory() const
 
 void ProgramManager::createTheory(const TheoryBuilder &builder) const
 {
+    checkActiveLogicalSystem();
+
     const QString theoryName = builder.getName();
     const QString theoryDescription = builder.getDescription();
 
-    checkActiveLogicalSystem();
+    //Theory Name Collision
     const QString activeLogicalSystemName = activeLogicalSystem->getName();
     if(checkTheoryNameCollision(activeLogicalSystemName, theoryName))
     {
@@ -107,7 +110,6 @@ void ProgramManager::checkActiveTheory() const
 
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
-                                         const QString &signatureName,
                                          const QStringList &inferenceRulesNamesList,
                                          const Type &wffType) const
 {
@@ -117,7 +119,8 @@ void ProgramManager::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    LogicalSystem logicalSystem(name, description, inferenceRulesNamesList, signatureName, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
+    QVector<const InferenceRule *> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesNamesList);//If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
+    LogicalSystem logicalSystem(name, description, inferenceRules, wffType);
 
     //LogicalSystemRecord
     LogicalSystemRecord newSystemRecord(name, description);
@@ -126,8 +129,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //File management
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::createLogicalSystemDir(logicalSystem);
-
+    StorageManager::createLogicalSystemDir(logicalSystem, inferenceRulesNamesList);
 }
 
 QVector<LogicalSystemRecord> ProgramManager::getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const
@@ -180,8 +182,8 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
-    LogicalSystem *system = new LogicalSystem();
-    StorageManager::loadLogicalSystem(name, *system);
+    LogicalSystem *system;
+    StorageManager::loadLogicalSystem(name, system);
     activeLogicalSystem.reset(system);
 }
 
