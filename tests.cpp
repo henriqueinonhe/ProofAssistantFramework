@@ -126,9 +126,8 @@ TEST_CASE("Trees")
 
 TEST_CASE("Logical System")
 {
-    QVector<const InferenceRule *> vec;
-    DummyInferenceRule rule;
-    vec.push_back(&rule);
+    QVector<shared_ptr<const InferenceRule>> vec;
+    vec.push_back(make_shared<DummyInferenceRule>());
 
     LogicalSystem logicalSystem("Dummy Logical System",
                                 "Lorem Ipsum",
@@ -154,8 +153,8 @@ TEST_CASE("Logical System")
 
     CHECK(logicalSystem2.getName() == logicalSystem.getName());
     CHECK(logicalSystem2.getDescription() == logicalSystem.getDescription());
-    CHECK(logicalSystem2.getInferenceRules()[0]->name() == logicalSystem.getInferenceRules()[0]->name());
     CHECK(logicalSystem2.getInferenceRules()[0]->callCommand() == logicalSystem.getInferenceRules()[0]->callCommand());
+    CHECK(logicalSystem2.getInferenceRules()[0]->name() == logicalSystem.getInferenceRules()[0]->name());
     CHECK(logicalSystem2.getWffType() == logicalSystem.getWffType());
 }
 

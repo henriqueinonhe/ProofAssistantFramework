@@ -9,6 +9,8 @@ public:
     virtual QString name() const = 0;
     virtual QString callCommand() const = 0;
 
+    virtual ~InferenceProcedure() = 0;
+
 };
 
 Q_DECLARE_INTERFACE(InferenceProcedure, "InferenceProcedure")

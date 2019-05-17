@@ -93,9 +93,11 @@ unsigned int LineOfProofSection::getBeginIndex() const
 QDataStream &operator <<(QDataStream &stream, const LineOfProofSection &section)
 {
     stream << section.beginIndex << section.endIndex << section.label << section.collapsed;
+    return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, LineOfProofSection &section)
 {
     stream >> section.beginIndex >> section.endIndex >> section.label >> section.collapsed;
+    return stream;
 }

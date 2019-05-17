@@ -4,12 +4,16 @@
 #include "pluginfactoryinterface.h"
 #include <QString>
 #include <QPluginLoader>
+#include <memory>
+
+using namespace std;
 
 class PluginManager
 {
 public:
-    template <class T> static T* fetchPlugin(const QString &pluginPath)
+    template <class T> static shared_ptr<T> fetchPlugin(const QString &pluginPath)
     {
+        //NOTE Maybe I should unload the loader!
         QPluginLoader loader(pluginPath);
         if(!loader.load())
         {
@@ -24,12 +28,12 @@ public:
         return factory->instance();
     }
 
-    template <class T> static QVector<T *> fetchPluginVector(const QStringList &pluginPathList)
+    template <class T> static QVector<shared_ptr<T>> fetchPluginVector(const QStringList &pluginPathList)
     {
-        QVector<T *> vec;
+        QVector<shared_ptr<T>> vec;
         std::for_each(pluginPathList.begin(), pluginPathList.end(), [&vec](const QString &pluginPath)
         {
-            T *ptr = fetchPlugin<T>(pluginPath);
+            shared_ptr<T> ptr = fetchPlugin<T>(pluginPath);
             vec.push_back(ptr);
         });
 

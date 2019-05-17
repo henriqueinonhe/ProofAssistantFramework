@@ -7,6 +7,8 @@ class Signature;
 
 class SignaturePlugin : public PluginFactoryInterface<Signature>
 {
+public:
+    virtual ~SignaturePlugin() = 0;
 };
 
 Q_DECLARE_INTERFACE(SignaturePlugin, "SignaturePlugin")

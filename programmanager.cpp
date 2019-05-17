@@ -29,7 +29,7 @@ bool ProgramManager::checkLogicalSystemNameCollision(const QString &name) const
 void ProgramManager::loadTheory(const QString &name)
 {
     checkActiveLogicalSystem();
-    Theory *theory;
+    Theory *theory = nullptr;
     StorageManager::loadTheory(*activeLogicalSystem, name, theory);
     activeTheory.reset(theory);
 }
@@ -119,7 +119,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    QVector<const InferenceRule *> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesNamesList);//If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
+    QVector<shared_ptr<const InferenceRule>> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesNamesList);//If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
     LogicalSystem logicalSystem(name, description, inferenceRules, wffType);
 
     //LogicalSystemRecord
@@ -182,7 +182,7 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
-    LogicalSystem *system;
+    LogicalSystem *system = nullptr;
     StorageManager::loadLogicalSystem(name, system);
     activeLogicalSystem.reset(system);
 }

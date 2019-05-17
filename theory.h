@@ -16,7 +16,7 @@ class Proof;
 class Theory
 {
 public:
-    Theory(const LogicalSystem *logicalSystem, Signature *signature, QDataStream &stream);
+    Theory(const LogicalSystem *logicalSystem, shared_ptr<Signature> signature, QDataStream &stream);
 
     const LogicalSystem *getParentLogic() const;
 

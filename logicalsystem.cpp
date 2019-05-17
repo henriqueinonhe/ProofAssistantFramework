@@ -2,18 +2,18 @@
 #include "storagemanager.h"
 #include "containerauxiliarytools.h"
 
-LogicalSystem::LogicalSystem(const QString &name, const QString &description, const QVector<const InferenceRule *> &inferenceRules, const Type &wffType) :
+LogicalSystem::LogicalSystem(const QString &name, const QString &description, const QVector<shared_ptr<const InferenceRule>> &inferenceRules, const Type &wffType) :
     name(name),
     description(description),
+    inferenceRules(inferenceRules),
     wffType(new Type(wffType))
 {
-    ContainerAuxiliaryTools::adaptToSmartPointerContainer(inferenceRules, this->inferenceRules);
 }
 
-LogicalSystem::LogicalSystem(QDataStream &stream, const QVector<const InferenceRule *> &inferenceRules)
+LogicalSystem::LogicalSystem(QDataStream &stream, const QVector<shared_ptr<const InferenceRule> > &inferenceRules) :
+    inferenceRules(inferenceRules)
 {
     stream >> *this;
-    ContainerAuxiliaryTools::adaptToSmartPointerContainer(inferenceRules, this->inferenceRules);
 }
 
 QString LogicalSystem::getName() const

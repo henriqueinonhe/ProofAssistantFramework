@@ -6,8 +6,6 @@
 
 class DummyInferenceRule : public InferenceRule
 {
-
-
 public:
     QString name() const
     {
@@ -21,6 +19,11 @@ public:
     // InferenceRule interface
 public:
     LineOfProof apply(const Proof &proof, const QStringList &argumentList) const
+    {
+
+    }
+
+    ~DummyInferenceRule()
     {
 
     }

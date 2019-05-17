@@ -29,7 +29,7 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
     parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
 }
 
-Theory::Theory(const LogicalSystem *parentLogic, Signature *signature, QDataStream &stream) :
+Theory::Theory(const LogicalSystem *parentLogic, shared_ptr<Signature> signature, QDataStream &stream) :
     parentLogic(parentLogic),
     signature(signature)
 {

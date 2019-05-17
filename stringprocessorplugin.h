@@ -7,6 +7,8 @@ class StringProcessor;
 
 class StringProcessorPlugin : public PluginFactoryInterface<StringProcessor>
 {
+public:
+    virtual ~StringProcessorPlugin() = 0;
 
 };
 

@@ -256,7 +256,7 @@ void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem 
     QStringList inferenceRulesNames;
     retrieveComponent(logicalSystemDataFilePath(systemName), inferenceRulesNames);
     const QStringList inferenceRulesPaths = convertPluginNamesToPaths(inferenceRulesNames, inferenceRulePluginPath);
-    QVector<const InferenceRule *> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPaths);
+    QVector<shared_ptr<const InferenceRule>> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPaths);
 
     QFile dataFile(logicalSystemDataFilePath(systemName));
     accessFile(dataFile, QIODevice::ReadOnly);
@@ -301,7 +301,7 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
     QString signaturePluginName;
     retrieveComponent(theoryDataFilePath(logicalSystemName, theoryName), signaturePluginName);
     const QString signaturePluginPath = StorageManager::signaturePluginPath(signaturePluginName);
-    Signature *signature = PluginManager::fetchPlugin<Signature>(signaturePluginPath);
+    shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(signaturePluginPath);
 
     //Load Theory
     QFile dataFile(StorageManager::theoryDataFilePath(logicalSystemName, theoryName));
@@ -316,6 +316,8 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)
 {
     retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+
+    //TODO
 }
 
 void StorageManager::storeProofsRecords(const QString &logicalSystemName, const QString &theoryName, const QVector<ProofRecord> &records)

@@ -7,7 +7,8 @@ class InferenceTactic;
 
 class InferenceTacticPlugin : public PluginFactoryInterface<InferenceTactic>
 {
-
+public:
+    virtual ~InferenceTacticPlugin() = 0;
 };
 
 Q_DECLARE_INTERFACE(InferenceTacticPlugin, "InferenceTacticPluin")

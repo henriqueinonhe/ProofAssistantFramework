@@ -13,10 +13,10 @@ class LogicalSystem
 public:
     LogicalSystem(const QString &name,
                   const QString &description,
-                  const QVector<const InferenceRule *> &inferenceRules,
+                  const QVector<shared_ptr<const InferenceRule>> &inferenceRules,
                   const Type &wffType);
 
-    LogicalSystem(QDataStream &stream, const QVector<const InferenceRule *> &inferenceRules);
+    LogicalSystem(QDataStream &stream, const QVector<shared_ptr<const InferenceRule>> &inferenceRules);
 
     QString getName() const;
     QString getDescription() const;
