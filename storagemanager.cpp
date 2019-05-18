@@ -285,13 +285,15 @@ void StorageManager::storeTheoriesRecords(const QString &logicalSystemName, cons
     storeRecords<TheoryRecord>(records, theoriesRecordsPath(logicalSystemName));
 }
 
-void StorageManager::createTheoryDir(const QString &logicalSystemName, const Theory &theory)
+void StorageManager::createTheoryDir(const QString &logicalSystemName, const Theory &theory, const QString &signatureName)
 {
     const QString theoryName = theory.getName();
     QDir theoriesDir(theoriesDirPath(logicalSystemName));
     mkDir(theoriesDir, theoryName);
 
-    writeComponent<Theory>(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
+    writeComponent(theoryPluginsDataFilePath(logicalSystemName, theory.getName()), signatureName);
+    //FIXME Later (store plugins)
+    writeComponent(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
 }
 
 void StorageManager::deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName)
@@ -305,11 +307,11 @@ void StorageManager::saveTheory(Theory &theory)
     writeComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
 }
 
-void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *theory)
+void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory * &theory)
 {
     //Load Signature Plugin
     const QString logicalSystemName = parentLogic.getName();
-    QString signaturePluginName;
+    const QString signaturePluginName = ; //FIXME
     readComponent(theoryDataFilePath(logicalSystemName, theoryName), signaturePluginName);
     const QString signaturePluginPath = StorageManager::signaturePluginPath(signaturePluginName);
     shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(signaturePluginPath);

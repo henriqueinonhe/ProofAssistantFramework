@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "parsingtree.h"
 #include "storagemanager.h"
+#include "pluginmanager.h"
 
 TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, const shared_ptr<Signature> &signature) :
     name(name),
@@ -12,6 +13,27 @@ TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &na
 {
     checkParentLogicPointer(parentLogic);
     this->parentLogic = parentLogic;
+}
+
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, const QString &signatureName) :
+    name(name),
+    description(description),
+    signatureName(signatureName)
+{
+    checkParentLogicPointer(parentLogic);
+    this->parentLogic = parentLogic;
+    loadSignature(signatureName);
+    parser.reset(new Parser(signature.get(), parentLogic->getWffType()));
+}
+
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &signatureName) :
+    parentLogic(parentLogic),
+    signatureName(signatureName)
+{
+    checkParentLogicPointer(parentLogic);
+    this->parentLogic = parentLogic;
+    loadSignature(signatureName);
+    parser.reset(new Parser(signature.get(), parentLogic->getWffType()));
 }
 
 Theory TheoryBuilder::build() const
@@ -59,6 +81,16 @@ void TheoryBuilder::addAxiom(const QString &axiom)
 void TheoryBuilder::removeAxiom(const QString &axiom)
 {
     //TODO
+}
+
+void TheoryBuilder::loadSignature(const QString &signatureName)
+{
+    signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath(signatureName));
+}
+
+QString TheoryBuilder::getSignatureName() const
+{
+    return signatureName;
 }
 
 void TheoryBuilder::checkParentLogicPointer(const LogicalSystem *parentLogic) const

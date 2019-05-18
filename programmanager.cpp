@@ -14,6 +14,10 @@ ProgramManager::ProgramManager() :
 
 LogicalSystem *ProgramManager::getActiveLogicalSystem() const
 {
+    if(activeLogicalSystem.get() == nullptr)
+    {
+        throw std::runtime_error("There is currently no active logical system!");
+    }
     return activeLogicalSystem.get();
 }
 
@@ -36,6 +40,10 @@ void ProgramManager::loadTheory(const QString &name)
 
 Theory *ProgramManager::getActiveTheory() const
 {
+    if(activeTheory.get() == nullptr)
+    {
+        throw std::runtime_error("There is currently no active theory!");
+    }
     return activeTheory.get();
 }
 
@@ -63,7 +71,7 @@ void ProgramManager::createTheory(const TheoryBuilder &builder) const
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-    StorageManager::createTheoryDir(activeLogicalSystemName, theory);
+    StorageManager::createTheoryDir(activeLogicalSystemName, theory, builder.getSignatureName());
 }
 
 void ProgramManager::removeTheory(const QString &theoryName) const

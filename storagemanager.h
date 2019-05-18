@@ -28,10 +28,10 @@ public:
     //Theory
     static QVector<TheoryRecord> retrieveTheoriesRecords(const QString &logicalSystemName);
     static void storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records);
-    static void createTheoryDir(const QString &logicalSystemName, const Theory &theory);
+    static void createTheoryDir(const QString &logicalSystemName, const Theory &theory, const QString &signatureName);
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
     static void saveTheory(Theory &theory);
-    static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *theory);
+    static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *&theory);
 
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName,

@@ -428,46 +428,51 @@ TEST_CASE("Framework Integration")
         }
     }
 
-//    SECTION("Theory")
-//    {
-//        //Setup
-//        ProgramManager manager;
+    SECTION("Theory")
+    {
+        //Setup
 
-//        QStringList inferenceRulesNamesList;
-//        inferenceRulesNamesList << "LogosClassicAndElimination";
-//        manager.createLogicalSystem("Propositional Logic",
-//                                    "Classical Propositional Logic",
-//                                    "TableSignaturePlugin",
-//                                    inferenceRulesNamesList,
-//                                    Type("o"));
+        QStringList inferenceRulesNamesList;
+        inferenceRulesNamesList << "DummyInferenceRulePlugin";
+        manager.createLogicalSystem("Propositional Logic",
+                                    "Classical Propositional Logic",
+                                    inferenceRulesNamesList,
+                                    Type("o"));
 
-//        manager.loadLogicalSystem("Propositional Logic");
+        manager.loadLogicalSystem("Propositional Logic");
 
-//        CHECK(StorageManager::retrieveTheoriesRecords("Propositional Logic").isEmpty());
+        CHECK(StorageManager::retrieveTheoriesRecords("Propositional Logic").isEmpty());
 
-//        //Create Theory
-//        TheoryBuilder builder(manager.getActiveLogicalSystem());
-//        builder.setName("Graph Theory");
-//        builder.setDescription("Some graph theory.");
-//        builder.getSignature()->addToken(CoreToken("P", Type("o")));
-//        builder.getSignature()->addToken(CoreToken("~", Type("o->o")));
-//        builder.addAxiom("P");
-//        builder.addAxiom("(~ (~ P))");
+        //Create Theory
+        TheoryBuilder builder(manager.getActiveLogicalSystem(), "TableSignaturePlugin");
+        builder.setName("Graph Theory");
+        builder.setDescription("Some graph theory.");
+        builder.getSignature()->addToken(CoreToken("P", Type("o")));
+        builder.getSignature()->addToken(CoreToken("~", Type("o->o")));
+        builder.addAxiom("P");
+        builder.addAxiom("(~ (~ P))");
 
-//        manager.createTheory(builder);
+        manager.createTheory(builder);
 
-//        const TheoryRecord record = StorageManager::retrieveTheoriesRecords("Propositional Logic").first();
-//        CHECK(record.getName() == "Graph Theory");
-//        CHECK(record.getDescription() == "Some graph theory.");
+        const TheoryRecord record = StorageManager::retrieveTheoriesRecords("Propositional Logic").first();
+        CHECK(record.getName() == "Graph Theory");
+        CHECK(record.getDescription() == "Some graph theory.");
 
-//        Theory *theory = manager.getActiveTheory();
-//    }
+        manager.loadTheory("Graph Theory");
+        Theory *theory = manager.getActiveTheory();
+        CHECK(theory->getName() == "Graph Theory");
+        CHECK(theory->getDescription() == "Some graph theory.");
+        CHECK(theory->getAxioms().first().formattedString() == "P");
+        CHECK(theory->getAxioms().last().formattedString() == "(~(~P))");
+        CHECK(theory->getSignature()->getTokenPointer("P")->getString() == "P");
+        CHECK(dynamic_cast<const CoreToken *>(theory->getSignature()->getTokenPointer("P"))->getType() == Type("o"));
+    }
 
 }
 
 TEST_CASE("File System Teardown")
 {
-    QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox").rmdir("data");
+    QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data").removeRecursively();
 }
 
 TEST_CASE("Dirty Fix")
