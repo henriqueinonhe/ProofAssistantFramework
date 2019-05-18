@@ -2,6 +2,7 @@
 #define INFERENCEPROCEDURE_H
 
 #include <QString>
+#include <QtPlugin>
 
 class InferenceProcedure
 {

@@ -4,16 +4,11 @@
 #include "parsingtree.h"
 #include "storagemanager.h"
 
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic)
-{
-    checkParentLogicPointer(parentLogic);
-    this->parentLogic = parentLogic;
-}
-
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, Signature *signature) :
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, const shared_ptr<Signature> &signature) :
     name(name),
     description(description),
-    signature(signature)
+    signature(signature),
+    parser(new Parser(signature.get(), parentLogic->getWffType()))
 {
     checkParentLogicPointer(parentLogic);
     this->parentLogic = parentLogic;
@@ -34,7 +29,7 @@ QString TheoryBuilder::getDescription() const
     return description;
 }
 
-Signature *TheoryBuilder::getSignature()
+shared_ptr<Signature> TheoryBuilder::getSignature()
 {
     return signature;
 }

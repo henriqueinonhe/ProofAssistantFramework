@@ -307,7 +307,7 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
     QFile dataFile(StorageManager::theoryDataFilePath(logicalSystemName, theoryName));
     accessFile(dataFile, QIODevice::ReadOnly);
     QDataStream stream(&dataFile);
-    theory = new Theory(&parentLogic, signature, stream);
+    //theory = new Theory(&parentLogic, signature, stream); FIXME!
 
     //Load Inference Tactics
 

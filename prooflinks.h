@@ -2,6 +2,7 @@
 #define PROOFLINKS_H
 
 class Formula;
+class QDataStream;
 
 using namespace std;
 

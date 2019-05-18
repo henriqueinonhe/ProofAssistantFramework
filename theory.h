@@ -16,13 +16,18 @@ class Proof;
 class Theory
 {
 public:
-    Theory(const LogicalSystem *logicalSystem, shared_ptr<Signature> signature, QDataStream &stream);
+    Theory(const LogicalSystem *logicalSystem,
+           const shared_ptr<Signature> &signature,
+           const QVector<shared_ptr<const InferenceTactic>> &inferenceTactics,
+           const QVector<shared_ptr<StringProcessor>> &preProcessors,
+           const QVector<shared_ptr<StringProcessor>> &postProcessors,
+           QDataStream &stream);
 
     const LogicalSystem *getParentLogic() const;
 
     QString getName() const;
     QString getDescription() const;
-    Signature *getSignature();
+    shared_ptr<Signature> getSignature() const;
     QLinkedList<Formula> getAxioms() const;
 
     QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
@@ -35,8 +40,11 @@ public:
     QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
 
 protected:
-    Theory(const LogicalSystem * const parentLogic);
-    Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, Signature *signature, const QLinkedList<Formula> &axioms);
+    Theory(const LogicalSystem * const parentLogic,
+           const QString &name,
+           const QString &description,
+           const shared_ptr<Signature> &signature,
+           const QLinkedList<Formula> &axioms);
 
     void serializePlugins() const;
 
@@ -51,7 +59,7 @@ protected:
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
-    Formatter preFormatter;
+    Formatter preFormatter; //TODO
     Formatter postFormatter;
 
     friend class ProofAssistant;
@@ -65,7 +73,7 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory);
 QDataStream &operator >>(QDataStream &stream, Theory &theory);
 QDataStream &operator <<(QDataStream &stream, const shared_ptr<Signature> &signature);
 QDataStream &operator >>(QDataStream &stream,  shared_ptr<Signature> &signature);
-QDataStream &operator <<(QDataStream &stream, const shared_ptr<StringProcessor> &processor);
-QDataStream &operator >>(QDataStream &stream, shared_ptr<StringProcessor> &processor);
+QDataStream &operator <<(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
+QDataStream &operator >>(QDataStream &stream, QVector<shared_ptr<StringProcessor>> &processors);
 
 #endif // THEORY_H

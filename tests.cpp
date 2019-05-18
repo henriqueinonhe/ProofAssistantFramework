@@ -15,6 +15,7 @@
 #include "theoryrecord.h"
 #include "dummyclasses.h"
 #include <QBuffer>
+#include "pluginmanager.h"
 
 TEST_CASE("Trees")
 {
@@ -182,72 +183,65 @@ TEST_CASE("Logical System Record")
     CHECK(record2.getDescription() == "Lorem Ipsum");
 }
 
-//TEST_CASE("Theory")
-//{
-//    LogicalSystem logicalSystem("A", "A", QStringList(), "TableSignaturePlugin", Type("o"));
-//    TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum");
+TEST_CASE("Theory")
+{
+    QVector<shared_ptr<const InferenceRule>> vec;
+    vec.push_back(make_shared<const DummyInferenceRule>());
+    LogicalSystem logicalSystem("A", "A", vec, Type("o"));
 
-//    Signature *signature = theoryBuilder.getSignature();
-//    signature->addToken(CoreToken("P", Type("o")));
-//    signature->addToken(CoreToken("~", Type("o->o")));
+    TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum", make_shared<TableSignature>());
 
-//    theoryBuilder.addAxiom("P");
-//    theoryBuilder.addAxiom("(~ P)");
-//    CHECK_THROWS(theoryBuilder.addAxiom("(~ P")); //Testing anti axiom collision
+    shared_ptr<Signature> signature = theoryBuilder.getSignature();
+    signature->addToken(CoreToken("P", Type("o")));
+    signature->addToken(CoreToken("~", Type("o->o")));
 
-//    Theory theory = theoryBuilder.build();
+    theoryBuilder.addAxiom("P");
+    theoryBuilder.addAxiom("(~ P)");
+    CHECK_THROWS(theoryBuilder.addAxiom("(~ P")); //Testing anti axiom collision
 
-//    CHECK_NOTHROW(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
-//    CHECK_THROWS(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
-//    CHECK_NOTHROW(theory.removeInferenceTactic("DummyInferenceTacticPlugin"));
-//    CHECK(theory.getInferenceTactics().isEmpty());
-//    CHECK_THROWS(theory.removeInferenceTactic("DummyInferenceTacticPlugin"));
-//    CHECK_NOTHROW(theory.addInferenceTactic("DummyInferenceTacticPlugin"));
+    Theory theory = theoryBuilder.build();
 
-//    CHECK_NOTHROW(theory.addPreProcessor("DummyPreProcessorPlugin"));
-//    CHECK_THROWS(theory.addPreProcessor("DummyPreProcessorPlugin"));
-//    CHECK_NOTHROW(theory.removePreProcessor("DummyPreProcessorPlugin"));
-//    CHECK(theory.getPreProcessors().isEmpty());
-//    CHECK_THROWS(theory.removePreProcessor("DummyPreProcessorPlugin"));
-//    CHECK_NOTHROW(theory.addPreProcessor("DummyPreProcessorPlugin"));
+    theory.getInferenceTactics().push_back(make_shared<DummyInferenceTactic>());
+    theory.getPreProcessors().push_back(make_shared<DummyPreProcessor>());
+    theory.getPostProcessors().push_back(make_shared<DummyPostProcessor>());
 
-//    CHECK_NOTHROW(theory.addPostProcessor("DummyPostProcessorPlugin"));
-//    CHECK_THROWS(theory.addPostProcessor("DummyPostProcessorPlugin"));
-//    CHECK_NOTHROW(theory.removePostProcessor("DummyPostProcessorPlugin"));
-//    CHECK(theory.getPostProcessors().isEmpty());
-//    CHECK_THROWS(theory.removePostProcessor("DummyPostProcessorPlugin"));
-//    CHECK_NOTHROW(theory.addPostProcessor("DummyPostProcessorPlugin"));
+    CHECK(theory.getName() == "Dummy Theory");
+    CHECK(theory.getDescription() == "Lorem Ipsum");
+    CHECK(theory.getAxioms().first().formattedString() == "P");
+    CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
+    CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Tactic");
+    CHECK(theory.getInferenceTactics()[0]->callCommand() == "Dummy Call Command");
+    CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor");
+    CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor");
 
-//    CHECK(theory.getName() == "Dummy Theory");
-//    CHECK(theory.getDescription() == "Lorem Ipsum");
-//    CHECK(theory.getAxioms().first().formattedString() == "P");
-//    CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
-//    CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
-//    CHECK(theory.getInferenceTactics()[0]->callCommand() == "DM");
-//    CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
-//    CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << theory;
 
-//    //Serialization
-//    QBuffer buffer;
-//    buffer.open(QIODevice::WriteOnly);
-//    QDataStream stream(&buffer);
-//    stream << theory;
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    shared_ptr<TableSignature> signature2 = make_shared<TableSignature>();
+    QVector<shared_ptr<const InferenceTactic>> tactics;
+    QVector<shared_ptr<StringProcessor>> preProcessors;
+    QVector<shared_ptr<StringProcessor>> postProcessors;
+    tactics.push_back(make_shared<DummyInferenceTactic>());
+    preProcessors.push_back(make_shared<DummyPreProcessor>());
+    postProcessors.push_back(make_shared<DummyPostProcessor>());
+    Theory theory2(&logicalSystem, signature2, tactics, preProcessors, postProcessors, stream);
 
-//    buffer.close();
-//    buffer.open(QIODevice::ReadOnly);
-//    Theory theory2(&logicalSystem, stream);
-
-//    CHECK(theory2.getName() == "Dummy Theory");
-//    CHECK(theory2.getDescription() == "Lorem Ipsum");
-//    CHECK(theory2.getAxioms().first().formattedString() == "P");
-//    CHECK(theory2.getAxioms().last().formattedString() == "(~ P)");
-//    CHECK(theory2.getInferenceTactics()[0]->name() == "Dummy Inference Rule");
-//    CHECK(theory2.getInferenceTactics()[0]->callCommand() == "DM");
-//    CHECK(theory2.getPreProcessors()[0]->toString() == "Dummy Pre Processor Plugin");
-//    CHECK(theory2.getPostProcessors()[0]->toString() == "Dummy Post Processor Plugin");
-//    CHECK(*theory2.getSignature()->getTokenPointer("P") == CoreToken("P", Type("o")));
-//    //Maybe I should test the other members as well like the parser
-//}
+    CHECK(theory2.getName() == theory.getName());
+    CHECK(theory2.getDescription() == theory.getDescription());
+    CHECK(theory2.getAxioms().first().formattedString() == theory.getAxioms().first().formattedString());
+    CHECK(theory2.getAxioms().last().formattedString() == theory.getAxioms().last().formattedString());
+    CHECK(theory2.getInferenceTactics()[0]->name() == theory.getInferenceTactics()[0]->name());
+    CHECK(theory2.getInferenceTactics()[0]->callCommand() == theory.getInferenceTactics()[0]->callCommand());
+    CHECK(theory2.getPreProcessors()[0]->toString() == theory.getPreProcessors()[0]->toString());
+    CHECK(theory2.getPostProcessors()[0]->toString() == theory.getPostProcessors()[0]->toString());
+    CHECK(*theory2.getSignature()->getTokenPointer("P") == CoreToken("P", Type("o")));
+    //Maybe I should test the other members as well like the parser
+}
 
 TEST_CASE("Theory Records")
 {
@@ -272,17 +266,6 @@ TEST_CASE("Theory Records")
     CHECK(record2.getName() == record.getName());
     CHECK(record2.getDescription() == record.getDescription());
 }
-
-//TEST_CASE("Plugins")
-//{
-//    //Signature Plugin
-//    QPluginLoader loader("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Signatures/TableSignaturePlugin.dll");
-//    CHECK(loader.load());
-
-//    SignaturePlugin *ptr = qobject_cast<SignaturePlugin *>(loader.instance());
-//    ptr->addToken(CoreToken("Chabaduba", Type("i")));
-//    CHECK(ptr->getTokenPointer("Chabaduba")->tokenClass() == "CoreToken");
-//}
 
 TEST_CASE("Line of Proof Section")
 {
@@ -361,8 +344,15 @@ TEST_CASE("Storage Manager")
     CHECK(StorageManager::postProcessorPluginPath("DummyPostProcessor") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Post Processors/DummyPostProcessor.dll");
 }
 
-//TEST_CASE("Framework Integration")
-//{
+TEST_CASE("Plugins")
+{
+    shared_ptr<const InferenceRule> rule = PluginManager::fetchPlugin<const InferenceRule>(StorageManager::inferenceRulePluginPath("DummyInferenceRulePlugin"));
+    CHECK(rule->name() == "Dummy Inference Rule");
+    CHECK(rule->callCommand() == "Dummy Call Command");
+}
+
+TEST_CASE("Framework Integration")
+{
 //    ProgramManager manager;
 
 //    SECTION("Logical System")
@@ -444,7 +434,7 @@ TEST_CASE("Storage Manager")
 //        Theory *theory = manager.getActiveTheory();
 //    }
 
-//}
+}
 
 TEST_CASE("Dirty Fix")
 {

@@ -1,2 +1,7 @@
-﻿#include "inferencetactic.h"
+#include "inferencetactic.h"
 
+
+InferenceTactic::~InferenceTactic()
+{
+
+}

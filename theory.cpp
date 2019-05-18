@@ -4,10 +4,6 @@
 #include <QDataStream>
 #include "containerauxiliarytools.h"
 
-Theory::Theory(const LogicalSystem * const parentLogic) :
-    parentLogic(parentLogic)
-{
-}
 
 QVector<shared_ptr<StringProcessor> > &Theory::getPostProcessors()
 {
@@ -19,20 +15,24 @@ QVector<shared_ptr<StringProcessor>> &Theory::getPreProcessors()
     return preProcessors;
 }
 
-Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, Signature *signature, const QLinkedList<Formula> &axioms) :
+Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const shared_ptr<Signature> &signature, const QLinkedList<Formula> &axioms) :
     parentLogic(parentLogic),
     name(name),
     description(description),
     signature(signature),
     axioms(axioms)
 {
-    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
+    parser.reset(new Parser(getSignature().get(), parentLogic->getWffType()));
 }
 
-Theory::Theory(const LogicalSystem *parentLogic, shared_ptr<Signature> signature, QDataStream &stream) :
+Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QVector<shared_ptr<const InferenceTactic> > &inferenceTactics, const QVector<shared_ptr<StringProcessor> > &preProcessors, const QVector<shared_ptr<StringProcessor> > &postProcessors, QDataStream &stream) :
     parentLogic(parentLogic),
-    signature(signature)
+    signature(signature),
+    inferenceTactics(inferenceTactics),
+    preProcessors(preProcessors),
+    postProcessors(postProcessors)
 {
+    parser.reset(new Parser(getSignature().get(), parentLogic->getWffType()));
     stream >> *this;
 }
 
@@ -41,9 +41,9 @@ const LogicalSystem *Theory::getParentLogic() const
     return parentLogic;
 }
 
-Signature *Theory::getSignature()
+shared_ptr<Signature> Theory::getSignature() const
 {
-    return signature.get();
+    return signature;
 }
 
 QVector<const Proof *> Theory::findProofsWithConclusion(const QString &formula) const
@@ -144,14 +144,14 @@ QDataStream &operator >>(QDataStream &stream, shared_ptr<Signature> &signature)
     return stream;
 }
 
-QDataStream &operator <<(QDataStream &stream, const shared_ptr<StringProcessor> &processor)
+QDataStream &operator <<(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors)
 {
-    stream << *processor;
+    ContainerAuxiliaryTools::serializeSmartPointerContainer(stream, processors);
     return stream;
 }
 
-QDataStream &operator >>(QDataStream &stream, shared_ptr<StringProcessor> &processor)
+QDataStream &operator >>(QDataStream &stream, QVector<shared_ptr<StringProcessor> > &processors)
 {
-    stream >> *processor;
+    ContainerAuxiliaryTools::unserializeSmartPointerContainer(stream, processors);
     return stream;
 }

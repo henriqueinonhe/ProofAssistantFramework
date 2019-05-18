@@ -2,6 +2,7 @@
 #define PLUGINFACTORYINTERFACE_H
 
 #include <memory>
+#include <QtPlugin>
 
 using namespace std;
 
@@ -16,12 +17,20 @@ class PluginFactoryInterface
 public:
     virtual shared_ptr<T> instance() const = 0;
 
-    virtual ~PluginFactoryInterface() = 0;
+    virtual ~PluginFactoryInterface()
+    {
+
+    }
 };
 
-Q_DECLARE_INTERFACE(PluginFactoryInterface<Signature>, "PluginFactoryInterface<Signature>");
-Q_DECLARE_INTERFACE(PluginFactoryInterface<const InferenceRule>, "PluginFactoryInterface<const InferenceRule>");
-Q_DECLARE_INTERFACE(PluginFactoryInterface<InferenceTactic>, "PluginFactoryInterface<InferenceTactic>");
-Q_DECLARE_INTERFACE(PluginFactoryInterface<StringProcessor>, "PluginFactoryInterface<StringProcessor>");
+typedef PluginFactoryInterface<Signature> SignatureFactoryPlugin;
+typedef PluginFactoryInterface<const InferenceRule> InferenceRuleFactoryPlugin;
+typedef PluginFactoryInterface<InferenceTactic> InferenceTacticFactoryPlugin;
+typedef PluginFactoryInterface<StringProcessor> StringProcessorFactoryPlugin;
+
+Q_DECLARE_INTERFACE(SignatureFactoryPlugin, "SignatureFactoryPlugin")
+Q_DECLARE_INTERFACE(InferenceRuleFactoryPlugin, "PluginFactoryInterface<const InferenceRule>")
+Q_DECLARE_INTERFACE(InferenceTacticFactoryPlugin, "PluginFactoryInterface<InferenceTactic>")
+Q_DECLARE_INTERFACE(StringProcessorFactoryPlugin, "PluginFactoryInterface<StringProcessor>")
 
 #endif // PLUGINFACTORYINTERFACE_H
