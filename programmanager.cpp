@@ -119,7 +119,8 @@ void ProgramManager::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    QVector<shared_ptr<const InferenceRule>> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesNamesList);//If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
+    QStringList inferenceRulesPathList = StorageManager::convertPluginNamesToPaths(inferenceRulesNamesList, StorageManager::inferenceRulePluginPath);
+    QVector<shared_ptr<const InferenceRule>> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPathList);//If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
     LogicalSystem logicalSystem(name, description, inferenceRules, wffType);
 
     //LogicalSystemRecord

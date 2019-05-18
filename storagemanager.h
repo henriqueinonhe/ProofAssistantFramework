@@ -20,10 +20,10 @@ public:
     //Logical System
     static QVector<LogicalSystemRecord> retrieveLogicalSystemsRecords();
     static void storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records);
-    static void createLogicalSystemDir(const LogicalSystem &system, const QStringList inferenceRulesNamesList);
+    static void createLogicalSystemDir(const LogicalSystem &system, const QStringList &inferenceRulesNamesList);
     static void deleteLogicalSystemDir(const QString &systemName);
     static void saveLogicalSystem(const LogicalSystem &system);
-    static void loadLogicalSystem(const QString &systemName, LogicalSystem *loadedSystem);
+    static void loadLogicalSystem(const QString &systemName, LogicalSystem *&loadedSystem);
 
     //Theory
     static QVector<TheoryRecord> retrieveTheoriesRecords(const QString &logicalSystemName);
@@ -55,6 +55,7 @@ public:
     static QString logicalSystemsRecordsPath();
     static QString logicalSystemDirPath(const QString &logicalSystemName);
     static QString logicalSystemDataFilePath(const QString &logicalSystemName);
+    static QString logicalSystemPluginsDataFilePath(const QString &logicalSystemName);
 
     //Theory
     static const QString theoriesDirName;
@@ -64,6 +65,7 @@ public:
     static QString theoriesRecordsPath(const QString &logicalSystemName);
     static QString theoryDirPath(const QString &logicalSystemName, const QString &theoryName);
     static QString theoryDataFilePath(const QString &logicalSystemName, const QString &theoryName);
+    static QString theoryPluginsDataFilePath(const QString &logicalSystemName, const QString &theoryName);
 
     //Proof
     static const QString proofsDirName;
@@ -72,6 +74,7 @@ public:
     static QString proofsRecordsFilePath(const QString &logicalSystemName, const QString &theoryName);
 
     //Plugins
+    static const QString pluginDataFileName;
     static const QString pluginsDirName;
     static const QString inferenceRulesPluginsDirName;
     static const QString signaturePluginsDirName;
@@ -99,7 +102,7 @@ private:
     static QVector<T> retrieveRecords(const QString &recordsFilePath)
     {
         QVector<T> records;
-        retrieveComponent<QVector<T>>(recordsFilePath, records);
+        readComponent<QVector<T>>(recordsFilePath, records);
 
         return records;
     }
@@ -107,11 +110,11 @@ private:
     template<class T>
     static void storeRecords(const QVector<T> &records, const QString &recordsFilePath)
     {
-        storeComponent<QVector<T>>(recordsFilePath, records);
+        writeComponent<QVector<T>>(recordsFilePath, records);
     }
 
     template<class T>
-    static void storeComponent(const QString &dataFilePath, const T &component)
+    static void writeComponent(const QString &dataFilePath, const T &component)
     {
         QFile dataFile(dataFilePath);
         accessFile(dataFile, QIODevice::WriteOnly);
@@ -120,7 +123,16 @@ private:
     }
 
     template<class T>
-    static void retrieveComponent(const QString &dataFilePath, T &component)
+    static void appendComponent(const QString &dataFilePath, const T &component)
+    {
+        QFile dataFile(dataFilePath);
+        accessFile(dataFile, QIODevice::Append);
+        QDataStream stream(&dataFile);
+        stream << component;
+    }
+
+    template<class T>
+    static void readComponent(const QString &dataFilePath, T &component)
     {
         QFile dataFile(dataFilePath);
         accessFile(dataFile, QIODevice::ReadOnly);

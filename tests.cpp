@@ -17,6 +17,16 @@
 #include <QBuffer>
 #include "pluginmanager.h"
 
+TEST_CASE("File System Setup")
+{
+    QDir dir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox");
+    dir.mkdir("data");
+    dir.cd("data");
+    dir.mkdir("Logical Systems");
+    dir.cd("Logical Systems");
+    QFile(dir.path() + "/logicalsystemsrecords.dat").open(QIODevice::WriteOnly);
+}
+
 TEST_CASE("Trees")
 {
     Tree<QString> tree;
@@ -374,51 +384,49 @@ TEST_CASE("Plugins")
 
 TEST_CASE("Framework Integration")
 {
-//    ProgramManager manager;
+    ProgramManager manager;
 
-//    SECTION("Logical System")
-//    {
-//        CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
+    SECTION("Logical System")
+    {
+        CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
 
-//        //Create Logical System
-//        QStringList inferenceRulesNamesList;
-//        inferenceRulesNamesList << "LogosClassicAndElimination";
-//        manager.createLogicalSystem("First Order Logic",
-//                                    "Predicate Logic With Quantifiers",
-//                                    "Table Signature",
-//                                    inferenceRulesNamesList,
-//                                    Type("o"));
+        //Create Logical System
+        QStringList inferenceRulesNamesList;
+        inferenceRulesNamesList << "DummyInferenceRulePlugin";
+        manager.createLogicalSystem("First Order Logic",
+                                    "Predicate Logic With Quantifiers",
+                                    inferenceRulesNamesList,
+                                    Type("o"));
 
-//        const LogicalSystemRecord logicalSystemRecord = StorageManager::retrieveLogicalSystemsRecords().first();
+        const LogicalSystemRecord logicalSystemRecord = StorageManager::retrieveLogicalSystemsRecords().first();
 
-//        CHECK(logicalSystemRecord.getName() == "First Order Logic");
-//        CHECK(logicalSystemRecord.getDescription() == "Predicate Logic With Quantifiers");
+        CHECK(logicalSystemRecord.getName() == "First Order Logic");
+        CHECK(logicalSystemRecord.getDescription() == "Predicate Logic With Quantifiers");
 
-//        //Load Logical System
-//        manager.loadLogicalSystem("First Order Logic");
-//        LogicalSystem *ptr = manager.getActiveLogicalSystem();
+        //Load Logical System
+        manager.loadLogicalSystem("First Order Logic");
+        LogicalSystem *ptr = manager.getActiveLogicalSystem();
 
-//        CHECK(ptr->getName() == "First Order Logic");
-//        CHECK(ptr->getDescription() == "Predicate Logic With Quantifiers");
-//        CHECK(ptr->getSignatureName() == "Table Signature");
-//        CHECK(ptr->getInferenceRules()[0]->name() == "And Elimination");
-//        CHECK(ptr->getInferenceRules()[0]->callCommand() == "AndE");
-//        CHECK(ptr->getWffType() == Type("o"));
+        CHECK(ptr->getName() == "First Order Logic");
+        CHECK(ptr->getDescription() == "Predicate Logic With Quantifiers");
+        CHECK(ptr->getInferenceRules()[0]->name() == "Dummy Inference Rule");
+        CHECK(ptr->getInferenceRules()[0]->callCommand() == "Dummy Call Command");
+        CHECK(ptr->getWffType() == Type("o"));
 
-//        //Remove Logical System
-//        manager.removeLogicalSystem("First Order Logic");
+        //Remove Logical System
+        manager.removeLogicalSystem("First Order Logic");
 
-//        CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
-//        CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/Logical Systems/First Order Logic").exists());
+        CHECK(StorageManager::retrieveLogicalSystemsRecords().isEmpty());
+        CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/Logical Systems/First Order Logic").exists());
 
-//        SECTION("Failing to Create Logical System")
-//        {
-//            QStringList inferenceList;
-//            inferenceList << "YadayadaRule";
-//            CHECK_THROWS_WITH(LogicalSystem("Name", "Description", inferenceList, "Signature", Type("o")), "Couldn't load plugin named \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\".");
-//            CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
-//        }
-//    }
+        SECTION("Failing to Create Logical System")
+        {
+            QStringList inferenceList;
+            inferenceList << "YadayadaRule";
+            CHECK_THROWS_WITH(manager.createLogicalSystem("Name", "Description", inferenceList, Type("o")), "The plugin at \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\" couldn't be loaded!");
+            CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
+        }
+    }
 
 //    SECTION("Theory")
 //    {
@@ -455,6 +463,11 @@ TEST_CASE("Framework Integration")
 //        Theory *theory = manager.getActiveTheory();
 //    }
 
+}
+
+TEST_CASE("File System Teardown")
+{
+    QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox").rmdir("data");
 }
 
 TEST_CASE("Dirty Fix")
