@@ -346,9 +346,30 @@ TEST_CASE("Storage Manager")
 
 TEST_CASE("Plugins")
 {
+    //Inference Rule
     shared_ptr<const InferenceRule> rule = PluginManager::fetchPlugin<const InferenceRule>(StorageManager::inferenceRulePluginPath("DummyInferenceRulePlugin"));
     CHECK(rule->name() == "Dummy Inference Rule");
     CHECK(rule->callCommand() == "Dummy Call Command");
+
+    //Signature
+    shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("TableSignaturePlugin"));
+    CHECK_NOTHROW(signature->addToken(CoreToken("P", Type("o"))));
+    CHECK_THROWS(signature->addToken(CoreToken("P", Type("o"))));
+    CHECK(signature->getTokenPointer("P")->getString() == "P");
+    CHECK(dynamic_cast<const CoreToken *>(signature->getTokenPointer("P"))->getType() == Type("o"));
+
+    //Inference Tactic
+    shared_ptr<InferenceTactic> tactic = PluginManager::fetchPlugin<InferenceTactic>(StorageManager::inferenceTacticPluginPath("DummyInferenceTactic"));
+    CHECK(tactic->name() == "Dummy Inference Tactic");
+    CHECK(tactic->callCommand() == "Dummy Call Command");
+
+    //Pre Processor
+    shared_ptr<StringProcessor> preProcessor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::preProcessorPluginPath("DummyPreProcessorPlugin"));
+    CHECK(preProcessor->toString() == "Dummy Pre Processor");
+
+    //Post Processor
+    shared_ptr<StringProcessor> postProcessor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::postProcessorPluginPath("DummyPostProcessorPlugin"));
+    CHECK(postProcessor->toString() == "Dummy Post Processor");
 }
 
 TEST_CASE("Framework Integration")
