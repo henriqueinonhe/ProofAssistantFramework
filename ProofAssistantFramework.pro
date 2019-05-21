@@ -67,6 +67,7 @@ SOURCES += main.cpp \
     logicalsystemrecord.cpp \
     programmanager.cpp \
     theorybuilder.cpp \
+    theorypluginsrecord.cpp \
     theoryrecord.cpp \
     logosprogrammanager.cpp \
     ../Language/Parser/parsingtreeconstiterator.cpp \
@@ -136,6 +137,7 @@ HEADERS += \
     prooflinks.h \
     inferencerule.h \
     theorybuilder.h \
+    theorypluginsrecord.h \
     tree.h \
     proofassistant.h \
     justification.h \

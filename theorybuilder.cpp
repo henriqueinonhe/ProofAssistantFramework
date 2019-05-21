@@ -15,24 +15,12 @@ TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &na
     this->parentLogic = parentLogic;
 }
 
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, const QString &signatureName) :
-    name(name),
-    description(description),
-    signatureName(signatureName)
-{
-    checkParentLogicPointer(parentLogic);
-    this->parentLogic = parentLogic;
-    loadSignature(signatureName);
-    parser.reset(new Parser(signature.get(), parentLogic->getWffType()));
-}
-
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &signatureName) :
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature) :
     parentLogic(parentLogic),
-    signatureName(signatureName)
+    signature(signature)
 {
     checkParentLogicPointer(parentLogic);
     this->parentLogic = parentLogic;
-    loadSignature(signatureName);
     parser.reset(new Parser(signature.get(), parentLogic->getWffType()));
 }
 
@@ -86,11 +74,6 @@ void TheoryBuilder::removeAxiom(const QString &axiom)
 void TheoryBuilder::loadSignature(const QString &signatureName)
 {
     signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath(signatureName));
-}
-
-QString TheoryBuilder::getSignatureName() const
-{
-    return signatureName;
 }
 
 void TheoryBuilder::checkParentLogicPointer(const LogicalSystem *parentLogic) const

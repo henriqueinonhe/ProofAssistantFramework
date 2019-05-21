@@ -369,7 +369,7 @@ TEST_CASE("Plugins")
     CHECK(dynamic_cast<const CoreToken *>(signature->getTokenPointer("P"))->getType() == Type("o"));
 
     //Inference Tactic
-    shared_ptr<InferenceTactic> tactic = PluginManager::fetchPlugin<InferenceTactic>(StorageManager::inferenceTacticPluginPath("DummyInferenceTactic"));
+    shared_ptr<const InferenceTactic> tactic = PluginManager::fetchPlugin<const InferenceTactic>(StorageManager::inferenceTacticPluginPath("DummyInferenceTactic"));
     CHECK(tactic->name() == "Dummy Inference Tactic");
     CHECK(tactic->callCommand() == "Dummy Call Command");
 
@@ -444,7 +444,8 @@ TEST_CASE("Framework Integration")
         CHECK(StorageManager::retrieveTheoriesRecords("Propositional Logic").isEmpty());
 
         //Create Theory
-        TheoryBuilder builder(manager.getActiveLogicalSystem(), "TableSignaturePlugin");
+        shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("TableSignaturePlugin"));
+        TheoryBuilder builder(manager.getActiveLogicalSystem(), signature);
         builder.setName("Graph Theory");
         builder.setDescription("Some graph theory.");
         builder.getSignature()->addToken(CoreToken("P", Type("o")));
@@ -452,7 +453,7 @@ TEST_CASE("Framework Integration")
         builder.addAxiom("P");
         builder.addAxiom("(~ (~ P))");
 
-        manager.createTheory(builder);
+        manager.createTheory(builder, TheoryPluginsRecord("TableSignaturePlugin"));
 
         const TheoryRecord record = StorageManager::retrieveTheoriesRecords("Propositional Logic").first();
         CHECK(record.getName() == "Graph Theory");
@@ -463,7 +464,7 @@ TEST_CASE("Framework Integration")
         CHECK(theory->getName() == "Graph Theory");
         CHECK(theory->getDescription() == "Some graph theory.");
         CHECK(theory->getAxioms().first().formattedString() == "P");
-        CHECK(theory->getAxioms().last().formattedString() == "(~(~P))");
+        CHECK(theory->getAxioms().last().formattedString() == "(~ (~ P))");
         CHECK(theory->getSignature()->getTokenPointer("P")->getString() == "P");
         CHECK(dynamic_cast<const CoreToken *>(theory->getSignature()->getTokenPointer("P"))->getType() == Type("o"));
     }

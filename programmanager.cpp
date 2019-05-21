@@ -47,8 +47,9 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
-void ProgramManager::createTheory(const TheoryBuilder &builder) const
+void ProgramManager::createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const
 {
+    //NOTE Maybe we should check signature compliance here
     checkActiveLogicalSystem();
 
     const QString theoryName = builder.getName();
@@ -71,7 +72,7 @@ void ProgramManager::createTheory(const TheoryBuilder &builder) const
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-    StorageManager::createTheoryDir(activeLogicalSystemName, theory, builder.getSignatureName());
+    StorageManager::createTheoryDir(activeLogicalSystemName, theory, pluginsRecord);
 }
 
 void ProgramManager::removeTheory(const QString &theoryName) const
@@ -195,18 +196,5 @@ void ProgramManager::loadLogicalSystem(const QString &name)
     StorageManager::loadLogicalSystem(name, system);
     activeLogicalSystem.reset(system);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

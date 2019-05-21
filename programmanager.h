@@ -4,6 +4,7 @@
 #include <memory>
 #include "theory.h"
 #include "logicalsystem.h"
+#include "theorypluginsrecord.h"
 
 class LogicalSystem;
 class Type;
@@ -31,7 +32,7 @@ public:
     //TODO Edit Logical System
 
     //Theory
-    void createTheory(const TheoryBuilder &builder) const;
+    void createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const;
     void loadTheory(const QString &name);
     void removeTheory(const QString &theoryName) const;
     bool checkTheoryNameCollision(const QString &logicalSystemName, const QString &name) const;
@@ -40,6 +41,8 @@ public:
 
     //Proof
     //void createProof(const QString &string);
+
+
 
 private:
     void checkActiveLogicalSystem() const;
@@ -50,6 +53,9 @@ private:
 
     unique_ptr<LogicalSystem> activeLogicalSystem;
     unique_ptr<Theory> activeTheory;
+    TheoryPluginsRecord theoryPluginsRecord;
 };
+
+
 
 #endif // PROGRAMMANAGER_H

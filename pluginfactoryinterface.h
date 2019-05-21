@@ -25,12 +25,12 @@ public:
 
 typedef PluginFactoryInterface<Signature> SignatureFactoryPlugin;
 typedef PluginFactoryInterface<const InferenceRule> InferenceRuleFactoryPlugin;
-typedef PluginFactoryInterface<InferenceTactic> InferenceTacticFactoryPlugin;
+typedef PluginFactoryInterface<const InferenceTactic> InferenceTacticFactoryPlugin;
 typedef PluginFactoryInterface<StringProcessor> StringProcessorFactoryPlugin;
 
 Q_DECLARE_INTERFACE(SignatureFactoryPlugin, "SignatureFactoryPlugin")
 Q_DECLARE_INTERFACE(InferenceRuleFactoryPlugin, "PluginFactoryInterface<const InferenceRule>")
-Q_DECLARE_INTERFACE(InferenceTacticFactoryPlugin, "PluginFactoryInterface<InferenceTactic>")
+Q_DECLARE_INTERFACE(InferenceTacticFactoryPlugin, "PluginFactoryInterface<const InferenceTactic>")
 Q_DECLARE_INTERFACE(StringProcessorFactoryPlugin, "PluginFactoryInterface<StringProcessor>")
 
 #endif // PLUGINFACTORYINTERFACE_H
