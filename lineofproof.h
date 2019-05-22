@@ -14,8 +14,9 @@ using namespace std;
 class LineOfProof
 {
 public:
-    LineOfProof(QDataStream &stream, const Signature * const signature);
     LineOfProof(const Formula &formula, const Justification &justification, const QString &comment = "");
+    LineOfProof(QDataStream &stream, const Signature * const signature);
+    static QVector<LineOfProof> unserializeVector(QDataStream &stream, const Signature * const signature);
 
     bool operator==(const LineOfProof &other) const;
     bool operator!=(const LineOfProof &other) const;

@@ -416,7 +416,14 @@ TEST_CASE("Proofs")
     buffer.close();
 
     buffer.open(QIODevice::ReadOnly);
-    //TODO
+    Proof proof2(stream, &signature);
+    CHECK(proof2.getId() == proof.getId());
+    CHECK(proof2.getName() == proof.getName());
+    CHECK(proof2.getPremises() == proof.getPremises());
+    CHECK(proof2.getConclusion() == proof.getConclusion());
+    CHECK(proof2.getLinesOfProof() == proof.getLinesOfProof());
+    CHECK(proof2.getLinkedWithAxioms() == proof.getLinkedWithAxioms());
+    CHECK(proof2.isFinished() == proof.isFinished());
 }
 
 

@@ -7,10 +7,12 @@
 
 class Formula;
 class ProofAssistant;
+class QDataStream;
 
 class Proof
 {
 public:
+    Proof(QDataStream &stream, const Signature * const signature);
     Proof(const uint id,
           const QString &name,
           const QString &description,
@@ -48,10 +50,8 @@ private:
 
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);
-    friend QDataStream &operator >>(QDataStream &stream, Proof &proof);
 };
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof);
-QDataStream &operator >>(QDataStream &stream, Proof &proof);
 
 #endif // PROOF_H

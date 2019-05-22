@@ -3,6 +3,18 @@
 #include "formula.h"
 
 
+Proof::Proof(QDataStream &stream, const Signature * const signature) :
+    premises(Formula::unserializeVector(stream, signature)),
+    conclusion(stream, signature),
+    linesOfProof(LineOfProof::unserializeVector(stream, signature))
+{
+    stream >> id
+           >> name
+           >> description
+           >> sectioning
+           >> linkedWithAxioms;
+}
+
 Proof::Proof(const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) :
     id(id),
     name(name),
@@ -83,10 +95,14 @@ void Proof::setDescription(const QString &value)
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof)
 {
-    stream << proof.id << proof.name << proof.description << proof.premises << proof.conclusion << proof.linesOfProof << proof.sectioning << proof.linkedWithAxioms;
+    stream << proof.premises
+           << proof.conclusion
+           << proof.linesOfProof
+           << proof.id
+           << proof.name
+           << proof.description
+           << proof.sectioning
+           << proof.linkedWithAxioms;
+    return stream;
 }
 
-QDataStream &operator >>(QDataStream &stream, Proof &proof)
-{
-
-}

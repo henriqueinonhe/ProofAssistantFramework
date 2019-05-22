@@ -8,6 +8,19 @@ LineOfProof::LineOfProof(QDataStream &stream, const Signature * const signature)
     stream >> justification >> comment;
 }
 
+QVector<LineOfProof> LineOfProof::unserializeVector(QDataStream &stream, const Signature * const signature)
+{
+    int size;
+    stream >> size;
+
+    QVector<LineOfProof> vec;
+    for(int index = 0; index < size; index++)
+    {
+        vec.push_back(LineOfProof(stream, signature));
+    }
+    return vec;
+}
+
 LineOfProof::LineOfProof(const Formula &formula, const Justification &justification, const QString &comment) :
     formula(formula),
     justification(justification),
