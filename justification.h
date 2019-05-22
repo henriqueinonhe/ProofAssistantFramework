@@ -7,19 +7,23 @@
 class Justification
 {
 public:
-    Justification();
+    Justification(QDataStream &stream);
     Justification(const QString &inferenceRuleCallCommand, const QStringList &argumentList);
 
+    bool operator==(const Justification &other) const;
+    bool operator!=(const Justification &other) const;
+
     QString getInferenceRuleCallCommand() const;
-    void setInferenceRuleCallCommand(const QString &value);
 
     QStringList getArgumentList() const;
-    void setArgumentList(const QStringList &value);
 
 private:
+    Justification();
+
     QString inferenceRuleCallCommand;
     QStringList argumentList;
 
+    friend class LineOfProof;
     friend QDataStream &operator <<(QDataStream &stream, const Justification &justification);
     friend QDataStream &operator >>(QDataStream &stream, Justification &justification);
 };

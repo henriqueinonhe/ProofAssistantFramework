@@ -1,30 +1,38 @@
 #ifndef PROOFLINKS_H
 #define PROOFLINKS_H
 
-class Formula;
+#include <QString>
+#include <QVector>
+
 class QDataStream;
-
-using namespace std;
-
-class Proof;
+class ProofRecord;
 
 class ProofLinks
 {
 public:
-    //ProofLinks(const Formula &formula, const QVector<unsigned int> linkedProofsIds);
+    ProofLinks(QDataStream &stream);
+    ProofLinks(const QString &formula, const QVector<unsigned int> linkedProofsIds);
 
-    Formula getFormula() const;
+    QString getFormula() const;
+    QVector<unsigned int> getLinkedProofsIds() const;
+
+    bool operator==(const ProofLinks &other) const;
+    bool operator!=(const ProofLinks &other) const;
 
 private:
-//    Formula formula;
-//    QVector<unsigned int> linkedProofsIds;
+    ProofLinks();
 
+    QString formula;
+    QVector<unsigned int> linkedProofsIds;
+
+    friend class ProofRecord;
+    friend class QVector<ProofLinks>;
     friend QDataStream &operator <<(QDataStream &stream, const ProofLinks &links);
     friend QDataStream &operator >>(QDataStream &stream, ProofLinks &links);
 };
 
 QDataStream &operator <<(QDataStream &stream, const ProofLinks &links);
 QDataStream &operator >>(QDataStream &stream, ProofLinks &links);
-
+QDataStream &operator >>(QDataStream &stream, QVector<ProofLinks> &vec);
 
 #endif // PROOFLINKS_H

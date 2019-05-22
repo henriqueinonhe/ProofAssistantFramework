@@ -16,6 +16,10 @@
 #include "dummyclasses.h"
 #include <QBuffer>
 #include "pluginmanager.h"
+#include "prooflinks.h"
+#include "proofrecord.h"
+#include "proof.h"
+#include "justification.h"
 
 TEST_CASE("File System Setup")
 {
@@ -277,6 +281,145 @@ TEST_CASE("Theory Records")
     CHECK(record2.getDescription() == record.getDescription());
 }
 
+TEST_CASE("Proof Links")
+{
+    QVector<unsigned int> vec{0,1,2,3};
+    ProofLinks link("(v P (~ P))", vec);
+    CHECK(link.getFormula() == "(v P (~ P))");
+    CHECK(link.getLinkedProofsIds() == vec);
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << link;
+    buffer.close();
+
+    buffer.open(QIODevice::ReadOnly);
+    ProofLinks link2(stream);
+    CHECK(link2.getFormula() == link.getFormula());
+    CHECK(link2.getLinkedProofsIds() == link.getLinkedProofsIds());
+}
+
+TEST_CASE("Proof Records")
+{
+    ProofLinks premise1("A", QVector<uint>{0}), premise2("(-> A B)", QVector<uint>());
+    ProofLinks conclusion ("B", QVector<uint>{3});
+    QVector<ProofLinks> premises;
+    premises.push_back(premise1);
+    premises.push_back(premise2);
+    ProofRecord record("Dummy Proof", "Lorem Ipsum", premises, conclusion);
+
+    CHECK(record.getName() == "Dummy Proof");
+    CHECK(record.getDescription() == "Lorem Ipsum");
+    CHECK(record.getPremisesLinks() == premises);
+    CHECK(record.getConclusionLinks() == conclusion);
+    CHECK(record.getProofIsDone() == false);
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << record;
+    buffer.close();
+
+    buffer.open(QIODevice::ReadOnly);
+    ProofRecord record2(stream);
+    CHECK(record2.getName() == record.getName());
+    CHECK(record2.getDescription() == record.getDescription());
+    CHECK(record2.getPremisesLinks() == record.getPremisesLinks());
+    CHECK(record2.getConclusionLinks() == record.getConclusionLinks());
+    CHECK(record2.getProofIsDone() == record.getProofIsDone());
+}
+
+TEST_CASE("Justification")
+{
+    Justification justification("Dummy Call Command", QStringList{"Dummy Arg1", "Dummy Arg2"});
+    CHECK(justification.getInferenceRuleCallCommand() == "Dummy Call Command");
+    CHECK(justification.getArgumentList() == QStringList{"Dummy Arg1", "Dummy Arg2"});
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << justification;
+    buffer.close();
+
+    buffer.open(QIODevice::ReadOnly);
+    Justification justification2(stream);
+    CHECK(justification2.getInferenceRuleCallCommand() == justification.getInferenceRuleCallCommand());
+    CHECK(justification2.getArgumentList() == justification.getArgumentList());
+    CHECK(justification2 == justification);
+}
+
+TEST_CASE("Line of Proof")
+{
+    TableSignature signature;
+    signature.addToken(CoreToken("P", Type("o")));
+    signature.addToken(CoreToken("->", Type("[o,o]->o")));
+    Parser parser(&signature, Type("o"));
+    Formula formula(parser.parse("(-> P P)"));
+    Justification justification("Dummy Call Command", QStringList({"Dummy Arg1, Dummy Arg2"}));
+
+    LineOfProof lineOfProof(formula, justification, "Dummy Comment");
+    CHECK(lineOfProof.getFormula() == formula);
+    CHECK(lineOfProof.getJustification() == justification);
+    CHECK(lineOfProof.getComment() == "Dummy Comment");
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << lineOfProof;
+    buffer.close();
+
+    buffer.open(QIODevice::ReadOnly);
+    LineOfProof lineOfProof2(stream, &signature);
+    CHECK(lineOfProof2.getFormula() == lineOfProof.getFormula());
+    CHECK(lineOfProof2.getJustification() == lineOfProof.getJustification());
+    CHECK(lineOfProof2.getComment() == lineOfProof.getComment());
+}
+
+
+TEST_CASE("Proofs")
+{
+    TableSignature signature;
+    signature.addToken(CoreToken("P", Type("o")));
+    signature.addToken(CoreToken("->", Type("[o,o]->o")));
+    Parser parser(&signature, Type("o"));
+    Formula premiss1(parser.parse("P"));
+    Formula premiss2(parser.parse("(-> P P)"));
+    Formula conclusion(parser.parse("P"));
+    QVector<Formula> premises;
+    premises.push_back(premiss1);
+    premises.push_back(premiss2);
+
+    Proof proof(0, "Dummy Proof", "Lorem Ipsum", premises, conclusion);
+    CHECK(proof.getId() == 0);
+    CHECK(proof.getName() == "Dummy Proof");
+    CHECK(proof.getDescription() == "Lorem Ipsum");
+    CHECK(proof.getPremises() == premises);
+    CHECK(proof.getConclusion() == conclusion);
+    CHECK(proof.getLinkedWithAxioms() == false);
+    CHECK(proof.isFinished() == false);
+
+    LineOfProof lineOfProof(premiss1, Justification("Dummy Call Command", QStringList({"Arg1"})), "Dummy Comment");
+    proof.addLineOfProof(lineOfProof);
+    CHECK(proof.getLinesOfProof().first() == lineOfProof);
+    CHECK(proof.isFinished() == true);
+
+    //Serialization
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    QDataStream stream(&buffer);
+    stream << proof;
+    buffer.close();
+
+    buffer.open(QIODevice::ReadOnly);
+    //TODO
+}
+
+
 TEST_CASE("Line of Proof Section")
 {
     LineOfProofSection section1(4, 12, ""), section2(2, 14, ""), section3(3, 11, "");
@@ -467,6 +610,20 @@ TEST_CASE("Framework Integration")
         CHECK(theory->getAxioms().last().formattedString() == "(~ (~ P))");
         CHECK(theory->getSignature()->getTokenPointer("P")->getString() == "P");
         CHECK(dynamic_cast<const CoreToken *>(theory->getSignature()->getTokenPointer("P"))->getType() == Type("o"));
+
+        //Repeating load theory
+        manager.loadTheory("Graph Theory");
+        theory = manager.getActiveTheory();
+        CHECK(theory->getName() == "Graph Theory");
+        CHECK(theory->getDescription() == "Some graph theory.");
+        CHECK(theory->getAxioms().first().formattedString() == "P");
+        CHECK(theory->getAxioms().last().formattedString() == "(~ (~ P))");
+        CHECK(theory->getSignature()->getTokenPointer("P")->getString() == "P");
+        CHECK(dynamic_cast<const CoreToken *>(theory->getSignature()->getTokenPointer("P"))->getType() == Type("o"));
+
+        CHECK_THROWS(manager.removeTheory("Some Theory"));
+        CHECK_NOTHROW(manager.removeTheory("Graph Theory"));
+        CHECK(!QDir(StorageManager::theoryDirPath("Propositional Logic", "Graph Theory")).exists());
     }
 
 }

@@ -1,4 +1,4 @@
-﻿#ifndef PROOFASSISTANT_H
+#ifndef PROOFASSISTANT_H
 #define PROOFASSISTANT_H
 
 #include "logicalsystem.h"
@@ -13,7 +13,6 @@ class ProofAssistant
 public:
     ProofAssistant();
 
-    void createProof();
     void setProofName(const QString &name);
     void addPremise(const QString &premise);
     //TODO removePremise();

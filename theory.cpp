@@ -113,7 +113,7 @@ QDataStream &operator >>(QDataStream &stream, Theory &theory)
     stream >> theory.name
            >> theory.description
            >> theory.signature;
-    theory.axioms = Formula::unserializeList(stream, theory.signature.get()); //refactor this guy! (clean up)
+    theory.axioms = Formula::unserializeList(stream, theory.signature.get());
     stream >> theory.preProcessors
            >> theory.postProcessors
            >> theory.preFormatter

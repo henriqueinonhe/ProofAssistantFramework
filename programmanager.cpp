@@ -84,6 +84,8 @@ void ProgramManager::removeTheory(const QString &theoryName) const
         QString errorMsg;
         errorMsg += "There is no theory named: \"";
         errorMsg += theoryName + "\".";
+
+        throw std::invalid_argument(errorMsg.toStdString());
     }
 
     QVector<TheoryRecord> newRecords = getTheoryRecordsWithoutRemovedRecord(logicalSystemName, theoryName);

@@ -2,37 +2,32 @@
 #include <QDataStream>
 #include "formula.h"
 
-Proof::Proof() :
-    linkedWithAxioms(true) //Empty premises are valid formulas and thus linked with axioms!
+
+Proof::Proof(const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) :
+    id(id),
+    name(name),
+    description(description),
+    premises(premises),
+    conclusion(conclusion),
+    linkedWithAxioms(false)
 {
 
-}
-
-QVector<ProofLinks> Proof::getPremisesLinks() const
-{
-    return premisesLinks;
-}
-
-ProofLinks Proof::getConclusionLinks() const
-{
-    return conclusionLinks;
 }
 
 bool Proof::isFinished() const
 {
-//    if(linesOfProof.isEmpty())
-//    {
-//        return false;
-//    }
-//    else
-//    {
-//        const Formula &conclusionFormula = *conclusionLinks.getFormulaPtr();
-//        const Formula lastLineOfProofFormula = linesOfProof.last()->getFormula();
+    if(linesOfProof.isEmpty())
+    {
+        return false;
+    }
+    else
+    {
+        const Formula lastLineOfProofFormula = linesOfProof.last().getFormula();
 
-//        return conclusionFormula == lastLineOfProofFormula;
-//    }
+        return conclusion == lastLineOfProofFormula;
+    }
 
-    //FIXME!
+    //NOTE Not sure if it is done
 }
 
 QString Proof::getName() const
@@ -47,33 +42,51 @@ void Proof::setName(const QString &value)
 
 QVector<Formula> Proof::getPremises() const
 {
-    QVector<Formula> premises;
-
-    std::for_each(premisesLinks.begin(), premisesLinks.end(), [&premises](const ProofLinks &links)
-    {
-       // premises.push_back(links.getFormula());
-    });
-
     return premises;
 }
 
 Formula Proof::getConclusion() const
 {
-    //return conclusionLinks.getFormula();
+    return conclusion;
+}
+
+bool Proof::getLinkedWithAxioms() const
+{
+    return linkedWithAxioms;
+}
+
+unsigned int Proof::getId() const
+{
+    return id;
+}
+
+void Proof::addLineOfProof(const LineOfProof &lineOfProof)
+{
+    linesOfProof.push_back(lineOfProof);
+}
+
+QVector<LineOfProof> Proof::getLinesOfProof() const
+{
+    return linesOfProof;
+}
+
+QString Proof::getDescription() const
+{
+    return description;
+}
+
+void Proof::setDescription(const QString &value)
+{
+    description = value;
 }
 
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof)
 {
-    //FIXME!
-//    stream << proof.id << proof.name << proof.description /*<< proof.premisesLinks << proof.conclusionLinks */ << proof.linesOfProof << proof.sectioning << proof.linkedWithAxioms;
-//    return stream;
+    stream << proof.id << proof.name << proof.description << proof.premises << proof.conclusion << proof.linesOfProof << proof.sectioning << proof.linkedWithAxioms;
 }
 
 QDataStream &operator >>(QDataStream &stream, Proof &proof)
 {
 
-    //FIXME!
-//    stream >> proof.id >> proof.name >> proof.description /*>> proof.premisesLinks >> proof.conclusionLinks*/ >> proof.linesOfProof >> proof.sectioning >> proof.linkedWithAxioms;
-//    return stream;
 }

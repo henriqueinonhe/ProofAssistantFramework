@@ -2,17 +2,30 @@
 #include "formula.h"
 #include <QDataStream>
 
-LineOfProof::LineOfProof()
+LineOfProof::LineOfProof(QDataStream &stream, const Signature * const signature) :
+    formula(stream, signature) //There might be an issue here, not sure...
 {
-
+    stream >> justification >> comment;
 }
 
 LineOfProof::LineOfProof(const Formula &formula, const Justification &justification, const QString &comment) :
-    formula(new Formula(formula)),
+    formula(formula),
     justification(justification),
     comment(comment)
 {
 
+}
+
+bool LineOfProof::operator==(const LineOfProof &other) const
+{
+    return this->formula == other.formula &&
+           this->justification == other.justification &&
+           this->comment == other.comment;
+}
+
+bool LineOfProof::operator!=(const LineOfProof &other) const
+{
+    return !(*this == other);
 }
 
 QString LineOfProof::getComment() const
@@ -25,32 +38,31 @@ void LineOfProof::setComment(const QString &value)
     comment = value;
 }
 
+LineOfProof::LineOfProof()
+{
+
+}
+
 Justification LineOfProof::getJustification() const
 {
     return justification;
 }
 
-void LineOfProof::setJustification(const Justification &value)
-{
-    justification = value;
-}
-
 Formula LineOfProof::getFormula() const
 {
-    return *formula;
-}
-
-void LineOfProof::setFormula(const Formula &formula)
-{
-    this->formula.reset(new Formula(formula));
+    return formula;
 }
 
 QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof)
 {
-    stream << *lineOfProof.formula << lineOfProof.justification << lineOfProof.comment;
+    stream << lineOfProof.formula << lineOfProof.justification << lineOfProof.comment;
+    return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof)
 {
-    //TODO
+
+    //FIXME! This is where things go south!
+    //stream >> lineOfProof.formula >> lineOfProof.justification >> lineOfProof.comment;
+    return stream;
 }

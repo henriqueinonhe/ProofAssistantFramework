@@ -2,26 +2,37 @@
 #define PROOFRECORD_H
 
 #include <QString>
-#include <QStringList>
+#include <prooflinks.h>
 
 class QDataStream;
-
-//NOTE Maybe use formulas here...
 
 class ProofRecord
 {
 public:
-    ProofRecord();
+    ProofRecord(QDataStream &stream);
     ProofRecord(const QString &name,
                 const QString &description,
-                const QStringList &premises,
-                const QString conclusion);
+                const QVector<ProofLinks> &premisesLinks,
+                const ProofLinks &conclusionLinks);
+
+    QString getName() const;
+    void setName(const QString &value);
+
+    QString getDescription() const;
+    void setDescription(const QString &value);
+
+    QVector<ProofLinks> getPremisesLinks() const;
+
+    ProofLinks getConclusionLinks() const;
+
+    bool getProofIsDone() const;
 
 private:
     QString name;
     QString description;
-    QStringList premises;
-    QString conclusion;
+    QVector<ProofLinks> premisesLinks;
+    ProofLinks conclusionLinks;
+    bool proofIsDone;
 
     friend QDataStream &operator <<(QDataStream &stream, const ProofRecord &record);
     friend QDataStream &operator >>(QDataStream &stream, ProofRecord &record);

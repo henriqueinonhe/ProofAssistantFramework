@@ -40,7 +40,9 @@ public:
     //TODO Edit Theory
 
     //Proof
-    //void createProof(const QString &string);
+//    void createProof(const QString &name,
+//                     const QString &description,
+//                     const )
 
 
 

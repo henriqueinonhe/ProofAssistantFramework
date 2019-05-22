@@ -1,9 +1,9 @@
 #include "justification.h"
 #include <QDataStream>
 
-Justification::Justification()
+Justification::Justification(QDataStream &stream)
 {
-
+    stream >> *this;
 }
 
 Justification::Justification(const QString &inferenceRuleCallCommand, const QStringList &argumentList) :
@@ -13,14 +13,20 @@ Justification::Justification(const QString &inferenceRuleCallCommand, const QStr
 
 }
 
+bool Justification::operator==(const Justification &other) const
+{
+    return this->argumentList == other.argumentList &&
+           this->inferenceRuleCallCommand == other.inferenceRuleCallCommand;
+}
+
+bool Justification::operator!=(const Justification &other) const
+{
+    return !(*this == other);
+}
+
 QString Justification::getInferenceRuleCallCommand() const
 {
     return inferenceRuleCallCommand;
-}
-
-void Justification::setInferenceRuleCallCommand(const QString &value)
-{
-    inferenceRuleCallCommand = value;
 }
 
 QStringList Justification::getArgumentList() const
@@ -28,17 +34,19 @@ QStringList Justification::getArgumentList() const
     return argumentList;
 }
 
-void Justification::setArgumentList(const QStringList &value)
+Justification::Justification()
 {
-    argumentList = value;
+
 }
 
 QDataStream &operator <<(QDataStream &stream, const Justification &justification)
 {
     stream << justification.inferenceRuleCallCommand << justification.argumentList;
+    return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, Justification &justification)
 {
     stream >> justification.inferenceRuleCallCommand >> justification.argumentList;
+    return stream;
 }

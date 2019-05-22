@@ -1,13 +1,9 @@
-﻿#include "proofassistant.h"
+#include "proofassistant.h"
 
 ProofAssistant::ProofAssistant()
 {
 
 }
-
-//void ProofAssistant::createProof()
-//{
-//    //FIXME Possibly delete
 
 
 ////    currentProof = new Proof;
