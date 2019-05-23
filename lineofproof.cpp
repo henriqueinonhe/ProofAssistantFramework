@@ -72,10 +72,3 @@ QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof)
     return stream;
 }
 
-QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof)
-{
-
-    //FIXME! This is where things go south!
-    //stream >> lineOfProof.formula >> lineOfProof.justification >> lineOfProof.comment;
-    return stream;
-}

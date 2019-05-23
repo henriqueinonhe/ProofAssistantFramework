@@ -38,10 +38,8 @@ protected:
     friend class QVector<LineOfProof>;
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
-    friend QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof);
 };
 
 QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
-QDataStream &operator >>(QDataStream &stream, const LineOfProof &lineOfProof);
 
 #endif // LINEOFPROOF_H

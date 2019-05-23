@@ -6,6 +6,7 @@
 
 class QDataStream;
 class ProofRecord;
+class ProgramManager;
 
 class ProofLinks
 {

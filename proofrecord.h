@@ -6,6 +6,7 @@
 
 class QDataStream;
 class Formula;
+class StorageManager;
 
 class ProofRecord
 {
@@ -35,6 +36,8 @@ public:
     bool getProofIsDone() const;
 
 private:
+    ProofRecord();
+
     unsigned int id;
     QString name;
     QString description;
@@ -42,11 +45,14 @@ private:
     ProofLinks conclusionLinks;
     bool proofIsDone;
 
+    friend class QVector<ProofRecord>;
     friend QDataStream &operator <<(QDataStream &stream, const ProofRecord &record);
     friend QDataStream &operator >>(QDataStream &stream, ProofRecord &record);
+    friend QDataStream &operator >>(QDataStream &stream, QVector<ProofRecord> &records);
 };
 
 QDataStream &operator <<(QDataStream &stream, const ProofRecord &record);
 QDataStream &operator >>(QDataStream &stream, ProofRecord &record);
+QDataStream &operator >>(QDataStream &stream, QVector<ProofRecord> &vec);
 
 #endif // PROOFRECORD_H

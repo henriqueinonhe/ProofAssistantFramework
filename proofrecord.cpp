@@ -80,7 +80,23 @@ bool ProofRecord::getProofIsDone() const
     return proofIsDone;
 }
 
+ProofRecord::ProofRecord()
+{
+
+}
+
 unsigned int ProofRecord::getId() const
 {
     return id;
+}
+
+QDataStream &operator >>(QDataStream &stream, QVector<ProofRecord> &vec)
+{
+    int size;
+    stream >> size;
+    for(int i = 0; i < size; i++)
+    {
+        vec.push_back(ProofRecord(stream));
+    }
+    return stream;
 }

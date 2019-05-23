@@ -53,10 +53,7 @@ void ProgramManager::createProof(const QString &name, const QString &description
     //Make Formulas
     Parser * const parser = activeTheory->parser.get();
     QVector<Formula> premisesFormulas;
-    for(const QString &formula : premises)
-    {
-        premisesFormulas.push_back(parser->parse(formula));
-    }
+    makePremisesFormulas(premises, premisesFormulas, parser);
     Formula conclusionFormula(parser->parse(conclusion));
 
     //Proof Links
@@ -64,31 +61,8 @@ void ProgramManager::createProof(const QString &name, const QString &description
     const QString activeTheoryName = activeTheory->getName();
     QVector<ProofRecord> proofsRecords = StorageManager::retrieveProofsRecords(activeLogicalSystemName, activeTheoryName);
     QVector<ProofLinks> premisesLinks;
-    for(const QString &premiss : premises) //Linking Premises
-    {
-        QVector<unsigned int> linkedProofsIds;
-        for(const ProofRecord &record : proofsRecords)
-        {
-            if(premiss == record.getConclusion())
-            {
-                linkedProofsIds.push_back(record.getId());
-            }
-        }
-        premisesLinks.push_back(ProofLinks(premiss, linkedProofsIds));
-    }
-    QVector<unsigned int> linkedProofsIds; //Linking Conclusion
-    for(const ProofRecord &record : proofsRecords)
-    {
-        for(const QString &premiss : record.getPremises())
-        {
-            if(conclusion == premiss)
-            {
-                linkedProofsIds.push_back(record.getId());
-                break;
-            }
-        }
-    }
-    ProofLinks conclusionLinks(conclusion, linkedProofsIds);
+    linkPremises(premises, proofsRecords, premisesLinks);
+    ProofLinks conclusionLinks = linkConclusion(conclusion, proofsRecords);
 
     //Proof Id
     const unsigned int currentId = StorageManager::retrieveCurrentProofId(activeLogicalSystemName, activeTheoryName);
@@ -104,7 +78,7 @@ void ProgramManager::createProof(const QString &name, const QString &description
     //Store
     const QString proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, newId);
     StorageManager::storeProofsRecords(activeLogicalSystemName, activeTheoryName, proofsRecords);
-    //StorageManager::writeComponent<Proof>(proofDataFilePath, proof); FIXME!
+    StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
 }
 
 void ProgramManager::createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const
@@ -132,7 +106,7 @@ void ProgramManager::createTheory(const TheoryBuilder &builder, const TheoryPlug
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-    StorageManager::createTheoryDir(activeLogicalSystemName, theory, pluginsRecord);
+    StorageManager::setupTheoryDir(activeLogicalSystemName, theory, pluginsRecord);
 }
 
 void ProgramManager::removeTheory(const QString &theoryName) const
@@ -179,6 +153,53 @@ void ProgramManager::checkActiveTheory() const
     }
 }
 
+void ProgramManager::loadInferenceRules(const QStringList &inferenceRulesNames, QVector<shared_ptr<const InferenceRule> > &inferenceRules) const
+{
+    QStringList inferenceRulesPathList = StorageManager::convertPluginNamesToPaths(inferenceRulesNames, StorageManager::inferenceRulePluginPath);
+    inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPathList);
+}
+
+void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, Parser *parser) const
+{
+    for(const QString &formula : premises)
+    {
+        premisesFormulas.push_back(parser->parse(formula));
+    }
+}
+
+void ProgramManager::linkPremises(const QStringList &premises, const QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const
+{
+    for(const QString &premiss : premises)
+    {
+        QVector<unsigned int> linkedProofsIds;
+        for(const ProofRecord &record : proofsRecords)
+        {
+            if(premiss == record.getConclusion())
+            {
+                linkedProofsIds.push_back(record.getId());
+            }
+        }
+        premisesLinks.push_back(ProofLinks(premiss, linkedProofsIds));
+    }
+}
+
+ProofLinks ProgramManager::linkConclusion(const QString &conclusion, const QVector<ProofRecord> &proofsRecords) const
+{
+    QVector<unsigned int> linkedProofsIds;
+    for(const ProofRecord &record : proofsRecords)
+    {
+        for(const QString &premiss : record.getPremises())
+        {
+            if(conclusion == premiss)
+            {
+                linkedProofsIds.push_back(record.getId());
+                break;
+            }
+        }
+    }
+    return ProofLinks(conclusion, linkedProofsIds);
+}
+
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
                                          const QStringList &inferenceRulesNamesList,
@@ -190,9 +211,9 @@ void ProgramManager::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    QStringList inferenceRulesPathList = StorageManager::convertPluginNamesToPaths(inferenceRulesNamesList, StorageManager::inferenceRulePluginPath);
-    QVector<shared_ptr<const InferenceRule>> inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPathList);//If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
-    LogicalSystem logicalSystem(name, description, inferenceRules, wffType);
+    QVector<shared_ptr<const InferenceRule>> inferenceRules;;
+    loadInferenceRules(inferenceRulesNamesList, inferenceRules);
+    LogicalSystem logicalSystem(name, description, inferenceRules, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
 
     //LogicalSystemRecord
     LogicalSystemRecord newSystemRecord(name, description);
@@ -201,7 +222,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //File management
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::createLogicalSystemDir(logicalSystem, inferenceRulesNamesList);
+    StorageManager::setupLogicalSystemDir(logicalSystem, inferenceRulesNamesList);
 }
 
 QVector<LogicalSystemRecord> ProgramManager::getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const

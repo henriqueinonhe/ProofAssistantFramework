@@ -36,9 +36,6 @@ public:
 
     QVector<shared_ptr<StringProcessor>> &getPostProcessors();
 
-    QVector<const Proof *> findProofsWithConclusion(const QString &formula) const;
-    QVector<const Proof *> findProofsWithPremise(const QString &formula) const;
-
 protected:
     Theory(const LogicalSystem * const parentLogic,
            const QString &name,

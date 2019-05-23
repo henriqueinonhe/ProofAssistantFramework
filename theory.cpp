@@ -46,44 +46,6 @@ shared_ptr<Signature> Theory::getSignature() const
     return signature;
 }
 
-QVector<const Proof *> Theory::findProofsWithConclusion(const QString &formula) const
-{
-//    QVector<const Proof *> proofList;
-
-//    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
-//    {
-//        if(proof->getConclusion()->formattedString() == formula)
-//        {
-//            proofList.push_back(proof.get());
-//        }
-//    });
-
-//    return proofList;
-    //FIXME
-}
-
-QVector<const Proof *> Theory::findProofsWithPremise(const QString &formula) const
-{
-//    QVector<const Proof *> proofList;
-
-//    std::for_each(proofs.begin(), proofs.end(), [&formula, &proofList](const shared_ptr<Proof> &proof)
-//    {
-//        const QVector<const Formula *> premises = proof->getPremises();
-//        bool containsPremise = std::any_of(premises.begin(), premises.end(), [&formula](const Formula * const premise)
-//        {
-//            return premise->formattedString() == formula;
-//        });
-
-//        if(containsPremise)
-//        {
-//            proofList.push_back(proof.get());
-//        }
-//    });
-
-//    return proofList;
-    //FIXME
-}
-
 QString Theory::getName() const
 {
     return name;
