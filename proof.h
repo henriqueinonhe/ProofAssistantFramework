@@ -44,7 +44,7 @@ private:
     QString description;
     QVector<Formula> premises;
     Formula conclusion;
-    QVector<LineOfProof> linesOfProof;
+    QVector<LineOfProof> linesOfProof; //Initialize lines of proof from premises
     LineOfProofSectionManager sectioning;
     bool linkedWithAxioms;
 

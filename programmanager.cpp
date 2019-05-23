@@ -4,6 +4,8 @@
 #include "storagemanager.h"
 #include "theorybuilder.h"
 #include "pluginmanager.h"
+#include "proofrecord.h"
+#include "proof.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
@@ -40,11 +42,69 @@ void ProgramManager::loadTheory(const QString &name)
 
 Theory *ProgramManager::getActiveTheory() const
 {
-    if(activeTheory.get() == nullptr)
-    {
-        throw std::runtime_error("There is currently no active theory!");
-    }
+    checkActiveTheory();
     return activeTheory.get();
+}
+
+void ProgramManager::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion)
+{
+    checkActiveTheory();
+
+    //Make Formulas
+    Parser * const parser = activeTheory->parser.get();
+    QVector<Formula> premisesFormulas;
+    for(const QString &formula : premises)
+    {
+        premisesFormulas.push_back(parser->parse(formula));
+    }
+    Formula conclusionFormula(parser->parse(conclusion));
+
+    //Proof Links
+    const QString activeLogicalSystemName = activeLogicalSystem->getName();
+    const QString activeTheoryName = activeTheory->getName();
+    QVector<ProofRecord> proofsRecords = StorageManager::retrieveProofsRecords(activeLogicalSystemName, activeTheoryName);
+    QVector<ProofLinks> premisesLinks;
+    for(const QString &premiss : premises) //Linking Premises
+    {
+        QVector<unsigned int> linkedProofsIds;
+        for(const ProofRecord &record : proofsRecords)
+        {
+            if(premiss == record.getConclusion())
+            {
+                linkedProofsIds.push_back(record.getId());
+            }
+        }
+        premisesLinks.push_back(ProofLinks(premiss, linkedProofsIds));
+    }
+    QVector<unsigned int> linkedProofsIds; //Linking Conclusion
+    for(const ProofRecord &record : proofsRecords)
+    {
+        for(const QString &premiss : record.getPremises())
+        {
+            if(conclusion == premiss)
+            {
+                linkedProofsIds.push_back(record.getId());
+                break;
+            }
+        }
+    }
+    ProofLinks conclusionLinks(conclusion, linkedProofsIds);
+
+    //Proof Id
+    const unsigned int currentId = StorageManager::retrieveCurrentProofId(activeLogicalSystemName, activeTheoryName);
+    const unsigned int newId = currentId + 1;
+
+    //Create Proof Record
+    ProofRecord record(newId, name, description, premisesLinks, conclusionLinks);
+    proofsRecords.push_back(record);
+
+    //Create Proof
+    Proof proof(newId, name, description, premisesFormulas, conclusionFormula);
+
+    //Store
+    const QString proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, newId);
+    StorageManager::storeProofsRecords(activeLogicalSystemName, activeTheoryName, proofsRecords);
+    //StorageManager::writeComponent<Proof>(proofDataFilePath, proof); FIXME!
 }
 
 void ProgramManager::createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const

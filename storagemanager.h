@@ -35,8 +35,8 @@ public:
     static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *&theory);
 
     //Proof
-    static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName,
-                                                      const QString &theoryName);
+    static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName);
+    static unsigned int retrieveCurrentProofId(const QString &logicalSystemName, const QString &theoryName);
     static void storeProofsRecords(const QString &logicalSystemName,
                                    const QString &theoryName,
                                    const QVector<ProofRecord> &records);
@@ -71,8 +71,11 @@ public:
     //Proof
     static const QString proofsDirName;
     static const QString proofsRecordsFileName;
+    static const QString proofsIdFileName;
     static QString proofsDirPath(const QString &logicalSystemName, const QString &theoryName);
     static QString proofsRecordsFilePath(const QString &logicalSystemName, const QString &theoryName);
+    static QString proofsIdFilePath(const QString &logicalSystemName, const QString &theoryName);
+    static QString proofDataFilePath(const QString &logicalSystemName, const QString &theoryName, const unsigned int id);
 
     //Plugins
     static const QString pluginDataFileName;

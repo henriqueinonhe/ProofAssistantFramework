@@ -308,8 +308,9 @@ TEST_CASE("Proof Records")
     QVector<ProofLinks> premises;
     premises.push_back(premise1);
     premises.push_back(premise2);
-    ProofRecord record("Dummy Proof", "Lorem Ipsum", premises, conclusion);
+    ProofRecord record(0, "Dummy Proof", "Lorem Ipsum", premises, conclusion);
 
+    CHECK(record.getId() == 0);
     CHECK(record.getName() == "Dummy Proof");
     CHECK(record.getDescription() == "Lorem Ipsum");
     CHECK(record.getPremisesLinks() == premises);
@@ -325,6 +326,7 @@ TEST_CASE("Proof Records")
 
     buffer.open(QIODevice::ReadOnly);
     ProofRecord record2(stream);
+    CHECK(record2.getId() == record.getId());
     CHECK(record2.getName() == record.getName());
     CHECK(record2.getDescription() == record.getDescription());
     CHECK(record2.getPremisesLinks() == record.getPremisesLinks());
@@ -473,7 +475,6 @@ TEST_CASE("Line of Proof Section Manager")
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(1, 7, "")));
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(2, 7, "")));
 }
-
 
 TEST_CASE("Storage Manager")
 {
@@ -631,6 +632,11 @@ TEST_CASE("Framework Integration")
         CHECK_THROWS(manager.removeTheory("Some Theory"));
         CHECK_NOTHROW(manager.removeTheory("Graph Theory"));
         CHECK(!QDir(StorageManager::theoryDirPath("Propositional Logic", "Graph Theory")).exists());
+    }
+
+    SECTION("Proof")
+    {
+
     }
 
 }

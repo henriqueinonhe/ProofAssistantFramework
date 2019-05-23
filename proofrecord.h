@@ -5,21 +5,28 @@
 #include <prooflinks.h>
 
 class QDataStream;
+class Formula;
 
 class ProofRecord
 {
 public:
     ProofRecord(QDataStream &stream);
-    ProofRecord(const QString &name,
+    ProofRecord(const unsigned int id,
+                const QString &name,
                 const QString &description,
                 const QVector<ProofLinks> &premisesLinks,
                 const ProofLinks &conclusionLinks);
+
+    unsigned int getId() const;
 
     QString getName() const;
     void setName(const QString &value);
 
     QString getDescription() const;
     void setDescription(const QString &value);
+
+    QStringList getPremises() const;
+    QString getConclusion() const;
 
     QVector<ProofLinks> getPremisesLinks() const;
 
@@ -28,6 +35,7 @@ public:
     bool getProofIsDone() const;
 
 private:
+    unsigned int id;
     QString name;
     QString description;
     QVector<ProofLinks> premisesLinks;

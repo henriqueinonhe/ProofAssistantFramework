@@ -24,6 +24,7 @@ const QString StorageManager::theoryDataFileName = "theory";
 //Proof
 const QString StorageManager::proofsDirName = "Proofs";
 const QString StorageManager::proofsRecordsFileName = "proofsrecords";
+const QString StorageManager::proofsIdFileName = "idfile";
 
 //Plugins
 const QString StorageManager::pluginDataFileName = "plugins";
@@ -79,6 +80,11 @@ QString StorageManager::theoryPluginsDataFilePath(const QString &logicalSystemNa
     return theoryDirPath(logicalSystemName, theoryName) + "/" + pluginDataFileName + storageFilesSuffix;
 }
 
+QString StorageManager::getProofIdFileName()
+{
+    return proofsIdFileName;
+}
+
 QString StorageManager::proofsDirPath(const QString &logicalSystemName, const QString &theoryName)
 {
     return theoryDirPath(logicalSystemName, theoryName) + "/" + proofsDirName;
@@ -87,6 +93,16 @@ QString StorageManager::proofsDirPath(const QString &logicalSystemName, const QS
 QString StorageManager::proofsRecordsFilePath(const QString &logicalSystemName, const QString &theoryName)
 {
     return proofsDirPath(logicalSystemName, theoryName) + "/" + proofsRecordsFileName + storageFilesSuffix;
+}
+
+QString StorageManager::proofsIdFilePath(const QString &logicalSystemName, const QString &theoryName)
+{
+    return proofsDirPath(logicalSystemName, theoryName) + "/" + proofsIdFileName + storageFilesSuffix;
+}
+
+QString StorageManager::proofDataFilePath(const QString &logicalSystemName, const QString &theoryName, const unsigned int id)
+{
+    return proofsDirPath(logicalSystemName, theoryName) + "/" + QString::number(id) + storageFilesSuffix;
 }
 
 QString StorageManager::pluginsDirPath()
@@ -338,9 +354,14 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)
 {
-    //retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+    return retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+}
 
-    //TODO
+unsigned int StorageManager::retrieveCurrentProofId(const QString &logicalSystemName, const QString &theoryName)
+{
+    unsigned int id;
+    readComponent(proofsIdFilePath(logicalSystemName, theoryName), id);
+    return id;
 }
 
 void StorageManager::storeProofsRecords(const QString &logicalSystemName, const QString &theoryName, const QVector<ProofRecord> &records)

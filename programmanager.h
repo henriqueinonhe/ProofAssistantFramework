@@ -40,10 +40,10 @@ public:
     //TODO Edit Theory
 
     //Proof
-//    void createProof(const QString &name,
-//                     const QString &description,
-//                     const )
-
+    void createProof(const QString &name,
+                     const QString &description,
+                     const QStringList &premises,
+                     const QString &conclusion);
 
 
 private:
