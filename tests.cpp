@@ -404,10 +404,16 @@ TEST_CASE("Proofs")
     CHECK(proof.getConclusion() == conclusion);
     CHECK(proof.getLinkedWithAxioms() == false);
     CHECK(proof.isFinished() == false);
+    CHECK(proof.getLinesOfProof()[0].getFormula() == premiss1);
+    CHECK(proof.getLinesOfProof()[0].getJustification() == Justification("Premiss", QStringList()));
+    CHECK(proof.getLinesOfProof()[0].getComment() == "Premiss");
+    CHECK(proof.getLinesOfProof()[1].getFormula() == premiss2);
+    CHECK(proof.getLinesOfProof()[1].getJustification() == Justification("Premiss", QStringList()));
+    CHECK(proof.getLinesOfProof()[1].getComment() == "Premiss");
 
     LineOfProof lineOfProof(premiss1, Justification("Dummy Call Command", QStringList({"Arg1"})), "Dummy Comment");
     proof.addLineOfProof(lineOfProof);
-    CHECK(proof.getLinesOfProof().first() == lineOfProof);
+    CHECK(proof.getLinesOfProof().last() == lineOfProof);
     CHECK(proof.isFinished() == true);
 
     //Serialization

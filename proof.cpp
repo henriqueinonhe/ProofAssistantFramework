@@ -23,7 +23,7 @@ Proof::Proof(const uint id, const QString &name, const QString &description, con
     conclusion(conclusion),
     linkedWithAxioms(false)
 {
-
+    insertPremisesAsLinesOfProof();
 }
 
 bool Proof::isFinished() const
@@ -70,6 +70,15 @@ bool Proof::getLinkedWithAxioms() const
 unsigned int Proof::getId() const
 {
     return id;
+}
+
+void Proof::insertPremisesAsLinesOfProof()
+{
+    Justification justification("Premiss", QStringList());
+    for(const Formula &premiss : premises)
+    {
+        linesOfProof.push_back(LineOfProof(premiss, justification, "Premiss"));
+    }
 }
 
 void Proof::addLineOfProof(const LineOfProof &lineOfProof)

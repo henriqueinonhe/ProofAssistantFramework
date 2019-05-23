@@ -39,6 +39,8 @@ public:
     unsigned int getId() const;
 
 private:
+    void insertPremisesAsLinesOfProof();
+
     unsigned int id;
     QString name;
     QString description;
