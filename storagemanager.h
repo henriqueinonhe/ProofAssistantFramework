@@ -48,6 +48,7 @@ public:
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName);
     static unsigned int retrieveCurrentProofId(const QString &logicalSystemName, const QString &theoryName);
+    static void storeCurrentProofId(const QString &logicalSystemName, const QString &theoryName, const unsigned int id);
     static void storeProofsRecords(const QString &logicalSystemName, const QString &theoryName, const QVector<ProofRecord> &records);
     static void storeProofData(const QString &logicalSystemName, const QString &theoryName, const Proof &proof);
 

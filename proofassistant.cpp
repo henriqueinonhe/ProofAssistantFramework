@@ -1,85 +1,51 @@
 #include "proofassistant.h"
+#include <memory>
+#include "proof.h"
+#include "logicalsystem.h"
+#include "theory.h"
+#include "inferencetactic.h"
 
-ProofAssistant::ProofAssistant()
+
+ProofAssistant::ProofAssistant(const Theory * const theory, const Proof &proof) :
+    theory(theory),
+    proof(proof)
 {
-
 }
 
+void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStringList &argumentList)
+{
+    const LogicalSystem &logicalSystem = *theory->getParentLogic();
+    const InferenceRule *rule = queryInferenceProcedure(logicalSystem.getInferenceRules(), callCommand);
 
-////    currentProof = new Proof;
-//    //proofOwner = true;
+    if(rule == nullptr)
+    {
+        throw std::invalid_argument("There is no inference rule associated with this call command!");
+    }
 
-//    //NOTE The process is not finished yet!
-//}
+    proof.addLineOfProof(rule->apply(proof, argumentList));
+}
 
-//void ProofAssistant::setProofName(const QString &name)
-//{
+void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const
+{
+    const InferenceTactic *tactic = queryInferenceProcedure(theory->getInferenceTactics(), callCommand);
 
-////    currentProof->setName(name);
-//}
+    if(tactic == nullptr)
+    {
+        throw std::invalid_argument("There is no inference tactic associated with this call command!");
+    }
 
-//void ProofAssistant::createPremiseLineOfProof(const Formula &parsedPremise)
-//{
-//    shared_ptr<LineOfProof> newPremiseLine = make_shared<LineOfProof>(LineOfProof(parsedPremise, Justification("Premise", QStringList())));
+    //tactic->apply(this, argumentList); Gotta fix inference tactics
+}
 
-//    currentProof->linesOfProof.push_back(newPremiseLine);
-//}
+void ProofAssistant::setLineOfProofComment(const unsigned int lineNumber, const QString &comment)
+{
+    proof.setComment(lineNumber, comment);
+}
 
-//void ProofAssistant::linkPremise(const QString &premise)
-//{
-//    ProofLinks premiseProofLinks;
-//    premiseProofLinks.setLinks(currentTheory->findProofsWithConclusion(premise));
-
-//    LineOfProof &premiseLineOfProof = *currentProof->linesOfProof.last();
-//    Formula *formulaPtr = premiseLineOfProof.formula.get();
-//    premiseProofLinks.setFormulaPtr(formulaPtr);
-//    currentProof->premisesLinks.push_back(premiseProofLinks);
-//}
-
-//void ProofAssistant::addPremise(const QString &premise)
-//{
-//    const Formula parsedPremise = currentTheory->getParser()->parse(premise);
-//    createPremiseLineOfProof(parsedPremise);
-//    linkPremise(premise); //NOTE Maybe linking should be done only when proof is finished!
-//                          //So I need a temporary place to store them (both premises and conclusion)!
-//}
-
-//void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStringList &argumentList) const
-//{
-//    const LogicalSystem &logicalSystem = *currentTheory->getParentLogic();
-//    InferenceRule *rule = queryInferenceProcedure<InferenceRule>(logicalSystem.getInferenceRules(), callCommand);
-
-//    if(rule == nullptr)
-//    {
-//        throw std::invalid_argument("There is no inference rule associated with this call command!");
-//    }
-
-//    currentProof->linesOfProof.push_back(shared_ptr<LineOfProof>(new LineOfProof(rule->apply(*currentProof, argumentList))));
-
-
-//    //NOTE Refactor this! Extract function!
-//    if(currentProof->isFinished())
-//    {
-//        currentTheory->proofs.push_back(shared_ptr<Proof>(currentProof));
-//    }
-//}
-
-//void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const
-//{
-//    InferenceTactic *tactic = queryInferenceProcedure<InferenceTactic>(currentTheory->getInferenceTactics(), callCommand);
-
-//    if(tactic == nullptr)
-//    {
-//        throw std::invalid_argument("There is no inference tactic associated with this call command!");
-//    }
-
-//    tactic->apply(this, argumentList);
-//}
-
-//void ProofAssistant::setLineOfProofComment(const unsigned int lineNumber, const QString &comment) const
-//{
-//    currentProof->linesOfProof[lineNumber]->setComment(comment);
-//}
+Proof ProofAssistant::getProof() const
+{
+    return proof;
+}
 
 
 

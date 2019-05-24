@@ -33,6 +33,7 @@ public:
 
     QVector<LineOfProof> getLinesOfProof() const;
     void addLineOfProof(const LineOfProof &lineOfProof);
+    void setComment(const unsigned int lineNumber, const QString &comment);
 
     bool getLinkedWithAxioms() const;
 
@@ -50,7 +51,6 @@ private:
     LineOfProofSectionManager sectioning;
     bool linkedWithAxioms;
 
-    friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);
 };
 

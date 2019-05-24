@@ -86,6 +86,12 @@ void Proof::addLineOfProof(const LineOfProof &lineOfProof)
     linesOfProof.push_back(lineOfProof);
 }
 
+void Proof::setComment(const unsigned int lineNumber, const QString &comment)
+{
+    //NOTE Maybe add a boundary check
+    linesOfProof[lineNumber].setComment(comment);
+}
+
 QVector<LineOfProof> Proof::getLinesOfProof() const
 {
     return linesOfProof;

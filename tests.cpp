@@ -20,6 +20,7 @@
 #include "proofrecord.h"
 #include "proof.h"
 #include "justification.h"
+#include "proofassistant.h"
 
 TEST_CASE("File System Setup")
 {
@@ -588,7 +589,6 @@ TEST_CASE("Framework Integration")
     SECTION("Theory")
     {
         //Setup
-
         QStringList inferenceRulesNamesList;
         inferenceRulesNamesList << "DummyInferenceRulePlugin";
         manager.createLogicalSystem("Propositional Logic",
@@ -611,6 +611,8 @@ TEST_CASE("Framework Integration")
         builder.addAxiom("(~ (~ P))");
 
         manager.createTheory(builder, TheoryPluginsRecord("TableSignaturePlugin"));
+
+        CHECK(StorageManager::retrieveCurrentProofId("Propositional Logic", "Graph Theory") == 0);
 
         const TheoryRecord record = StorageManager::retrieveTheoriesRecords("Propositional Logic").first();
         CHECK(record.getName() == "Graph Theory");
@@ -638,11 +640,58 @@ TEST_CASE("Framework Integration")
         CHECK_THROWS(manager.removeTheory("Some Theory"));
         CHECK_NOTHROW(manager.removeTheory("Graph Theory"));
         CHECK(!QDir(StorageManager::theoryDirPath("Propositional Logic", "Graph Theory")).exists());
+
+        //Cleanup
+        manager.removeLogicalSystem("Propositional Logic");
     }
 
     SECTION("Proof")
     {
+        //Setup
+        //Create Logical System
+        QStringList inferenceRulesNamesList;
+        inferenceRulesNamesList << "DummyInferenceRulePlugin";
+        manager.createLogicalSystem("Propositional Logic",
+                                    "Classical Propositional Logic",
+                                    inferenceRulesNamesList,
+                                    Type("o"));
 
+        manager.loadLogicalSystem("Propositional Logic");
+
+        CHECK(StorageManager::retrieveTheoriesRecords("Propositional Logic").isEmpty());
+
+        //Create Theory
+        shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("TableSignaturePlugin"));
+        TheoryBuilder builder(manager.getActiveLogicalSystem(), signature);
+        builder.setName("Graph Theory");
+        builder.setDescription("Some graph theory.");
+        builder.getSignature()->addToken(CoreToken("P", Type("o")));
+        builder.getSignature()->addToken(CoreToken("~", Type("o->o")));
+        builder.addAxiom("P");
+        builder.addAxiom("(~ (~ P))");
+
+        manager.createTheory(builder, TheoryPluginsRecord("TableSignaturePlugin"));
+        manager.loadTheory("Graph Theory");
+        Theory *theory = manager.getActiveTheory();
+
+        //Create Proof
+        manager.createProof("Dummy Proof", "Lorem Ipsum", QStringList({"P"}), "P");
+        ProofAssistant proofAssistant = manager.loadProof(0);
+        Proof proof = proofAssistant.getProof();
+        CHECK(proof.getName() == "Dummy Proof");
+        CHECK(proof.getDescription() == "Lorem Ipsum");
+        CHECK(proof.getPremises()[0].formattedString() == "P");
+        CHECK(proof.getConclusion().formattedString() == "P");
+        CHECK(proof.isFinished());
+        CHECK(proof.getLinesOfProof().size() == 1);
+        CHECK(proof.getLinesOfProof()[0].getFormula().formattedString() == "P");
+        CHECK(proof.getLinesOfProof()[0].getJustification() == Justification("Premiss", QStringList()));
+        CHECK(proof.getLinesOfProof()[0].getComment() == "Premiss");
+        proofAssistant.setLineOfProofComment(0, "Dummy Comment");
+        CHECK(proofAssistant.getProof().getLinesOfProof()[0].getComment() == "Dummy Comment");
+
+        manager.saveProof(proofAssistant);
+        CHECK(manager.loadProof(0).getProof().getLinesOfProof()[0].getComment() == "Dummy Comment");
     }
 
 }

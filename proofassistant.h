@@ -1,46 +1,47 @@
 #ifndef PROOFASSISTANT_H
 #define PROOFASSISTANT_H
 
-#include "logicalsystem.h"
-#include "theory.h"
-#include "prooflinks.h"
-#include <memory>
+#include "proof.h"
 
-//FIXME Gotta rework whole class!
+class Formula;
+class Proof;
+class LogicalSystem;
+class Theory;
+
+namespace std
+{
+    template <class T> class shared_ptr;
+}
 
 class ProofAssistant
 {
 public:
-    ProofAssistant();
+    ProofAssistant(const Theory * const theory, const Proof &proof);
 
-    void setProofName(const QString &name);
-    void addPremise(const QString &premise);
-    //TODO removePremise();
-
-    void applyInferenceRule(const QString &callCommand, const QStringList &argumentList) const;
+    void applyInferenceRule(const QString &callCommand, const QStringList &argumentList);
     void applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const;
+    void setLineOfProofComment(const unsigned int lineNumber, const QString &comment);
 
-    void setLineOfProofComment(const unsigned int lineNumber, const QString &comment) const;
+    Proof getProof() const;
 
 private:
     template <class T>
-    T *queryInferenceProcedure(const QVector<T *> &procedureList, const QString &callCommand) const
+    T *queryInferenceProcedure(const QVector<std::shared_ptr<T>> &procedureList, const QString &callCommand) const
     {
         T *procedure = nullptr;
 
-        std::for_each(procedureList.begin(), procedureList.end(), [&callCommand, &procedure](T * const &storedProcedure)
+        for(const std::shared_ptr<T> &storedProcedure : procedureList)
         {
             if(callCommand == storedProcedure->callCommand())
             {
-                procedure = storedProcedure;
+                procedure = storedProcedure.get();
             }
-        });
-
+        }
         return procedure;
     }
 
-    void createPremiseLineOfProof(const Formula &parsedPremise);
-    void linkPremise(const QString &premise);
+    const Theory * const theory;
+    Proof proof;
 };
 
 #endif // PROOFASSISTANT_H

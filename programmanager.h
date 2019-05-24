@@ -44,7 +44,9 @@ public:
     void createProof(const QString &name,
                      const QString &description,
                      const QStringList &premises,
-                     const QString &conclusion);
+                     const QString &conclusion) const;
+    ProofAssistant loadProof(const unsigned int proofId) const;
+    void saveProof(const ProofAssistant &assistant) const;
 
 
 private:

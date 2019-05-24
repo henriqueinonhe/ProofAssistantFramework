@@ -6,6 +6,7 @@
 #include "pluginmanager.h"
 #include "proofrecord.h"
 #include "proof.h"
+#include "proofassistant.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
@@ -46,7 +47,7 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
-void ProgramManager::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion)
+void ProgramManager::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const
 {
     checkActiveTheory();
 
@@ -63,21 +64,41 @@ void ProgramManager::createProof(const QString &name, const QString &description
     QVector<ProofLinks> premisesLinks;
     linkPremises(premises, proofsRecords, premisesLinks);
     ProofLinks conclusionLinks = linkConclusion(conclusion, proofsRecords);
+    //FIXME! We should also retroactively link previously stored proof links! They are reciprocal!
 
     //Proof Id
     const unsigned int currentId = StorageManager::retrieveCurrentProofId(activeLogicalSystemName, activeTheoryName);
-    const unsigned int newId = currentId + 1;
 
     //Create Proof Record
-    ProofRecord record(newId, name, description, premisesLinks, conclusionLinks);
+    ProofRecord record(currentId, name, description, premisesLinks, conclusionLinks);
     proofsRecords.push_back(record);
 
     //Create Proof
-    Proof proof(newId, name, description, premisesFormulas, conclusionFormula);
+    Proof proof(currentId, name, description, premisesFormulas, conclusionFormula);
 
     //Store
-    const QString proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, newId);
+    const QString proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, currentId);
+    const unsigned int newId = currentId + 1;
     StorageManager::storeProofsRecords(activeLogicalSystemName, activeTheoryName, proofsRecords);
+    StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
+    StorageManager::storeCurrentProofId(activeLogicalSystemName, activeTheoryName, newId);
+}
+
+ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
+{
+    checkActiveTheory();
+
+    QFile file(StorageManager::proofDataFilePath(activeLogicalSystem->getName(), activeTheory->getName(), proofId));
+    file.open(QIODevice::ReadOnly);
+    QDataStream stream(&file);
+    return ProofAssistant(activeTheory.get(), Proof(stream, activeTheory->getSignature().get()));
+}
+
+void ProgramManager::saveProof(const ProofAssistant &assistant) const
+{
+    const Proof proof = assistant.getProof();
+    const QString activeLogicalSystemName = activeLogicalSystem->getName();
+    const QString activeTheoryName = activeTheory->getName();
     StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
 }
 

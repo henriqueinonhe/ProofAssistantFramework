@@ -31,10 +31,11 @@ public:
     QLinkedList<Formula> getAxioms() const;
 
     QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
-
     QVector<shared_ptr<StringProcessor>> &getPreProcessors();
-
     QVector<shared_ptr<StringProcessor>> &getPostProcessors();
+    const QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics() const;
+    const QVector<shared_ptr<StringProcessor>> &getPreProcessors()  const;
+    const QVector<shared_ptr<StringProcessor>> &getPostProcessors() const;
 
 protected:
     Theory(const LogicalSystem * const parentLogic,

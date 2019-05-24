@@ -10,6 +10,21 @@ QVector<shared_ptr<StringProcessor> > &Theory::getPostProcessors()
     return postProcessors;
 }
 
+const QVector<shared_ptr<const InferenceTactic> > &Theory::getInferenceTactics() const
+{
+    return inferenceTactics;
+}
+
+const QVector<shared_ptr<StringProcessor> > &Theory::getPreProcessors() const
+{
+    return preProcessors;
+}
+
+const QVector<shared_ptr<StringProcessor> > &Theory::getPostProcessors() const
+{
+    return postProcessors;
+}
+
 QVector<shared_ptr<StringProcessor>> &Theory::getPreProcessors()
 {
     return preProcessors;

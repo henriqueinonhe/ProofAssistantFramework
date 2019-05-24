@@ -347,7 +347,12 @@ void StorageManager::setupTheoryDir(const QString &logicalSystemName, const Theo
     const QString theoryName = theory.getName();
     QDir theoriesDir(theoriesDirPath(logicalSystemName));
     mkDir(theoriesDir, theoryName);
+    theoriesDir.cd(theoryName);
+    theoriesDir.mkdir("Proofs");
 
+    const unsigned int initialProofId = 0;
+    storeCurrentProofId(logicalSystemName, theoryName, initialProofId);
+    storeProofsRecords(logicalSystemName, theoryName, QVector<ProofRecord>());
     storeTheoryPluginsData(logicalSystemName, theory.getName(), pluginsRecord);
     storeTheoryData(logicalSystemName, theory);
 }
@@ -397,6 +402,11 @@ unsigned int StorageManager::retrieveCurrentProofId(const QString &logicalSystem
     unsigned int id;
     readComponent(proofsIdFilePath(logicalSystemName, theoryName), id);
     return id;
+}
+
+void StorageManager::storeCurrentProofId(const QString &logicalSystemName, const QString &theoryName, const unsigned int id)
+{
+    writeComponent(StorageManager::proofsIdFilePath(logicalSystemName, theoryName), id);
 }
 
 void StorageManager::storeProofsRecords(const QString &logicalSystemName, const QString &theoryName, const QVector<ProofRecord> &records)
