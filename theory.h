@@ -50,7 +50,7 @@ protected:
 
     QString name;
     QString description;
-    unique_ptr<Parser> parser;
+    unique_ptr<const Parser> parser;
     shared_ptr<Signature> signature;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
 

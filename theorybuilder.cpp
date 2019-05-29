@@ -68,12 +68,30 @@ void TheoryBuilder::addAxiom(const QString &axiom)
 
 void TheoryBuilder::removeAxiom(const QString &axiom)
 {
-    //TODO
+    for(const Formula &axiomFormula : axioms)
+    {
+        if(axiomFormula.toString() == axiom)
+        {
+            axioms.removeAll(axiomFormula);
+            return;
+        }
+    }
+
+    QString errorMsg;
+    errorMsg += "Axiom list doesn't contain \"";
+    errorMsg += axiom;
+    errorMsg += "\".";
+    throw invalid_argument(errorMsg.toStdString());
 }
 
 void TheoryBuilder::loadSignature(const QString &signatureName)
 {
     signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath(signatureName));
+}
+
+QLinkedList<Formula> TheoryBuilder::getAxioms() const
+{
+    return axioms;
 }
 
 void TheoryBuilder::checkParentLogicPointer(const LogicalSystem *parentLogic) const

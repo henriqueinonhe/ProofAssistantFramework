@@ -20,12 +20,14 @@ public:
 
     // InferenceRule interface
 public:
-    LineOfProof apply(const Proof &proof, const QStringList &argumentList) const
+    ~DummyInferenceRule()
     {
 
     }
 
-    ~DummyInferenceRule()
+    // InferenceRule interface
+public:
+    LineOfProof apply(const Parser &parser, const Proof &proof, const QStringList &argumentList) const
     {
 
     }

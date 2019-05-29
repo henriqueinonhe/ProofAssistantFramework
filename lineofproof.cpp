@@ -2,13 +2,13 @@
 #include "formula.h"
 #include <QDataStream>
 
-LineOfProof::LineOfProof(QDataStream &stream, const Signature * const signature) :
+LineOfProof::LineOfProof(QDataStream &stream, Signature * const signature) :
     formula(stream, signature) //There might be an issue here, not sure...
 {
     stream >> justification >> comment;
 }
 
-QVector<LineOfProof> LineOfProof::unserializeVector(QDataStream &stream, const Signature * const signature)
+QVector<LineOfProof> LineOfProof::unserializeVector(QDataStream &stream, Signature * const signature)
 {
     int size;
     stream >> size;

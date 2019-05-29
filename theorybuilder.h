@@ -26,6 +26,8 @@ public:
     void addAxiom(const QString &axiom);
     void removeAxiom(const QString &axiom);
 
+    QLinkedList<Formula> getAxioms() const;
+
 protected:
     void loadSignature(const QString &signatureName);
 
@@ -33,7 +35,7 @@ protected:
     QString name;
     QString description;
     shared_ptr<Signature> signature;
-    unique_ptr<Parser> parser;
+    unique_ptr<const Parser> parser;
     QLinkedList<Formula> axioms;
 
 private:

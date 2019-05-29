@@ -106,54 +106,104 @@ QString StorageManager::pluginsDirPath()
     return rootPath + "/" + pluginsDirName;
 }
 
-QString StorageManager::inferenceRulesPluginsDirPath()
+QString StorageManager::inferenceRulePluginsDirPath()
 {
     return pluginsDirPath() + "/" + inferenceRulesPluginsDirName;
 }
 
-QString StorageManager::signaturesPluginsDirPath()
+QStringList StorageManager::inferenceRulesPluginsList()
+{
+    return listDirPlugins(inferenceRulePluginsDirPath());
+}
+
+bool StorageManager::inferenceRulePluginExists(const QString &pluginName)
+{
+    return inferenceRulesPluginsList().contains(pluginName + ".dll");
+}
+
+QString StorageManager::signaturePluginsDirPath()
 {
     return pluginsDirPath() + "/" + signaturePluginsDirName;
 }
 
-QString StorageManager::inferenceTacticsPluginsDirPath()
+QStringList StorageManager::signaturePluginsList()
+{
+    return listDirPlugins(signaturePluginsDirPath());
+}
+
+bool StorageManager::signaturePluginExists(const QString &pluginName)
+{
+    return signaturePluginsList().contains(pluginName + ".dll");
+}
+
+QString StorageManager::inferenceTacticPluginsDirPath()
 {
     return pluginsDirPath() + "/" + inferenceTacticsPluginsDirName;
 }
 
-QString StorageManager::preProcessorsPluginsDirPath()
+QStringList StorageManager::inferenceTacticsPluginsList()
+{
+    return listDirPlugins(inferenceTacticPluginsDirPath());
+}
+
+bool StorageManager::inferenceTacticPluginExists(const QString &pluginName)
+{
+    return inferenceTacticsPluginsList().contains(pluginName + ".dll");
+}
+
+QString StorageManager::preProcessorPluginsDirPath()
 {
     return pluginsDirPath() + "/" + preProcessorPluginsDirName;
 }
 
-QString StorageManager::postProcessorsPluginsDirPath()
+QStringList StorageManager::preProcessorPluginsList()
+{
+    return listDirPlugins(preProcessorPluginsDirPath());
+}
+
+bool StorageManager::preProcessorPluginExists(const QString &pluginName)
+{
+    return preProcessorPluginsList().contains(pluginName + ".dll");
+}
+
+QString StorageManager::postProcessorPluginsDirPath()
 {
     return pluginsDirPath() + "/" + postProcessorPluginsDirName;
 }
 
+QStringList StorageManager::postProcessorPluginsList()
+{
+    return listDirPlugins(postProcessorPluginsDirPath());
+}
+
+bool StorageManager::postProcessorPluginExists(const QString &pluginName)
+{
+    return postProcessorPluginsList().contains(pluginName + ".dll");
+}
+
 QString StorageManager::inferenceRulePluginPath(const QString &pluginName)
 {
-    return inferenceRulesPluginsDirPath() + "/" + pluginName + ".dll";
+    return inferenceRulePluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::signaturePluginPath(const QString &pluginName)
 {
-    return signaturesPluginsDirPath() + "/" + pluginName + ".dll";
+    return signaturePluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::inferenceTacticPluginPath(const QString &pluginName)
 {
-    return inferenceTacticsPluginsDirPath() + "/" + pluginName  + ".dll";
+    return inferenceTacticPluginsDirPath() + "/" + pluginName  + ".dll";
 }
 
 QString StorageManager::preProcessorPluginPath(const QString &pluginName)
 {
-    return preProcessorsPluginsDirPath() + "/" + pluginName + ".dll";
+    return preProcessorPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QString StorageManager::postProcessorPluginPath(const QString &pluginName)
 {
-    return postProcessorsPluginsDirPath() + "/" + pluginName + ".dll";
+    return postProcessorPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QStringList StorageManager::convertPluginNamesToPaths(const QStringList &pluginNamesList, QString pluginPathFunction(const QString&))
@@ -215,6 +265,14 @@ void StorageManager::rmDir(QDir &dir)
     }
 }
 
+QStringList StorageManager::listDirPlugins(const QString &dirPath)
+{
+    QDir dir(dirPath);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList({"*.dll"}));
+    return dir.entryList();
+}
+
 void StorageManager::storeLogicalSystemPluginsData(const QString &systemName, const QStringList &inferenceRulesNames)
 {
     writeComponent(logicalSystemPluginsDataFilePath(systemName), inferenceRulesNames);
@@ -244,6 +302,16 @@ void StorageManager::setRootPath(const QString &value)
 QVector<LogicalSystemRecord> StorageManager::retrieveLogicalSystemsRecords()
 {
     return retrieveRecords<LogicalSystemRecord>(logicalSystemsRecordsPath());
+}
+
+QStringList StorageManager::logicalSystemsNamesList()
+{
+    return namesListFromRecords<LogicalSystemRecord>(logicalSystemsRecordsPath());
+}
+
+bool StorageManager::logicalSystemExists(const QString &systemName)
+{
+    return logicalSystemsNamesList().contains(systemName);
 }
 
 void StorageManager::storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records)
@@ -337,6 +405,16 @@ QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &log
     return retrieveRecords<TheoryRecord>(theoriesRecordsPath(logicalSystemName));
 }
 
+QStringList StorageManager::theoriesNamesList(const QString &logicalSystemName)
+{
+    return namesListFromRecords<TheoryRecord>(theoriesRecordsPath(logicalSystemName));
+}
+
+bool StorageManager::theoryExists(const QString &logicalSystemName, const QString &theoryName)
+{
+    return theoriesNamesList(logicalSystemName).contains(theoryName);
+}
+
 void StorageManager::storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records)
 {
     storeRecords<TheoryRecord>(records, theoriesRecordsPath(logicalSystemName));
@@ -395,6 +473,16 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)
 {
     return retrieveRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+}
+
+QStringList StorageManager::proofsNamesList(const QString &logicalSystemName, const QString &theoryName)
+{
+    return namesListFromRecords<ProofRecord>(proofsRecordsFilePath(logicalSystemName, theoryName));
+}
+
+bool StorageManager::proofExists(const QString &logicalSystemName, const QString &theoryName, const QString &proofName)
+{
+    return proofsNamesList(logicalSystemName, theoryName).contains(proofName);
 }
 
 unsigned int StorageManager::retrieveCurrentProofId(const QString &logicalSystemName, const QString &theoryName)

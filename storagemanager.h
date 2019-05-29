@@ -30,6 +30,8 @@ public:
 
     //Logical System
     static QVector<LogicalSystemRecord> retrieveLogicalSystemsRecords();
+    static QStringList logicalSystemsNamesList();
+    static bool logicalSystemExists(const QString &systemName);
     static void storeLogicalSystemsRecords(const QVector<LogicalSystemRecord> &records);
     static void setupLogicalSystemDir(const LogicalSystem &system, const QStringList &inferenceRulesNamesList);
     static void deleteLogicalSystemDir(const QString &systemName);
@@ -39,6 +41,8 @@ public:
 
     //Theory
     static QVector<TheoryRecord> retrieveTheoriesRecords(const QString &logicalSystemName);
+    static QStringList theoriesNamesList(const QString &logicalSystemName);
+    static bool theoryExists(const QString &logicalSystemName, const QString &theoryName);
     static void storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records);
     static void setupTheoryDir(const QString &logicalSystemName, const Theory &theory, const TheoryPluginsRecord &pluginsRecord);
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
@@ -47,10 +51,24 @@ public:
 
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName);
+    static QStringList proofsNamesList(const QString &logicalSystemName, const QString &theoryName);
+    static bool proofExists(const QString &logicalSystemName, const QString &theoryName, const QString &proofName);
     static unsigned int retrieveCurrentProofId(const QString &logicalSystemName, const QString &theoryName);
     static void storeCurrentProofId(const QString &logicalSystemName, const QString &theoryName, const unsigned int id);
     static void storeProofsRecords(const QString &logicalSystemName, const QString &theoryName, const QVector<ProofRecord> &records);
     static void storeProofData(const QString &logicalSystemName, const QString &theoryName, const Proof &proof);
+
+    //Plugins
+    static QStringList signaturePluginsList();
+    static bool signaturePluginExists(const QString &pluginName);
+    static QStringList inferenceRulesPluginsList();
+    static bool inferenceRulePluginExists(const QString &pluginName);
+    static QStringList inferenceTacticsPluginsList();
+    static bool inferenceTacticPluginExists(const QString &pluginName);
+    static QStringList preProcessorPluginsList();
+    static bool preProcessorPluginExists(const QString &pluginName);
+    static QStringList postProcessorPluginsList();
+    static bool postProcessorPluginExists(const QString &pluginName);
 
     // Files, Dirs and Paths
 
@@ -97,11 +115,11 @@ public:
     static const QString preProcessorPluginsDirName;
     static const QString postProcessorPluginsDirName;
     static QString pluginsDirPath();
-    static QString signaturesPluginsDirPath();
-    static QString inferenceRulesPluginsDirPath();
-    static QString inferenceTacticsPluginsDirPath();
-    static QString preProcessorsPluginsDirPath();
-    static QString postProcessorsPluginsDirPath();
+    static QString signaturePluginsDirPath();
+    static QString inferenceRulePluginsDirPath();
+    static QString inferenceTacticPluginsDirPath();
+    static QString preProcessorPluginsDirPath();
+    static QString postProcessorPluginsDirPath();
     static QString signaturePluginPath(const QString &pluginName);
     static QString inferenceRulePluginPath(const QString &pluginName);
     static QString inferenceTacticPluginPath(const QString &pluginName);
@@ -125,6 +143,19 @@ private:
     static void storeRecords(const QVector<T> &records, const QString &recordsFilePath)
     {
         writeComponent<QVector<T>>(recordsFilePath, records);
+    }
+
+    template <class T>
+    static QStringList namesListFromRecords(const QString &recordsFilePath)
+    {
+        const QVector<T> records = retrieveRecords<T>(recordsFilePath);
+        QStringList namesList;
+        for(const T &record : records)
+        {
+            namesList << record.getName();
+        }
+
+        return namesList;
     }
 
     template<class T>
@@ -159,6 +190,7 @@ private:
     static void checkDirExistence(const QDir &dir);
     static void mkDir(const QDir &dir, const QString &dirName);
     static void rmDir(QDir &dir);
+    static QStringList listDirPlugins(const QString &dirPath);
 
     //Auxiliary Functions
 

@@ -27,6 +27,7 @@ public:
                              const QStringList &inferenceRulesNamesList,
                              const Type &wffType) const;
     void loadLogicalSystem(const QString &name);
+    void unloadLogicalSystem();
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;
     LogicalSystem *getActiveLogicalSystem() const;
@@ -53,7 +54,7 @@ private:
     void checkActiveLogicalSystem() const;
     void checkActiveTheory() const;
     void loadInferenceRules(const QStringList &inferenceRulesNames, QVector<shared_ptr<const InferenceRule>> &inferenceRules) const;
-    void makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, Parser *parser) const;
+    void makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const;
     void linkPremises(const QStringList &premises, const QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const;
     ProofLinks linkConclusion(const QString &conclusion, const QVector<ProofRecord> &proofsRecords) const;
 

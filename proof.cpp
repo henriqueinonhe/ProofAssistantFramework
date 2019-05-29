@@ -3,7 +3,7 @@
 #include "formula.h"
 
 
-Proof::Proof(QDataStream &stream, const Signature * const signature) :
+Proof::Proof(QDataStream &stream, Signature * const signature) :
     premises(Formula::unserializeVector(stream, signature)),
     conclusion(stream, signature),
     linesOfProof(LineOfProof::unserializeVector(stream, signature))
@@ -95,6 +95,17 @@ void Proof::setComment(const unsigned int lineNumber, const QString &comment)
 QVector<LineOfProof> Proof::getLinesOfProof() const
 {
     return linesOfProof;
+}
+
+LineOfProof Proof::getLineOfProof(const int lineNumber) const
+{
+    if(lineNumber <= 0)
+    {
+        throw invalid_argument("Line of number must be a positive integer!");
+    }
+
+    const int zeroIndexCompensation = 1;
+    return linesOfProof[lineNumber - zeroIndexCompensation];
 }
 
 QString Proof::getDescription() const

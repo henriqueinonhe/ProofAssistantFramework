@@ -22,7 +22,7 @@ void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStrin
         throw std::invalid_argument("There is no inference rule associated with this call command!");
     }
 
-    proof.addLineOfProof(rule->apply(proof, argumentList));
+    proof.addLineOfProof(rule->apply(*theory->parser, proof, argumentList));
 }
 
 void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const

@@ -12,7 +12,7 @@ class QDataStream;
 class Proof
 {
 public:
-    Proof(QDataStream &stream, const Signature * const signature);
+    Proof(QDataStream &stream, Signature * const signature);
     Proof(const uint id,
           const QString &name,
           const QString &description,
@@ -32,6 +32,7 @@ public:
     Formula getConclusion() const;
 
     QVector<LineOfProof> getLinesOfProof() const;
+    LineOfProof getLineOfProof(const int lineNumber) const;
     void addLineOfProof(const LineOfProof &lineOfProof);
     void setComment(const unsigned int lineNumber, const QString &comment);
 

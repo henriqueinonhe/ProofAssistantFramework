@@ -52,7 +52,7 @@ void ProgramManager::createProof(const QString &name, const QString &description
     checkActiveTheory();
 
     //Make Formulas
-    Parser * const parser = activeTheory->parser.get();
+    const Parser * const parser = activeTheory->parser.get();
     QVector<Formula> premisesFormulas;
     makePremisesFormulas(premises, premisesFormulas, parser);
     Formula conclusionFormula(parser->parse(conclusion));
@@ -180,7 +180,7 @@ void ProgramManager::loadInferenceRules(const QStringList &inferenceRulesNames, 
     inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPathList);
 }
 
-void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, Parser *parser) const
+void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const
 {
     for(const QString &formula : premises)
     {
@@ -299,6 +299,11 @@ void ProgramManager::loadLogicalSystem(const QString &name)
     LogicalSystem *system = nullptr;
     StorageManager::loadLogicalSystem(name, system);
     activeLogicalSystem.reset(system);
+}
+
+void ProgramManager::unloadLogicalSystem()
+{
+    activeLogicalSystem == nullptr;
 }
 
 
