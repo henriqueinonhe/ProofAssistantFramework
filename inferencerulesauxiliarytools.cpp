@@ -7,7 +7,7 @@
 #include "parser.h"
 #include "signature.h"
 
-void InferenceRulesAuxiliaryTools::checkMainOperator(const QString &expectedMainOperator, const Formula &premiss)
+void InferenceRulesAuxiliaryTools::checkMainOperator(const QString &expectedMainOperator, const Formula &premiss, const unsigned int premissNumber)
 {
     const ParsingTree tree = premiss.getParsingTree();
     ParsingTreeConstIterator iter(&tree);
@@ -18,13 +18,21 @@ void InferenceRulesAuxiliaryTools::checkMainOperator(const QString &expectedMain
     if(actualMainOperator != expectedMainOperator)
     {
         QString errorMsg;
-        errorMsg += "Expected main operator for the premiss was \"";
+        errorMsg += "Expected main operator for the premiss number ";
+        errorMsg += QString::number(premissNumber);
+        errorMsg += " was \"";
         errorMsg += expectedMainOperator;
         errorMsg += "\", but \"";
         errorMsg += actualMainOperator;
         errorMsg += "\" was found instead!";
         throw invalid_argument(errorMsg.toStdString());
     }
+}
+
+void InferenceRulesAuxiliaryTools::checkArgumentListCompliance(const Parser &parser, const QStringList &argumentList, const QVector<ArgumentPrototype> &prototypes, const QVector<int> &possibleNumbers)
+{
+    checkArgumentListNumberCompliance(argumentList, possibleNumbers);
+    checkArgumentListPossibleValuesCompliance(parser, argumentList, prototypes);
 }
 
 void InferenceRulesAuxiliaryTools::checkArgumentListPossibleValuesCompliance(const Parser &parser, const QStringList &argumentList, const QVector<ArgumentPrototype> &prototypes)
@@ -41,7 +49,7 @@ void InferenceRulesAuxiliaryTools::checkArgumentListPossibleValuesCompliance(con
                 QString errorMsg;
                 errorMsg += "Argument number ";
                 errorMsg += QString::number(index + zeroIndexCompensation);
-                errorMsg += "must be a line number and therefore must be a positive integer, but \"";
+                errorMsg += " must be a line number and therefore must be a positive integer, but \"";
                 errorMsg += argument;
                 errorMsg += "\" was found!";
                 throw invalid_argument(errorMsg.toStdString());
@@ -131,9 +139,9 @@ void InferenceRulesAuxiliaryTools::checkArgumentListNumberCompliance(const QStri
         errorMsg += QString::number(*possibleNumber);
         errorMsg += ", or ";
     }
-    errorMsg += possibleNumbers.last();
+    errorMsg += QString::number(possibleNumbers.last());
     errorMsg += " arguments were expected, but ";
-    errorMsg += argumentList.size();
-    errorMsg += "were provided!";
+    errorMsg += QString::number(argumentList.size());
+    errorMsg += " were provided!";
     throw invalid_argument(errorMsg.toStdString());
 }

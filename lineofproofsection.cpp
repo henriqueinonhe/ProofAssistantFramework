@@ -11,7 +11,7 @@ void LineOfProofSection::checkIndexesOverlap(const unsigned int beginIndex, cons
     if(beginIndex >=  endIndex)
     {
         throw std::invalid_argument("The begin index of the line of proof section must be less than"
-                                    "than the end index!");
+                                    " the end index!");
     }
 }
 

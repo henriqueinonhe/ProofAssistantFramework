@@ -30,12 +30,11 @@ void LineOfProofSectionManager::addSection(const LineOfProofSection &section)
     unsigned int currentNodeIndex = 0;
     while(true)
     {
-        if(currentNodeIndex >= iter->getChildrenNumber())
+        if(currentNodeIndex >= iter->getChildrenNumber()) //Finished searching/checking
         {
             iter->appendChild(section);
             return;
         }
-
         iter.goToChild(currentNodeIndex);
 
         const LineOfProofSection &currentNodeSection = iter->getObj();
@@ -78,7 +77,7 @@ void LineOfProofSectionManager::addSection(const LineOfProofSection &section)
 LineOfProofSection LineOfProofSectionManager::getSection(const unsigned int beginIndex, const unsigned int endIndex) const
 {
     //TODO
-    //The searching method is really close to the addSection method
+    //The searching method is really similar to the addSection method
     //I do not need this now, so I will wait till this is necessary!
 }
 

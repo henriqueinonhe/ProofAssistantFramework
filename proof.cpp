@@ -12,6 +12,7 @@ Proof::Proof(QDataStream &stream, Signature * const signature) :
            >> name
            >> description
            >> sectioning
+           >> specialData
            >> linkedWithAxioms;
 }
 
@@ -81,6 +82,16 @@ void Proof::insertPremisesAsLinesOfProof()
     }
 }
 
+QByteArray Proof::getSpecialData() const
+{
+    return specialData;
+}
+
+void Proof::setSpecialData(const QByteArray &value)
+{
+    specialData = value;
+}
+
 void Proof::addLineOfProof(const LineOfProof &lineOfProof)
 {
     linesOfProof.push_back(lineOfProof);
@@ -101,7 +112,7 @@ LineOfProof Proof::getLineOfProof(const int lineNumber) const
 {
     if(lineNumber <= 0)
     {
-        throw invalid_argument("Line of number must be a positive integer!");
+        throw invalid_argument("Line number must be a positive integer!");
     }
 
     const int zeroIndexCompensation = 1;
@@ -128,6 +139,7 @@ QDataStream &operator <<(QDataStream &stream, const Proof &proof)
            << proof.name
            << proof.description
            << proof.sectioning
+           << proof.specialData
            << proof.linkedWithAxioms;
     return stream;
 }

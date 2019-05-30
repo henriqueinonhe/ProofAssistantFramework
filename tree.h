@@ -1,4 +1,4 @@
-﻿#ifndef TREE_H
+#ifndef TREE_H
 #define TREE_H
 
 #include <QLinkedList>
@@ -19,6 +19,16 @@ public:
     Tree() :
         root(this, nullptr, T())
     {}
+
+    bool operator==(const Tree &other) const
+    {
+        return this->root == other.root;
+    }
+
+    bool operator!=(const Tree &other) const
+    {
+        return !(*this == other);
+    }
 
     unsigned int getHeight() const
     {
@@ -52,9 +62,52 @@ class TreeNode
 {
 public:
 
+    bool operator==(const TreeNode &other) const
+    {
+        if(this->obj != other.obj)
+        {
+            return false;
+        }
+
+        if(this->children.size() != other.children.size())
+        {
+            return false;
+        }
+
+        for(int index = 0; index < this->children.size(); index++)
+        {
+            if(*this->children[index] != *other.children[index])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(const TreeNode &other) const
+    {
+        return !(*this == other);
+    }
+
     T &getObj()
     {
         return obj;
+    }
+
+    const T &getObj() const
+    {
+        return obj;
+    }
+
+    const QVector<shared_ptr<const TreeNode<T>>> &getChildren() const
+    {
+        return children;
+    }
+
+    QVector<shared_ptr<TreeNode<T>>> &getChildren()
+    {
+        return children;
     }
 
     void appendChild(const T &obj)
@@ -102,6 +155,22 @@ public:
         coordinatesString += ")";
 
         return coordinatesString;
+    }
+
+    bool hasNextSibling() const
+    {
+        const unsigned int ownChildNumber = getOwnChildNumber();
+        const unsigned int nextSiblingChildNumber = ownChildNumber + 1;
+
+        return nextSiblingChildNumber < parent->children.size();
+    }
+
+    bool hasPreviusSibling() const
+    {
+        const unsigned int ownChildNumber = getOwnChildNumber();
+        const unsigned int previousSiblingChildNumber = ownChildNumber - 1;
+
+        return previousSiblingChildNumber > 0;
     }
 
     bool isRoot() const
@@ -220,6 +289,27 @@ public:
 
         return *this;
     }
+
+    TreeIterator &goToNextSibling()
+    {
+        TreeNode<T> *parent = currentNode->parent;
+        const unsigned int ownChildNumber = currentNode->getOwnChildNumber();
+        const unsigned int nextSiblingChildNumber = ownChildNumber + 1;
+        currentNode = parent->children[nextSiblingChildNumber].get();
+
+        return *this;
+    }
+
+    TreeIterator &goToPreviousSibling()
+    {
+        TreeNode<T> *parent = currentNode->parent;
+        const unsigned int ownChildNumber = currentNode->getOwnChildNumber();
+        const unsigned int previousSiblingChildNumber = ownChildNumber - 1;
+        currentNode = parent->children[previousSiblingChildNumber].get();
+
+        return *this;
+    }
+
     TreeIterator &goToParent()
     {
         currentNode = currentNode->parent;
@@ -232,6 +322,7 @@ public:
 
         return *this;
     }
+
     TreeIterator &travelPath(const QString &path)
     {
         if(!checkPathStringValidity(path))
@@ -304,6 +395,129 @@ private:
     }
 
     TreeNode<T> *currentNode;
+};
+
+template <class T>
+class TreeConstIterator
+{
+public:
+    TreeConstIterator(Tree<T> *tree)
+    {
+        currentNode = &tree->root;
+    }
+
+    TreeConstIterator &goToChild(const unsigned int index)
+    {
+        currentNode = currentNode->children[index].get();
+
+        return *this;
+    }
+
+    TreeConstIterator &goToNextSibling()
+    {
+        TreeNode<T> *parent = currentNode->parent;
+        const unsigned int ownChildNumber = currentNode->getOwnChildNumber();
+        const unsigned int nextSiblingChildNumber = ownChildNumber + 1;
+        currentNode = parent->children[nextSiblingChildNumber].get();
+
+        return *this;
+    }
+
+    TreeConstIterator &goToPreviousSibling()
+    {
+        TreeNode<T> *parent = currentNode->parent;
+        const unsigned int ownChildNumber = currentNode->getOwnChildNumber();
+        const unsigned int previousSiblingChildNumber = ownChildNumber - 1;
+        currentNode = parent->children[previousSiblingChildNumber].get();
+
+        return *this;
+    }
+
+    TreeConstIterator &goToParent()
+    {
+        currentNode = currentNode->parent;
+
+        return *this;
+    }
+    TreeConstIterator &goToRoot()
+    {
+        currentNode = &currentNode->tree->root;
+
+        return *this;
+    }
+
+    TreeConstIterator &travelPath(const QString &path)
+    {
+        if(!checkPathStringValidity(path))
+        {
+            throw std::invalid_argument("This is not a valid path!");
+        }
+
+        const QVector<unsigned int> pathVector = convertStringToPath(path);
+
+        std::for_each(pathVector.begin(), pathVector.end(), [&](unsigned int index)
+        {
+            this->goToChild(index);
+        });
+
+        return *this;
+    }
+    TreeConstIterator &travelPath(const QVector<unsigned int> &path)
+    {
+        std::for_each(path.begin(), path.end(), [&](unsigned int index)
+        {
+            this->goToChild(index);
+        });
+
+        return *this;
+    }
+
+    Tree<T> &getTree() const
+    {
+        return *currentNode->tree;
+    }
+
+    TreeNode<T> *operator->()
+    {
+        return currentNode;
+    }
+    TreeNode<T> &operator*()
+    {
+        return *currentNode;
+    }
+
+
+private:
+    bool checkPathStringValidity(const QString &path) const
+    {
+        /* Path coordinates strings are in the form:
+         * "(x1,x2,...,xn)". */
+
+        QRegularExpression regex("^\\((\\d,)*\\d\\)$");
+
+        return regex.match(path).hasMatch();
+    }
+    QVector<unsigned int> convertStringToPath(const QString &path) const
+    {
+        QVector<unsigned int> pathVector;
+        const QString uncencasedPath = removeOuterParenthesis(path);
+        const QStringList coordinatesList = uncencasedPath.split(",");
+
+        std::for_each(coordinatesList.begin(), coordinatesList.end(), [&](const QString &str)
+        {
+            pathVector.push_back(str.toInt());
+        });
+
+        return pathVector;
+    }
+    QString removeOuterParenthesis(const QString &path) const
+    {
+        const unsigned int parenthesisPadding = 1;
+        const unsigned int numberOfParenthesis = 2;
+        return path.mid(parenthesisPadding, path.size() - numberOfParenthesis * parenthesisPadding);
+    }
+
+    const TreeNode<T> *currentNode;
 };
 
 #endif // TREE_H

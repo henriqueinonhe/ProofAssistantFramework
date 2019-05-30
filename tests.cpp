@@ -138,6 +138,26 @@ TEST_CASE("Trees")
         CHECK_THROWS(iter.travelPath("(0,0,0"));
         CHECK_THROWS(iter.travelPath("0,0"));
     }
+
+    SECTION("Tree Siblings Navigation")
+    {
+        iter->appendChild("Jaggers");
+        iter->appendChild("Freigers");
+        iter->appendChild("Fronkers");
+
+        iter.goToChild(0);
+        iter.goToNextSibling();
+        CHECK(iter->getObj() == "Freigers");
+
+        iter.goToNextSibling();
+        CHECK(iter->getObj() == "Fronkers");
+
+        iter.goToPreviousSibling();
+        CHECK(iter->getObj() == "Freigers");
+
+        iter.goToPreviousSibling();
+        CHECK(iter->getObj() == "Jaggers");
+    }
 }
 
 TEST_CASE("Logical System")
