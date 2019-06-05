@@ -87,7 +87,7 @@ QByteArray Proof::getSpecialData() const
     return specialData;
 }
 
-void Proof::setSpecialData(const QByteArray &value)
+void Proof::setSpecialData(const QByteArray &value) const
 {
     specialData = value;
 }

@@ -41,7 +41,7 @@ public:
     unsigned int getId() const;
 
     QByteArray getSpecialData() const;
-    void setSpecialData(const QByteArray &value);
+    void setSpecialData(const QByteArray &value) const;
 
 private:
     void insertPremisesAsLinesOfProof();
@@ -51,9 +51,9 @@ private:
     QString description;
     QVector<Formula> premises;
     Formula conclusion;
-    QVector<LineOfProof> linesOfProof; //Initialize lines of proof from premises
+    QVector<LineOfProof> linesOfProof;
     LineOfProofSectionManager sectioning;
-    QByteArray specialData;
+    mutable QByteArray specialData;
     bool linkedWithAxioms;
 
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);

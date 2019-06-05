@@ -11,6 +11,16 @@ void InferenceRulesAuxiliaryTools::checkMainOperator(const QString &expectedMain
 {
     const ParsingTree tree = premiss.getParsingTree();
     ParsingTreeConstIterator iter(&tree);
+    if(iter->isChildless())
+    {
+        QString errorMsg;
+        errorMsg += "Expected main operator for the premiss number ";
+        errorMsg += QString::number(premissNumber);
+        errorMsg += " was \"";
+        errorMsg += expectedMainOperator;
+        errorMsg += "\", but the premiss is atomic!";
+        throw invalid_argument(errorMsg.toStdString());
+    }
     const unsigned int mainOperatorNodeIndex = 0;
     iter.goToChild(mainOperatorNodeIndex);
 

@@ -158,6 +158,11 @@ TEST_CASE("Trees")
         iter.goToPreviousSibling();
         CHECK(iter->getObj() == "Jaggers");
     }
+
+    SECTION("Serialization")
+    {
+
+    }
 }
 
 TEST_CASE("Logical System")

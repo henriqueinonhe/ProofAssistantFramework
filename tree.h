@@ -11,6 +11,7 @@ using namespace std;
 
 template <class T> class TreeNode;
 template <class T> class TreeIterator;
+template <class T> class TreeConstIterator;
 
 template <class T>
 class Tree
@@ -40,19 +41,17 @@ private:
 
 friend class TreeNode<T>;
 friend class TreeIterator<T>;
+friend class TreeConstIterator<T>;
 friend QDataStream &operator <<(QDataStream &stream, const Tree<T> &tree)
 {
-    //TODO
-
-//    stream << tree.root;
-//    return stream;
+    stream << tree.root;
+    return stream;
 }
 
 friend QDataStream &operator >>(QDataStream &stream, Tree<T> &tree)
 {
-    //TODO
-//    stream >> tree.root;
-//    return stream;
+    stream >> tree.root;
+    return stream;
 }
 
 };
@@ -100,7 +99,7 @@ public:
         return obj;
     }
 
-    const QVector<shared_ptr<const TreeNode<T>>> &getChildren() const
+    const QVector<shared_ptr<TreeNode<T>>> &getChildren() const
     {
         return children;
     }
@@ -272,15 +271,51 @@ private:
 
 friend class Tree<T>;
 friend class TreeIterator<T>;
+friend class TreeConstIterator<T>;
+
+friend QDataStream &operator <<(QDataStream &stream, const TreeNode &node)
+{
+    stream << node.getObj();
+    stream << node.getChildrenNumber();
+    for(const shared_ptr<TreeNode> &child : node.children)
+    {
+        stream << *child;
+    }
+    return stream;
+}
+
+friend QDataStream &operator >>(QDataStream &stream, TreeNode &node)
+{
+    unsigned int childrenNumber;
+    stream >> node.obj;
+    stream >> childrenNumber;
+    for(unsigned int index = 0; index < childrenNumber; index++)
+    {
+        node.appendChild(T());
+    }
+    for(shared_ptr<TreeNode> &child : node.children)
+    {
+        stream >> *child;
+    }
+}
+
 };
 
 template <class T>
 class TreeIterator
 {
 public:
-    TreeIterator(Tree<T> *tree)
+    TreeIterator(QDataStream &stream, Tree<T> *tree) :
+        currentNode(tree->root)
     {
-        currentNode = &tree->root;
+        QVector<unsigned int> coordinates;
+        stream >> coordinates;
+        travelPath(coordinates);
+    }
+
+    TreeIterator(Tree<T> *tree) :
+        currentNode(&tree->root)
+    {
     }
 
     TreeIterator &goToChild(const unsigned int index)
@@ -358,7 +393,18 @@ public:
     {
         return currentNode;
     }
+
     TreeNode<T> &operator*()
+    {
+        return *currentNode;
+    }
+
+    const TreeNode<T> *operator->() const
+    {
+        return currentNode;
+    }
+
+    const TreeNode<T> &operator*() const
     {
         return *currentNode;
     }
@@ -395,15 +441,30 @@ private:
     }
 
     TreeNode<T> *currentNode;
+
+friend QDataStream &operator <<(QDataStream &stream, const TreeIterator &iter)
+{
+    stream << iter->getCoordinates();
+    return stream;
+}
+
+friend QDataStream &operator >>(QDataStream &stream, TreeIterator &iter)
+{
+    QVector<unsigned int> coordinates;
+    stream >> coordinates;
+    iter.travelPath(coordinates);
+    return stream;
+}
+
 };
 
 template <class T>
 class TreeConstIterator
 {
 public:
-    TreeConstIterator(Tree<T> *tree)
+    TreeConstIterator(const Tree<T> *tree) :
+        currentNode(&tree->root)
     {
-        currentNode = &tree->root;
     }
 
     TreeConstIterator &goToChild(const unsigned int index)
@@ -477,11 +538,22 @@ public:
         return *currentNode->tree;
     }
 
-    TreeNode<T> *operator->()
+    const TreeNode<T> *operator->() const
     {
         return currentNode;
     }
-    TreeNode<T> &operator*()
+
+    const TreeNode<T> *operator->()
+    {
+        return currentNode;
+    }
+
+    const TreeNode<T> &operator*()
+    {
+        return *currentNode;
+    }
+
+    const TreeNode<T> &operator*() const
     {
         return *currentNode;
     }
