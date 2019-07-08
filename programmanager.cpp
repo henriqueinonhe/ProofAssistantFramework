@@ -41,6 +41,11 @@ void ProgramManager::loadTheory(const QString &name)
     activeTheory.reset(theory);
 }
 
+void ProgramManager::unloadTheory()
+{
+    activeTheory = nullptr;
+}
+
 Theory *ProgramManager::getActiveTheory() const
 {
     checkActiveTheory();
@@ -303,7 +308,7 @@ void ProgramManager::loadLogicalSystem(const QString &name)
 
 void ProgramManager::unloadLogicalSystem()
 {
-    activeLogicalSystem == nullptr;
+    activeLogicalSystem = nullptr;
 }
 
 

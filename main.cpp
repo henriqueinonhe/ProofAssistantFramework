@@ -1,4 +1,4 @@
-﻿#include <QCoreApplication>
+#include <QCoreApplication>
 
 #define CATCH_CONFIG_MAIN
 

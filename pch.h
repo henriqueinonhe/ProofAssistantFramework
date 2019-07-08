@@ -11,5 +11,7 @@
 #include <QFile>
 #include <QDir>
 #include <QPluginLoader>
+#include <unordered_map>
+#include "token.h"
 
 #endif // PCH_H

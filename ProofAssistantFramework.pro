@@ -3,6 +3,8 @@ QT -= gui
 
 CONFIG += c++11
 
+QMAKE_CXXFLAGS += -gdwarf-2
+
 TARGET = ProofAssistantFramework
 CONFIG += console
 CONFIG -= app_bundle

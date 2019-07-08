@@ -736,10 +736,6 @@ TEST_CASE("File System Teardown")
     QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data").removeRecursively();
 }
 
-TEST_CASE("Dirty Fix")
-{
-    DirtyFix::fix();
-}
 
 
 

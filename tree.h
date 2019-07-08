@@ -297,6 +297,7 @@ friend QDataStream &operator >>(QDataStream &stream, TreeNode &node)
     {
         stream >> *child;
     }
+    return stream;
 }
 
 };

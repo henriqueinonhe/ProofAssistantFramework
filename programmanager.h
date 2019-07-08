@@ -36,6 +36,7 @@ public:
     //Theory
     void createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const;
     void loadTheory(const QString &name);
+    void unloadTheory();
     void removeTheory(const QString &theoryName) const;
     bool checkTheoryNameCollision(const QString &logicalSystemName, const QString &name) const;
     Theory *getActiveTheory() const;
