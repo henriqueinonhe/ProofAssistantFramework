@@ -70,7 +70,7 @@ void TheoryBuilder::removeAxiom(const QString &axiom)
 {
     for(const Formula &axiomFormula : axioms)
     {
-        if(axiomFormula.toString() == axiom)
+        if(axiomFormula.formattedString() == axiom)
         {
             axioms.removeAll(axiomFormula);
             return;
@@ -82,6 +82,18 @@ void TheoryBuilder::removeAxiom(const QString &axiom)
     errorMsg += axiom;
     errorMsg += "\".";
     throw invalid_argument(errorMsg.toStdString());
+}
+
+void TheoryBuilder::removeAxiom(const unsigned int index)
+{
+    if(index >= static_cast<uint>(axioms.size()))
+    {
+        throw invalid_argument("There is no axiom associated with this index!");
+    }
+
+    auto iter = axioms.begin();
+    iter += index;
+    axioms.removeOne(*iter);
 }
 
 void TheoryBuilder::loadSignature(const QString &signatureName)

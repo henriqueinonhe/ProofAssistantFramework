@@ -25,6 +25,7 @@ public:
 
     void addAxiom(const QString &axiom);
     void removeAxiom(const QString &axiom);
+    void removeAxiom(const unsigned int index);
 
     QLinkedList<Formula> getAxioms() const;
 
