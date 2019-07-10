@@ -62,31 +62,30 @@ void ProgramManager::createProof(const QString &name, const QString &description
     makePremisesFormulas(premises, premisesFormulas, parser);
     Formula conclusionFormula(parser->parse(conclusion));
 
-    //Proof Links
+    //Proof Id
     const QString activeLogicalSystemName = activeLogicalSystem->getName();
     const QString activeTheoryName = activeTheory->getName();
+    const unsigned int currentProofId = StorageManager::retrieveCurrentProofId(activeLogicalSystemName, activeTheoryName);
+
+    //Proof Links
     QVector<ProofRecord> proofsRecords = StorageManager::retrieveProofsRecords(activeLogicalSystemName, activeTheoryName);
     QVector<ProofLinks> premisesLinks;
-    linkPremises(premises, proofsRecords, premisesLinks);
-    ProofLinks conclusionLinks = linkConclusion(conclusion, proofsRecords);
-    //FIXME! We should also retroactively link previously stored proof links! They are reciprocal!
-
-    //Proof Id
-    const unsigned int currentId = StorageManager::retrieveCurrentProofId(activeLogicalSystemName, activeTheoryName);
+    linkPremises(currentProofId, premises, proofsRecords, premisesLinks);
+    ProofLinks conclusionLinks = linkConclusion(currentProofId, conclusion, proofsRecords);
 
     //Create Proof Record
-    ProofRecord record(currentId, name, description, premisesLinks, conclusionLinks);
+    ProofRecord record(currentProofId, name, description, premisesLinks, conclusionLinks);
     proofsRecords.push_back(record);
 
     //Create Proof
-    Proof proof(currentId, name, description, premisesFormulas, conclusionFormula);
+    Proof proof(currentProofId, name, description, premisesFormulas, conclusionFormula);
 
     //Store
-    const QString proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, currentId);
-    const unsigned int newId = currentId + 1;
+    const QString proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, currentProofId);
+    const unsigned int newProofId = currentProofId + 1;
     StorageManager::storeProofsRecords(activeLogicalSystemName, activeTheoryName, proofsRecords);
     StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
-    StorageManager::storeCurrentProofId(activeLogicalSystemName, activeTheoryName, newId);
+    StorageManager::storeCurrentProofId(activeLogicalSystemName, activeTheoryName, newProofId);
 }
 
 ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
@@ -193,32 +192,34 @@ void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<F
     }
 }
 
-void ProgramManager::linkPremises(const QStringList &premises, const QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const
+void ProgramManager::linkPremises(const unsigned int currentProofId, const QStringList &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const
 {
     for(const QString &premiss : premises)
     {
         QVector<unsigned int> linkedProofsIds;
-        for(const ProofRecord &record : proofsRecords)
+        for(ProofRecord &record : proofsRecords)
         {
             if(premiss == record.getConclusion())
             {
                 linkedProofsIds.push_back(record.getId());
+                record.addConclusionLinkId(currentProofId);
             }
         }
         premisesLinks.push_back(ProofLinks(premiss, linkedProofsIds));
     }
 }
 
-ProofLinks ProgramManager::linkConclusion(const QString &conclusion, const QVector<ProofRecord> &proofsRecords) const
+ProofLinks ProgramManager::linkConclusion(const unsigned int currentProofId, const QString &conclusion, QVector<ProofRecord> &proofsRecords) const
 {
     QVector<unsigned int> linkedProofsIds;
-    for(const ProofRecord &record : proofsRecords)
+    for(ProofRecord &record : proofsRecords)
     {
         for(const QString &premiss : record.getPremises())
         {
             if(conclusion == premiss)
             {
                 linkedProofsIds.push_back(record.getId());
+                record.addPremissLinkId(premiss, currentProofId);
                 break;
             }
         }

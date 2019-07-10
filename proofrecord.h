@@ -30,8 +30,10 @@ public:
     QString getConclusion() const;
 
     QVector<ProofLinks> getPremisesLinks() const;
+    void addPremissLinkId(const QString &formula, const unsigned int id);
 
     ProofLinks getConclusionLinks() const;
+    void addConclusionLinkId(const unsigned int id);
 
     bool getProofIsDone() const;
 

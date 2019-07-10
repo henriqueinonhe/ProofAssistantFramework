@@ -22,6 +22,11 @@ QVector<unsigned int> ProofLinks::getLinkedProofsIds() const
     return linkedProofsIds;
 }
 
+void ProofLinks::addLinkedProofId(const unsigned int id)
+{
+    linkedProofsIds.push_back(id);
+}
+
 bool ProofLinks::operator==(const ProofLinks &other) const
 {
     return getFormula() == other.formula &&

@@ -16,6 +16,7 @@ public:
 
     QString getFormula() const;
     QVector<unsigned int> getLinkedProofsIds() const;
+    void addLinkedProofId(const unsigned int id);
 
     bool operator==(const ProofLinks &other) const;
     bool operator!=(const ProofLinks &other) const;
