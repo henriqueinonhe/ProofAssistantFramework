@@ -22,6 +22,7 @@ INCLUDEPATH += ../Language/Parser \
                ../Language/Utils
 
 SOURCES += main.cpp \
+    logicalsystempluginsrecord.cpp \
     tests.cpp \
     ../Language/Parser/formula.cpp \
     ../Language/Parser/lexer.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     inferenceruleplugin.h \
     inferencetacticplugin.h \
     logicalsystem.h \
+    logicalsystempluginsrecord.h \
     pch.h \
     pluginfactoryinterface.h \
     smartpointersserialization.h \

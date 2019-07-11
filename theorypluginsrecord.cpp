@@ -1,13 +1,7 @@
 #include "theorypluginsrecord.h"
 #include <QDataStream>
 
-TheoryPluginsRecord::TheoryPluginsRecord()
-{
-
-}
-
-TheoryPluginsRecord::TheoryPluginsRecord(const QString &signaturePluginName, const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorsPluginsNameList, const QStringList &postProcessorsPluginsNameList) :
-    signaturePluginName(signaturePluginName),
+TheoryPluginsRecord::TheoryPluginsRecord(const QStringList &inferenceTacticsPluginsNameList, const QStringList &preProcessorsPluginsNameList, const QStringList &postProcessorsPluginsNameList) :
     inferenceTacticsPluginsNameList(inferenceTacticsPluginsNameList),
     preProcessorsPluginsNameList(preProcessorsPluginsNameList),
     postProcessorsPluginsNameList(postProcessorsPluginsNameList)
@@ -16,8 +10,7 @@ TheoryPluginsRecord::TheoryPluginsRecord(const QString &signaturePluginName, con
 
 QDataStream &operator <<(QDataStream &stream, const TheoryPluginsRecord &record)
 {
-    stream << record.signaturePluginName
-           << record.inferenceTacticsPluginsNameList
+    stream << record.inferenceTacticsPluginsNameList
            << record.preProcessorsPluginsNameList
            << record.postProcessorsPluginsNameList;
     return stream;
@@ -25,8 +18,7 @@ QDataStream &operator <<(QDataStream &stream, const TheoryPluginsRecord &record)
 
 QDataStream &operator >>(QDataStream &stream, TheoryPluginsRecord &record)
 {
-    stream >> record.signaturePluginName
-           >> record.inferenceTacticsPluginsNameList
+    stream >> record.inferenceTacticsPluginsNameList
            >> record.preProcessorsPluginsNameList
            >> record.postProcessorsPluginsNameList;
     return stream;

@@ -7,6 +7,7 @@
 #include "pluginmanager.h"
 #include "theorypluginsrecord.h"
 #include "proof.h"
+#include "logicalsystempluginsrecord.h"
 
 QString StorageManager::rootPath = "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox";
 const QString StorageManager::storageFilesSuffix = ".dat";
@@ -273,9 +274,9 @@ QStringList StorageManager::listDirPlugins(const QString &dirPath)
     return dir.entryList();
 }
 
-void StorageManager::storeLogicalSystemPluginsData(const QString &systemName, const QStringList &inferenceRulesNames)
+void StorageManager::storeLogicalSystemPluginsData(const QString &systemName, const LogicalSystemPluginsRecord &pluginsRecord)
 {
-    writeComponent(logicalSystemPluginsDataFilePath(systemName), inferenceRulesNames);
+    writeComponent(logicalSystemPluginsDataFilePath(systemName), pluginsRecord);
 }
 
 void StorageManager::storeLogicalSystemData(const QString &systemName, const LogicalSystem &system)
@@ -324,7 +325,7 @@ QString StorageManager::logicalSystemsDirPath()
     return storageDirPath() + "/"  + logicalSystemsDirName;
 }
 
-void StorageManager::setupLogicalSystemDir(const LogicalSystem &system, const QStringList &inferenceRulesNames)
+void StorageManager::setupLogicalSystemDir(const LogicalSystem &system, const LogicalSystemPluginsRecord &pluginsRecord)
 {
     QDir dir(logicalSystemsDirPath());
     const QString systemName = system.getName();
@@ -338,7 +339,7 @@ void StorageManager::setupLogicalSystemDir(const LogicalSystem &system, const QS
     mkDir(dir, "Theories");
 
     //Serialization
-    storeLogicalSystemPluginsData(systemName, inferenceRulesNames);
+    storeLogicalSystemPluginsData(systemName, pluginsRecord);
     storeLogicalSystemData(systemName, system);
 
     //Theories Records
@@ -375,24 +376,30 @@ void StorageManager::storeTheoryData(const QString &logicalSystemName, const The
     writeComponent(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
 }
 
-void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const QString &theoryName, std::shared_ptr<Signature> &signature, QVector<std::shared_ptr<const InferenceTactic> > &inferenceTactics, QVector<std::shared_ptr<StringProcessor> > &preProcessors, QVector<std::shared_ptr<StringProcessor> > &postProcessors)
+void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const QString &theoryName, TheoryPluginsRecord &theoryPluginsRecord, std::shared_ptr<Signature> &signature, QVector<std::shared_ptr<const InferenceTactic> > &inferenceTactics, QVector<std::shared_ptr<StringProcessor> > &preProcessors, QVector<std::shared_ptr<StringProcessor> > &postProcessors)
 {
-    TheoryPluginsRecord pluginsRecord;
-    readComponent(theoryPluginsDataFilePath(logicalSystemName, theoryName), pluginsRecord);
+    LogicalSystemPluginsRecord systemPluginsRecord;
+    readComponent(logicalSystemPluginsDataFilePath(logicalSystemName), systemPluginsRecord);
+    readComponent(theoryPluginsDataFilePath(logicalSystemName, theoryName), theoryPluginsRecord);
 
-    const QString signaturePluginPath = StorageManager::signaturePluginPath(pluginsRecord.signaturePluginName);
-    const QStringList inferenceTacticsPluginsPaths = convertPluginNamesToPaths(pluginsRecord.inferenceTacticsPluginsNameList, inferenceTacticPluginPath);
-    const QStringList preProcessorsPluginsPaths = convertPluginNamesToPaths(pluginsRecord.preProcessorsPluginsNameList, preProcessorPluginPath);
-    const QStringList postProcessorsPluginsPaths = convertPluginNamesToPaths(pluginsRecord.postProcessorsPluginsNameList, postProcessorPluginPath);
+    const QString signaturePluginPath = StorageManager::signaturePluginPath(systemPluginsRecord.getSignatureName());
+    const QStringList inferenceTacticsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.inferenceTacticsPluginsNameList, inferenceTacticPluginPath);
+    const QStringList preProcessorsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.preProcessorsPluginsNameList, preProcessorPluginPath);
+    const QStringList postProcessorsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.postProcessorsPluginsNameList, postProcessorPluginPath);
     signature = PluginManager::fetchPlugin<Signature>(signaturePluginPath);
     inferenceTactics = PluginManager::fetchPluginVector<const InferenceTactic>(inferenceTacticsPluginsPaths);
     preProcessors = PluginManager::fetchPluginVector<StringProcessor>(preProcessorsPluginsPaths);
     postProcessors = PluginManager::fetchPluginVector<StringProcessor>(postProcessorsPluginsPaths);
 }
 
-void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem * &loadedSystem)
+void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem * &loadedSystem, LogicalSystemPluginsRecord &pluginsRecord)
 {
+    //NOTE REFACTOR!
     QVector<shared_ptr<const InferenceRule>> inferenceRules = loadInferenceRules(systemName);
+    QFile pluginsFile(logicalSystemPluginsDataFilePath(systemName));
+    accessFile(pluginsFile, QIODevice::ReadOnly);
+    QDataStream pluginStream(&pluginsFile);
+    pluginStream >> pluginsRecord;
 
     QFile dataFile(logicalSystemDataFilePath(systemName));
     accessFile(dataFile, QIODevice::ReadOnly);
@@ -447,7 +454,7 @@ void StorageManager::saveTheory(Theory &theory)
     writeComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
 }
 
-void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory * &theory)
+void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory * &theory, TheoryPluginsRecord &pluginsRecord)
 {
     //Load Theory Plugins
     const QString logicalSystemName = parentLogic.getName();
@@ -456,7 +463,7 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
-    loadTheoryPlugins(logicalSystemName, theoryName, signature, inferenceTactics, preProcessors, postProcessors);
+    loadTheoryPlugins(logicalSystemName, theoryName, pluginsRecord, signature, inferenceTactics, preProcessors, postProcessors);
 
     //Load Theory
     QFile dataFile(StorageManager::theoryDataFilePath(logicalSystemName, theoryName));

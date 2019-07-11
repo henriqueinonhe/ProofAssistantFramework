@@ -37,7 +37,7 @@ void ProgramManager::loadTheory(const QString &name)
 {
     checkActiveLogicalSystem();
     Theory *theory = nullptr;
-    StorageManager::loadTheory(*activeLogicalSystem, name, theory);
+    StorageManager::loadTheory(*activeLogicalSystem, name, theory, theoryPluginsRecord);
     activeTheory.reset(theory);
 }
 
@@ -108,7 +108,6 @@ void ProgramManager::saveProof(const ProofAssistant &assistant) const
 
 void ProgramManager::createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const
 {
-    //NOTE Maybe we should check signature compliance here
     checkActiveLogicalSystem();
 
     const QString theoryName = builder.getName();
@@ -184,6 +183,12 @@ void ProgramManager::loadInferenceRules(const QStringList &inferenceRulesNames, 
     inferenceRules = PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPathList);
 }
 
+void ProgramManager::loadSignature(const QString &signatureName, shared_ptr<Signature> &signature) const
+{
+    QString signaturePath = StorageManager::signaturePluginPath(signatureName);
+    signature = PluginManager::fetchPlugin<Signature>(signaturePath);
+}
+
 void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const
 {
     for(const QString &formula : premises)
@@ -230,6 +235,7 @@ ProofLinks ProgramManager::linkConclusion(const unsigned int currentProofId, con
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
                                          const QStringList &inferenceRulesNamesList,
+                                         const QString &signatureName,
                                          const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -238,8 +244,10 @@ void ProgramManager::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    QVector<shared_ptr<const InferenceRule>> inferenceRules;;
+    QVector<shared_ptr<const InferenceRule>> inferenceRules;
     loadInferenceRules(inferenceRulesNamesList, inferenceRules);
+    shared_ptr<Signature> signature;
+    loadSignature(signatureName, signature);
     LogicalSystem logicalSystem(name, description, inferenceRules, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
 
     //LogicalSystemRecord
@@ -248,8 +256,9 @@ void ProgramManager::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     //File management
+    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signatureName);
     StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::setupLogicalSystemDir(logicalSystem, inferenceRulesNamesList);
+    StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
 }
 
 QVector<LogicalSystemRecord> ProgramManager::getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const
@@ -303,7 +312,7 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
     LogicalSystem *system = nullptr;
-    StorageManager::loadLogicalSystem(name, system);
+    StorageManager::loadLogicalSystem(name, system, logicalSystemPluginsRecord);
     activeLogicalSystem.reset(system);
 }
 

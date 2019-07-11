@@ -232,8 +232,9 @@ TEST_CASE("Theory")
     TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum", make_shared<TableSignature>());
 
     shared_ptr<Signature> signature = theoryBuilder.getSignature();
-    signature->addToken(CoreToken("P", Type("o")));
-    signature->addToken(CoreToken("~", Type("o->o")));
+    TableSignature *tableSignature = dynamic_cast<TableSignature *>(signature.get());
+    tableSignature->addToken(CoreToken("P", Type("o")));
+    tableSignature->addToken(CoreToken("~", Type("o->o")));
 
     theoryBuilder.addAxiom("P");
     theoryBuilder.addAxiom("(~ P)");
@@ -575,8 +576,9 @@ TEST_CASE("Plugins")
 
     //Signature
     shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("TableSignaturePlugin"));
-    CHECK_NOTHROW(signature->addToken(CoreToken("P", Type("o"))));
-    CHECK_THROWS(signature->addToken(CoreToken("P", Type("o"))));
+    TableSignature *tableSignature = dynamic_cast<TableSignature *>(signature.get());
+    CHECK_NOTHROW(tableSignature->addToken(CoreToken("P", Type("o"))));
+    CHECK_THROWS(tableSignature->addToken(CoreToken("P", Type("o"))));
     CHECK(signature->getTokenPointer("P")->getString() == "P");
     CHECK(dynamic_cast<const CoreToken *>(signature->getTokenPointer("P"))->getType() == Type("o"));
 
@@ -608,6 +610,7 @@ TEST_CASE("Framework Integration I")
         manager.createLogicalSystem("First Order Logic",
                                     "Predicate Logic With Quantifiers",
                                     inferenceRulesNamesList,
+                                    "TableSignaturePlugin",
                                     Type("o"));
 
         const LogicalSystemRecord logicalSystemRecord = StorageManager::retrieveLogicalSystemsRecords().first();
@@ -635,7 +638,7 @@ TEST_CASE("Framework Integration I")
         {
             QStringList inferenceList;
             inferenceList << "YadayadaRule";
-            CHECK_THROWS_WITH(manager.createLogicalSystem("Name", "Description", inferenceList, Type("o")), "The plugin at \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\" couldn't be loaded!");
+            CHECK_THROWS_WITH(manager.createLogicalSystem("Name", "Description", inferenceList, "TableSignature", Type("o")), "The plugin at \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\" couldn't be loaded!");
             CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
         }
     }
@@ -648,6 +651,7 @@ TEST_CASE("Framework Integration I")
         manager.createLogicalSystem("Propositional Logic",
                                     "Classical Propositional Logic",
                                     inferenceRulesNamesList,
+                                    "TableSignaturePlugin",
                                     Type("o"));
 
         manager.loadLogicalSystem("Propositional Logic");
@@ -659,12 +663,13 @@ TEST_CASE("Framework Integration I")
         TheoryBuilder builder(manager.getActiveLogicalSystem(), signature);
         builder.setName("Graph Theory");
         builder.setDescription("Some graph theory.");
-        builder.getSignature()->addToken(CoreToken("P", Type("o")));
-        builder.getSignature()->addToken(CoreToken("~", Type("o->o")));
+        TableSignature *tableSignature = dynamic_cast<TableSignature *>(builder.getSignature().get());
+        tableSignature->addToken(CoreToken("P", Type("o")));
+        tableSignature->addToken(CoreToken("~", Type("o->o")));
         builder.addAxiom("P");
         builder.addAxiom("(~ (~ P))");
 
-        manager.createTheory(builder, TheoryPluginsRecord("TableSignaturePlugin"));
+        manager.createTheory(builder, TheoryPluginsRecord());
 
         CHECK(StorageManager::retrieveCurrentProofId("Propositional Logic", "Graph Theory") == 0);
 
@@ -708,6 +713,7 @@ TEST_CASE("Framework Integration I")
         manager.createLogicalSystem("Propositional Logic",
                                     "Classical Propositional Logic",
                                     inferenceRulesNamesList,
+                                    "TableSignaturePlugin",
                                     Type("o"));
 
         manager.loadLogicalSystem("Propositional Logic");
@@ -719,12 +725,13 @@ TEST_CASE("Framework Integration I")
         TheoryBuilder builder(manager.getActiveLogicalSystem(), signature);
         builder.setName("Graph Theory");
         builder.setDescription("Some graph theory.");
-        builder.getSignature()->addToken(CoreToken("P", Type("o")));
-        builder.getSignature()->addToken(CoreToken("~", Type("o->o")));
+        TableSignature *tableSignature = dynamic_cast<TableSignature *>(builder.getSignature().get());
+        tableSignature->addToken(CoreToken("P", Type("o")));
+        tableSignature->addToken(CoreToken("~", Type("o->o")));
         builder.addAxiom("P");
         builder.addAxiom("(~ (~ P))");
 
-        manager.createTheory(builder, TheoryPluginsRecord("TableSignaturePlugin"));
+        manager.createTheory(builder, TheoryPluginsRecord());
         manager.loadTheory("Graph Theory");
         Theory *theory = manager.getActiveTheory();
 
@@ -771,6 +778,7 @@ TEST_CASE("Framework Integration II")
     manager.createLogicalSystem("Propositional Logic2",
                                 "Just a normal propositional logic system.",
                                 inferenceRules,
+                                "AutomaticPropositionalLogicSignature",
                                 Type("o"));
     manager.loadLogicalSystem("Propositional Logic2");
 
@@ -783,7 +791,7 @@ TEST_CASE("Framework Integration II")
     builder.addAxiom("A");
     builder.addAxiom("B");
 
-    TheoryPluginsRecord pluginsRecords("AutomaticPropositionalLogicSignature");
+    TheoryPluginsRecord pluginsRecords;
     manager.createTheory(builder, pluginsRecords);
     manager.loadTheory("First Theory");
 
