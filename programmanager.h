@@ -55,8 +55,8 @@ private:
     void checkActiveTheory() const;
     void loadInferenceRules(const QStringList &inferenceRulesNames, QVector<shared_ptr<const InferenceRule>> &inferenceRules) const;
     void makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const;
-    void linkPremises(const unsigned int currentProofId, const QStringList &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const;
-    ProofLinks linkConclusion(const unsigned int currentProofId, const QString &conclusion, QVector<ProofRecord> &proofsRecords) const;
+    void linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const;
+    ProofLinks linkConclusion(const unsigned int currentProofId, const Formula &conclusion, QVector<ProofRecord> &proofsRecords) const;
 
     QVector<LogicalSystemRecord> getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const;
     QVector<TheoryRecord> getTheoryRecordsWithoutRemovedRecord(const QString &logicalSystemName, const QString &theoryName) const;

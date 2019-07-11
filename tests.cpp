@@ -309,8 +309,14 @@ TEST_CASE("Theory Records")
 
 TEST_CASE("Proof Links")
 {
+    TableSignature signature;
+    signature.addToken(CoreToken("P", Type("o")));
+    signature.addToken(CoreToken("~", Type("o->o")));
+    signature.addToken(CoreToken("v", Type("[o,o]->o")));
+    Parser parser(&signature, Type("o"));
+
     QVector<unsigned int> vec{0,1,2,3};
-    ProofLinks link("(v P (~ P))", vec);
+    ProofLinks link(Formula("(v P (~ P))", parser), vec);
     CHECK(link.getFormula() == "(v P (~ P))");
     CHECK(link.getLinkedProofsIds() == vec);
     link.addLinkedProofId(34);
@@ -331,8 +337,14 @@ TEST_CASE("Proof Links")
 
 TEST_CASE("Proof Records")
 {
-    ProofLinks premiss1("A", QVector<uint>{0}), premiss2("(-> A B)", QVector<uint>());
-    ProofLinks conclusion ("B", QVector<uint>{3});
+    TableSignature signature;
+    signature.addToken(CoreToken("A", Type("o")));
+    signature.addToken(CoreToken("B", Type("o")));
+    signature.addToken(CoreToken("->", Type("[o,o]->o")));
+    Parser parser(&signature, Type("o"));
+
+    ProofLinks premiss1(parser.parse("A"), QVector<uint>{0}), premiss2(parser.parse("(-> A B)"), QVector<uint>());
+    ProofLinks conclusion (parser.parse("B"), QVector<uint>{3});
     QVector<ProofLinks> premises;
     premises.push_back(premiss1);
     premises.push_back(premiss2);

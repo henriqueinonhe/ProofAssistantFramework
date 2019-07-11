@@ -1,13 +1,14 @@
 #include "prooflinks.h"
 #include <QDataStream>
+#include "formula.h"
 
 ProofLinks::ProofLinks(QDataStream &stream)
 {
     stream >> *this;
 }
 
-ProofLinks::ProofLinks(const QString &formula, const QVector<unsigned int> linkedProofsIds) :
-    formula(formula),
+ProofLinks::ProofLinks(const Formula &formula, const QVector<unsigned int> linkedProofsIds) :
+    formula(formula.formattedString()),
     linkedProofsIds(linkedProofsIds)
 {
 }

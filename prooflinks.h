@@ -7,12 +7,13 @@
 class QDataStream;
 class ProofRecord;
 class ProgramManager;
+class Formula;
 
 class ProofLinks
 {
 public:
     ProofLinks(QDataStream &stream);
-    ProofLinks(const QString &formula, const QVector<unsigned int> linkedProofsIds);
+    ProofLinks(const Formula &formula, const QVector<unsigned int> linkedProofsIds);
 
     QString getFormula() const;
     QVector<unsigned int> getLinkedProofsIds() const;

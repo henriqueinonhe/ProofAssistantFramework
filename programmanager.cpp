@@ -70,8 +70,8 @@ void ProgramManager::createProof(const QString &name, const QString &description
     //Proof Links
     QVector<ProofRecord> proofsRecords = StorageManager::retrieveProofsRecords(activeLogicalSystemName, activeTheoryName);
     QVector<ProofLinks> premisesLinks;
-    linkPremises(currentProofId, premises, proofsRecords, premisesLinks);
-    ProofLinks conclusionLinks = linkConclusion(currentProofId, conclusion, proofsRecords);
+    linkPremises(currentProofId, premisesFormulas, proofsRecords, premisesLinks);
+    ProofLinks conclusionLinks = linkConclusion(currentProofId, conclusionFormula, proofsRecords);
 
     //Create Proof Record
     ProofRecord record(currentProofId, name, description, premisesLinks, conclusionLinks);
@@ -192,14 +192,14 @@ void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<F
     }
 }
 
-void ProgramManager::linkPremises(const unsigned int currentProofId, const QStringList &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const
+void ProgramManager::linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const
 {
-    for(const QString &premiss : premises)
+    for(const Formula &premiss : premises)
     {
         QVector<unsigned int> linkedProofsIds;
         for(ProofRecord &record : proofsRecords)
         {
-            if(premiss == record.getConclusion())
+            if(premiss.formattedString() == record.getConclusion())
             {
                 linkedProofsIds.push_back(record.getId());
                 record.addConclusionLinkId(currentProofId);
@@ -209,14 +209,14 @@ void ProgramManager::linkPremises(const unsigned int currentProofId, const QStri
     }
 }
 
-ProofLinks ProgramManager::linkConclusion(const unsigned int currentProofId, const QString &conclusion, QVector<ProofRecord> &proofsRecords) const
+ProofLinks ProgramManager::linkConclusion(const unsigned int currentProofId, const Formula &conclusion, QVector<ProofRecord> &proofsRecords) const
 {
     QVector<unsigned int> linkedProofsIds;
     for(ProofRecord &record : proofsRecords)
     {
         for(const QString &premiss : record.getPremises())
         {
-            if(conclusion == premiss)
+            if(conclusion.formattedString() == premiss)
             {
                 linkedProofsIds.push_back(record.getId());
                 record.addPremissLinkId(premiss, currentProofId);
