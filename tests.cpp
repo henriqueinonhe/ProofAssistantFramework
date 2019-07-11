@@ -313,6 +313,8 @@ TEST_CASE("Proof Links")
     ProofLinks link("(v P (~ P))", vec);
     CHECK(link.getFormula() == "(v P (~ P))");
     CHECK(link.getLinkedProofsIds() == vec);
+    link.addLinkedProofId(34);
+    CHECK(link.getLinkedProofsIds() == vec + QVector<unsigned int>({34}));
 
     //Serialization
     QBuffer buffer;
@@ -329,11 +331,11 @@ TEST_CASE("Proof Links")
 
 TEST_CASE("Proof Records")
 {
-    ProofLinks premise1("A", QVector<uint>{0}), premise2("(-> A B)", QVector<uint>());
+    ProofLinks premiss1("A", QVector<uint>{0}), premiss2("(-> A B)", QVector<uint>());
     ProofLinks conclusion ("B", QVector<uint>{3});
     QVector<ProofLinks> premises;
-    premises.push_back(premise1);
-    premises.push_back(premise2);
+    premises.push_back(premiss1);
+    premises.push_back(premiss2);
     ProofRecord record(0, "Dummy Proof", "Lorem Ipsum", premises, conclusion);
 
     CHECK(record.getId() == 0);
