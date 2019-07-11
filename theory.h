@@ -37,6 +37,9 @@ public:
     const QVector<shared_ptr<StringProcessor>> &getPreProcessors()  const;
     const QVector<shared_ptr<StringProcessor>> &getPostProcessors() const;
 
+    Formatter &getPreFormatter();
+    Formatter &getPostFormatter();
+
 protected:
     Theory(const LogicalSystem * const parentLogic,
            const QString &name,
@@ -52,12 +55,12 @@ protected:
     QString description;
     unique_ptr<const Parser> parser;
     shared_ptr<Signature> signature;
-    QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms!
+    QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms! NOTE Will there?
 
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
-    Formatter preFormatter; //TODO
+    Formatter preFormatter;
     Formatter postFormatter;
 
     friend class ProofAssistant;
