@@ -70,11 +70,11 @@ QVector<ProofLinks> ProofRecord::getPremisesLinks() const
     return premisesLinks;
 }
 
-void ProofRecord::addPremissLinkId(const QString &formula, const unsigned int id)
+void ProofRecord::addPremissLinkId(const Formula &formula, const unsigned int id)
 {
     for(ProofLinks &links : premisesLinks)
     {
-        if(links.getFormula() == formula)
+        if(links.getFormula() == formula.formattedString())
         {
             links.addLinkedProofId(id);
             return;
@@ -83,7 +83,7 @@ void ProofRecord::addPremissLinkId(const QString &formula, const unsigned int id
 
     QString errorMsg;
     errorMsg += "There is no premiss link associated with the formula \"";
-    errorMsg += formula;
+    errorMsg += formula.formattedString();
     errorMsg += "\"!";
     throw invalid_argument(errorMsg.toStdString());
 }

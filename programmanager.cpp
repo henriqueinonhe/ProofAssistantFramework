@@ -219,7 +219,7 @@ ProofLinks ProgramManager::linkConclusion(const unsigned int currentProofId, con
             if(conclusion.formattedString() == premiss)
             {
                 linkedProofsIds.push_back(record.getId());
-                record.addPremissLinkId(premiss, currentProofId);
+                record.addPremissLinkId(conclusion, currentProofId);
                 break;
             }
         }

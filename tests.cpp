@@ -357,6 +357,11 @@ TEST_CASE("Proof Records")
     CHECK(record.getConclusionLinks() == conclusion);
     CHECK(record.getProofIsDone() == false);
 
+    record.addPremissLinkId(Formula("(->     A B)", parser), 23);
+    record.addConclusionLinkId(10);
+    CHECK(record.getPremisesLinks()[1].getLinkedProofsIds() == premises[1].getLinkedProofsIds() + QVector<unsigned int>({23}));
+    CHECK(record.getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({3, 10}));
+
     //Serialization
     QBuffer buffer;
     buffer.open(QIODevice::WriteOnly);
