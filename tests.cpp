@@ -21,6 +21,9 @@
 #include "proof.h"
 #include "justification.h"
 #include "proofassistant.h"
+#include "stringprocessormanager.h"
+#include "basicpreprocessor.h"
+#include "basicpostprocessor.h"
 
 TEST_CASE("File System Setup")
 {
@@ -526,6 +529,55 @@ TEST_CASE("Line of Proof Section Manager")
     //Fail due to crossing indexes
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(1, 7, "")));
     CHECK_THROWS(sectionManager.addSection(LineOfProofSection(2, 7, "")));
+}
+
+TEST_CASE("String Processor Manager")
+{
+    //Enviroment Setup
+    TableSignature signature;
+    signature.addToken(CoreToken("P", Type("o")));
+    signature.addToken(CoreToken("Q", Type("o")));
+    signature.addToken(CoreToken("^", Type("[o,o]->o")));
+    signature.addToken(CoreToken("->", Type("[o,o]->o")));
+    signature.addToken(CoreToken("~", Type("o->o")));
+
+    BasicPreProcessor preProcessor(&signature);
+    preProcessor.addTokenRecord("->", 1);
+    preProcessor.addTokenRecord("^", 1);
+    preProcessor.addTokenRecord("~", 0);
+
+    BasicPostProcessor postProcessor(&signature);
+    postProcessor.addTokenRecord("->", 1);
+    postProcessor.addTokenRecord("^", 1);
+    postProcessor.addTokenRecord("~", 0);
+
+    //Testing
+    StringProcessorManager manager;
+    QVector<StringProcessor *> processorList({&preProcessor, &postProcessor, &postProcessor, &preProcessor, &postProcessor});
+    manager.addProcessor(processorList, 0);
+    manager.addProcessor(processorList, 4);
+
+    CHECK(manager.format("P ^ ~ Q -> ~ Q ^ P") == "P ^ ~ Q -> ~ Q ^ P");
+
+    manager.toggleProcessor(1);
+    CHECK(manager.format("P ^ ~ Q -> ~ Q ^ P") == "(-> (^ P (~ Q)) (^ (~ Q) P))");
+
+    manager.turnOnProcessor(1);
+    manager.turnOffProcessor(0);
+    CHECK(manager.format("(-> (^ P (~ Q)) (^ (~ Q) P))").toStdString() == "P ^ ~ Q -> ~ Q ^ P");
+
+    manager.toggleProcessor(0);
+
+    //Serialization
+    QBuffer buffer;
+    QDataStream stream(&buffer);
+    buffer.open(QIODevice::WriteOnly);
+    stream << manager;
+
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    StringProcessorManager manager2(stream, processorList);
+    CHECK(manager2.format("P ^ ~ Q -> ~ Q ^ P") == "P ^ ~ Q -> ~ Q ^ P");
 }
 
 TEST_CASE("Storage Manager")

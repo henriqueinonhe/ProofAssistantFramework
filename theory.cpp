@@ -40,16 +40,6 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
     parser.reset(new Parser(getSignature().get(), parentLogic->getWffType()));
 }
 
-Formatter &Theory::getPostFormatter()
-{
-    return postFormatter;
-}
-
-Formatter &Theory::getPreFormatter()
-{
-    return preFormatter;
-}
-
 Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QVector<shared_ptr<const InferenceTactic> > &inferenceTactics, const QVector<shared_ptr<StringProcessor> > &preProcessors, const QVector<shared_ptr<StringProcessor> > &postProcessors, QDataStream &stream) :
     parentLogic(parentLogic),
     signature(signature),
@@ -88,9 +78,9 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory)
            << theory.signature
            << theory.axioms
            << theory.preProcessors
-           << theory.postProcessors
-           << theory.preFormatter
-           << theory.postFormatter;
+           << theory.postProcessors;
+           //<< theory.preFormatter
+           //<< theory.postFormatter;
 
     return stream;
 }
@@ -102,9 +92,9 @@ QDataStream &operator >>(QDataStream &stream, Theory &theory)
            >> theory.signature;
     theory.axioms = Formula::unserializeList(stream, theory.signature.get());
     stream >> theory.preProcessors
-           >> theory.postProcessors
-           >> theory.preFormatter
-           >> theory.postFormatter;
+           >> theory.postProcessors;
+           //>> theory.preFormatter
+           //>> theory.postFormatter;
 
     return stream;
 }

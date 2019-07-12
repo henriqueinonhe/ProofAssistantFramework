@@ -23,6 +23,7 @@ INCLUDEPATH += ../Language/Parser \
 
 SOURCES += main.cpp \
     logicalsystempluginsrecord.cpp \
+    stringprocessormanager.cpp \
     tests.cpp \
     ../Language/Parser/formula.cpp \
     ../Language/Parser/lexer.cpp \
@@ -131,6 +132,7 @@ HEADERS += \
     pch.h \
     pluginfactoryinterface.h \
     smartpointersserialization.h \
+    stringprocessormanager.h \
     theory.h \
     proof.h \
     lineofproof.h \

@@ -3,9 +3,9 @@
 
 #include "formula.h"
 #include <QString>
-#include "formatter.h"
 #include "parser.h"
 #include "signature.h"
+#include "stringprocessormanager.h"
 
 class StringProcessor;
 class InferenceTactic;
@@ -37,9 +37,6 @@ public:
     const QVector<shared_ptr<StringProcessor>> &getPreProcessors()  const;
     const QVector<shared_ptr<StringProcessor>> &getPostProcessors() const;
 
-    Formatter &getPreFormatter();
-    Formatter &getPostFormatter();
-
 protected:
     Theory(const LogicalSystem * const parentLogic,
            const QString &name,
@@ -60,8 +57,6 @@ protected:
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
-    Formatter preFormatter;
-    Formatter postFormatter;
 
     friend class ProofAssistant;
     friend class TheoryBuilder;
