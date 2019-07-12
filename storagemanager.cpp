@@ -360,8 +360,10 @@ void StorageManager::saveLogicalSystem(const LogicalSystem &system)
 
 QVector<shared_ptr<const InferenceRule>> StorageManager::loadInferenceRules(const QString &systemName)
 {
-    QStringList inferenceRulesNames;
-    readComponent(logicalSystemPluginsDataFilePath(systemName), inferenceRulesNames);
+    LogicalSystemPluginsRecord pluginsRecord;
+    readComponent(logicalSystemPluginsDataFilePath(systemName), pluginsRecord);
+
+    const QStringList inferenceRulesNames = pluginsRecord.getInferenceRulesNamesList();
     const QStringList inferenceRulesPaths = convertPluginNamesToPaths(inferenceRulesNames, inferenceRulePluginPath);
     return PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPaths);
 }
@@ -376,9 +378,10 @@ void StorageManager::storeTheoryData(const QString &logicalSystemName, const The
     writeComponent(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
 }
 
-void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const QString &theoryName, TheoryPluginsRecord &theoryPluginsRecord, std::shared_ptr<Signature> &signature, QVector<std::shared_ptr<const InferenceTactic> > &inferenceTactics, QVector<std::shared_ptr<StringProcessor> > &preProcessors, QVector<std::shared_ptr<StringProcessor> > &postProcessors)
+void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const QString &theoryName, std::shared_ptr<Signature> &signature, QVector<std::shared_ptr<const InferenceTactic> > &inferenceTactics, QVector<std::shared_ptr<StringProcessor> > &preProcessors, QVector<std::shared_ptr<StringProcessor> > &postProcessors)
 {
     LogicalSystemPluginsRecord systemPluginsRecord;
+    TheoryPluginsRecord theoryPluginsRecord;
     readComponent(logicalSystemPluginsDataFilePath(logicalSystemName), systemPluginsRecord);
     readComponent(theoryPluginsDataFilePath(logicalSystemName, theoryName), theoryPluginsRecord);
 
@@ -392,14 +395,9 @@ void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const Q
     postProcessors = PluginManager::fetchPluginVector<StringProcessor>(postProcessorsPluginsPaths);
 }
 
-void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem * &loadedSystem, LogicalSystemPluginsRecord &pluginsRecord)
+void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem * &loadedSystem)
 {
-    //NOTE REFACTOR!
     QVector<shared_ptr<const InferenceRule>> inferenceRules = loadInferenceRules(systemName);
-    QFile pluginsFile(logicalSystemPluginsDataFilePath(systemName));
-    accessFile(pluginsFile, QIODevice::ReadOnly);
-    QDataStream pluginStream(&pluginsFile);
-    pluginStream >> pluginsRecord;
 
     QFile dataFile(logicalSystemDataFilePath(systemName));
     accessFile(dataFile, QIODevice::ReadOnly);
@@ -454,7 +452,7 @@ void StorageManager::saveTheory(Theory &theory)
     writeComponent<Theory>(theoryDataFilePath(theory.getParentLogic()->getName(), theory.getName()), theory);
 }
 
-void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory * &theory, TheoryPluginsRecord &pluginsRecord)
+void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory * &theory)
 {
     //Load Theory Plugins
     const QString logicalSystemName = parentLogic.getName();
@@ -463,7 +461,7 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
-    loadTheoryPlugins(logicalSystemName, theoryName, pluginsRecord, signature, inferenceTactics, preProcessors, postProcessors);
+    loadTheoryPlugins(logicalSystemName, theoryName, signature, inferenceTactics, preProcessors, postProcessors);
 
     //Load Theory
     QFile dataFile(StorageManager::theoryDataFilePath(logicalSystemName, theoryName));

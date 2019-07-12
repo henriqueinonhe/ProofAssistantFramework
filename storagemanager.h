@@ -37,7 +37,7 @@ public:
     static void setupLogicalSystemDir(const LogicalSystem &system, const LogicalSystemPluginsRecord &pluginsRecord);
     static void deleteLogicalSystemDir(const QString &systemName);
     static void saveLogicalSystem(const LogicalSystem &system);
-    static void loadLogicalSystem(const QString &systemName, LogicalSystem *&loadedSystem, LogicalSystemPluginsRecord &pluginsRecord);
+    static void loadLogicalSystem(const QString &systemName, LogicalSystem *&loadedSystem);
 
 
     //Theory
@@ -48,7 +48,7 @@ public:
     static void setupTheoryDir(const QString &logicalSystemName, const Theory &theory, const TheoryPluginsRecord &pluginsRecord);
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
     static void saveTheory(Theory &theory);
-    static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *&theory, TheoryPluginsRecord &pluginsRecord);
+    static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *&theory);
 
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName);
@@ -205,7 +205,7 @@ private:
     static void storeTheoryPluginsData(const QString &logicalSystemName, const QString &theoryName, const TheoryPluginsRecord &pluginsRecord);
     static void storeTheoryData(const QString &logicalSystemName, const Theory &theory);
     static void loadTheoryPlugins(const QString &logicalSystemName,
-                                  const QString &theoryName, TheoryPluginsRecord &theoryPluginsRecord,
+                                  const QString &theoryName,
                                   std::shared_ptr<Signature> &signature,
                                   QVector<std::shared_ptr<const InferenceTactic>> &inferenceTactics,
                                   QVector<std::shared_ptr<StringProcessor>> &preProcessors,

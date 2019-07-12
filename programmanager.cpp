@@ -7,6 +7,7 @@
 #include "proofrecord.h"
 #include "proof.h"
 #include "proofassistant.h"
+#include "logicalsystempluginsrecord.h"
 
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
@@ -37,7 +38,7 @@ void ProgramManager::loadTheory(const QString &name)
 {
     checkActiveLogicalSystem();
     Theory *theory = nullptr;
-    StorageManager::loadTheory(*activeLogicalSystem, name, theory, theoryPluginsRecord);
+    StorageManager::loadTheory(*activeLogicalSystem, name, theory);
     activeTheory.reset(theory);
 }
 
@@ -312,7 +313,7 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
     LogicalSystem *system = nullptr;
-    StorageManager::loadLogicalSystem(name, system, logicalSystemPluginsRecord);
+    StorageManager::loadLogicalSystem(name, system);
     activeLogicalSystem.reset(system);
 }
 

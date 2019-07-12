@@ -74,8 +74,6 @@ SOURCES += main.cpp \
     theoryrecord.cpp \
     logosprogrammanager.cpp \
     ../Language/Parser/parsingtreeconstiterator.cpp \
-    signatureplugin.cpp \
-    stringprocessorplugin.cpp \
     pluginmanager.cpp \
     proofrecord.cpp
 
@@ -128,8 +126,6 @@ HEADERS += \
     ../Language/Utils/parsingauxiliarytools.h \
     ../Language/Utils/pool.h \
     dummyclasses.h \
-    inferenceruleplugin.h \
-    inferencetacticplugin.h \
     logicalsystem.h \
     logicalsystempluginsrecord.h \
     pch.h \
@@ -153,9 +149,6 @@ HEADERS += \
     logicalsystemrecord.h \
     programmanager.h \
     theoryrecord.h \
-    logosprogrammanager.h \
     ../Language/Parser/parsingtreeconstiterator.h \
-    signatureplugin.h \
-    stringprocessorplugin.h \
     pluginmanager.h \
     proofrecord.h

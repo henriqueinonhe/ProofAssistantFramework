@@ -66,8 +66,6 @@ private:
 
     unique_ptr<LogicalSystem> activeLogicalSystem;
     unique_ptr<Theory> activeTheory;
-    LogicalSystemPluginsRecord logicalSystemPluginsRecord;
-    TheoryPluginsRecord theoryPluginsRecord;
 };
 
 
