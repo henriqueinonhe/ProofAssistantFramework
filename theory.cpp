@@ -5,65 +5,29 @@
 #include "containerauxiliarytools.h"
 
 
-QVector<shared_ptr<StringProcessor> > &Theory::getPostProcessorsOld()
-{
-    return postProcessors;
-}
-
 const QVector<shared_ptr<const InferenceTactic> > &Theory::getInferenceTactics() const
 {
     return inferenceTactics;
 }
 
-const QVector<shared_ptr<StringProcessor> > &Theory::getPreProcessorsOld() const
+StringProcessorManager &Theory::getPreFormatter()
 {
-    return preProcessors;
+    return preFormatter;
 }
 
-const QVector<shared_ptr<StringProcessor> > &Theory::getPostProcessorsOld() const
+const StringProcessorManager &Theory::getPreFormatter() const
 {
-    return postProcessors;
+    return preFormatter;
 }
 
-QVector<StringProcessor *> Theory::getPreProcessors() const
+StringProcessorManager &Theory::getPostFormatter()
 {
-    QVector<StringProcessor *> vec;
-    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(preProcessors, vec);
-    return vec;
+    return postFormatter;
 }
 
-QVector<StringProcessor *> Theory::getPostProcessors() const
+const StringProcessorManager &Theory::getPostFormatter() const
 {
-    QVector<StringProcessor *> vec;
-    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(postProcessors, vec);
-    return vec;
-}
-
-void Theory::addPreProcessor(const shared_ptr<StringProcessor> &preProcessor)
-{
-    preProcessors.push_back(preProcessor);
-    preFormatter.addProcessor(preProcessor.get());
-}
-
-void Theory::addPostProcessor(const shared_ptr<StringProcessor> &postProcessor)
-{
-    postProcessors.push_back(postProcessor);
-    postFormatter.addProcessor(postProcessor.get());
-}
-
-void Theory::removePreProcessor(const unsigned int index)
-{
-//TODO
-}
-
-void Theory::removePostProcessor(const unsigned int index)
-{
-//TODO
-}
-
-QVector<shared_ptr<StringProcessor>> &Theory::getPreProcessorsOld()
-{
-    return preProcessors;
+    return postFormatter;
 }
 
 Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, const QString &description, const shared_ptr<Signature> &signature, const QLinkedList<Formula> &axioms) :
@@ -76,22 +40,10 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
     parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
 }
 
-Formatter Theory::getPostFormatter() const
-{
-    return postFormatter;
-}
-
-Formatter Theory::getPreFormatter() const
-{
-    return preFormatter;
-}
-
 Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QVector<shared_ptr<const InferenceTactic> > &inferenceTactics, const QVector<shared_ptr<StringProcessor> > &preProcessors, const QVector<shared_ptr<StringProcessor> > &postProcessors, QDataStream &stream) :
     parentLogic(parentLogic),
     signature(signature),
-    inferenceTactics(inferenceTactics),
-    preProcessors(preProcessors),
-    postProcessors(postProcessors)
+    inferenceTactics(inferenceTactics)
 {
     //Note to self: Why didn't I initialize everything using QDataStream
     //instead of unserializing them?
@@ -100,6 +52,8 @@ Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &si
 
     parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
     stream >> *this;
+    preFormatter.unserialize(stream, preProcessors);
+    postFormatter.unserialize(stream, postProcessors);
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -128,8 +82,6 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory)
            << theory.description
            << theory.signature
            << theory.axioms
-           << theory.preProcessors
-           << theory.postProcessors
            << theory.preFormatter
            << theory.postFormatter;
 
@@ -138,14 +90,11 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory)
 
 QDataStream &operator >>(QDataStream &stream, Theory &theory)
 {
+    //FIXME This is hard to understand and error-prone, I need to come up with a uniform way to serialize-deserialize
     stream >> theory.name
            >> theory.description
            >> theory.signature;
     theory.axioms = Formula::unserializeList(stream, theory.signature.get());
-    stream >> theory.preProcessors
-           >> theory.postProcessors;
-    theory.preFormatter.unserialize(stream, theory.getPreProcessors());
-    theory.preFormatter.unserialize(stream, theory.getPostProcessors());
 
     return stream;
 }

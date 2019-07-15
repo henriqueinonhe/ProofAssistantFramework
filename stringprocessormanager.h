@@ -29,6 +29,8 @@ public:
 
     QString toString() const;
 
+    QVector<StringProcessor *> getProcessors();
+
 private:
     QVector<shared_ptr<StringProcessor>> processors;
     Formatter formatter;

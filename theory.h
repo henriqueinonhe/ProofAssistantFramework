@@ -5,7 +5,7 @@
 #include <QString>
 #include "parser.h"
 #include "signature.h"
-#include "formatter.h"
+#include "stringprocessormanager.h"
 
 class StringProcessor;
 class InferenceTactic;
@@ -31,29 +31,11 @@ public:
     QLinkedList<Formula> getAxioms() const;
 
     QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
-    QVector<shared_ptr<StringProcessor>> &getPreProcessorsOld();
-    QVector<shared_ptr<StringProcessor>> &getPostProcessorsOld();
     const QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics() const;
-    const QVector<shared_ptr<StringProcessor>> &getPreProcessorsOld()  const;
-    const QVector<shared_ptr<StringProcessor>> &getPostProcessorsOld() const;
-
-    //String Processors
-    QVector<StringProcessor *> getPreProcessors() const;
-    QVector<StringProcessor *> getPostProcessors() const;
-
-    void addPreProcessor(const shared_ptr<StringProcessor> &preProcessor);
-    void addPostProcessor(const shared_ptr<StringProcessor> &postProcessor);
-    void turnOnPreProcessor(const unsigned int index);
-    void turnOnPostProcessor(const unsigned int index);
-    void turnOffPreProcessor(const unsigned int index);
-    void turnOffPostProcessor(const unsigned int index);
-    void togglePreProcessor(const unsigned int index);
-    void tooflePostProcessor(const unsigned int index);
-    void removePreProcessor(const unsigned int index);
-    void removePostProcessor(const unsigned int index);
-
-    Formatter getPreFormatter() const;
-    Formatter getPostFormatter() const;
+    StringProcessorManager &getPreFormatter();
+    const StringProcessorManager &getPreFormatter() const;
+    StringProcessorManager &getPostFormatter();
+    const StringProcessorManager &getPostFormatter() const;
 
 protected:
     Theory(const LogicalSystem * const parentLogic,
@@ -71,11 +53,9 @@ protected:
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms! NOTE Will there?
 
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
-    QVector<shared_ptr<StringProcessor>> preProcessors;
-    QVector<shared_ptr<StringProcessor>> postProcessors;
 
-    Formatter preFormatter;
-    Formatter postFormatter;
+    StringProcessorManager preFormatter;
+    StringProcessorManager postFormatter;
 
     friend class ProofAssistant;
     friend class TheoryBuilder;

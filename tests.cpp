@@ -246,8 +246,8 @@ TEST_CASE("Theory")
     Theory theory = theoryBuilder.build();
 
     theory.getInferenceTactics().push_back(make_shared<DummyInferenceTactic>());
-    theory.getPreProcessorsOld().push_back(make_shared<DummyPreProcessor>());
-    theory.getPostProcessorsOld().push_back(make_shared<DummyPostProcessor>());
+    theory.getPreFormatter().addProcessor(make_shared<DummyPreProcessor>());
+    theory.getPostFormatter().addProcessor(make_shared<DummyPostProcessor>());
 
     CHECK(theory.getName() == "Dummy Theory");
     CHECK(theory.getDescription() == "Lorem Ipsum");
@@ -255,8 +255,8 @@ TEST_CASE("Theory")
     CHECK(theory.getAxioms().last().formattedString() == "(~ P)");
     CHECK(theory.getInferenceTactics()[0]->name() == "Dummy Inference Tactic");
     CHECK(theory.getInferenceTactics()[0]->callCommand() == "Dummy Call Command");
-    CHECK(theory.getPreProcessors()[0]->toString() == "Dummy Pre Processor");
-    CHECK(theory.getPostProcessors()[0]->toString() == "Dummy Post Processor");
+    CHECK(theory.getPreFormatter().getProcessors()[0]->toString() == "Dummy Pre Processor");
+    CHECK(theory.getPostFormatter().getProcessors()[0]->toString() == "Dummy Post Processor");
 
     //Serialization
     QBuffer buffer;
@@ -281,8 +281,8 @@ TEST_CASE("Theory")
     CHECK(theory2.getAxioms().last().formattedString() == theory.getAxioms().last().formattedString());
     CHECK(theory2.getInferenceTactics()[0]->name() == theory.getInferenceTactics()[0]->name());
     CHECK(theory2.getInferenceTactics()[0]->callCommand() == theory.getInferenceTactics()[0]->callCommand());
-    CHECK(theory2.getPreProcessors()[0]->toString() == theory.getPreProcessors()[0]->toString());
-    CHECK(theory2.getPostProcessors()[0]->toString() == theory.getPostProcessors()[0]->toString());
+    CHECK(theory2.getPreFormatter().getProcessors()[0]->toString() == theory.getPreFormatter().getProcessors()[0]->toString());
+    CHECK(theory2.getPostFormatter().getProcessors()[0]->toString() == theory.getPostFormatter().getProcessors()[0]->toString());
     CHECK(*theory2.getSignature()->getTokenPointer("P") == CoreToken("P", Type("o")));
     //Maybe I should test the other members as well like the parser
 }

@@ -63,6 +63,13 @@ QString StringProcessorManager::toString() const
     return formatter.toString();
 }
 
+QVector<StringProcessor *> StringProcessorManager::getProcessors()
+{
+    QVector<StringProcessor *> processorsPtrs;
+    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(processors, processorsPtrs);
+    return processorsPtrs;
+}
+
 QDataStream &operator <<(QDataStream &stream, const StringProcessorManager &manager)
 {
     stream << manager.formatter;
