@@ -96,7 +96,7 @@ ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
     QFile file(StorageManager::proofDataFilePath(activeLogicalSystem->getName(), activeTheory->getName(), proofId));
     file.open(QIODevice::ReadOnly);
     QDataStream stream(&file);
-    return ProofAssistant(activeTheory.get(), Proof(stream, activeTheory->getSignature().get()));
+    return ProofAssistant(activeTheory.get(), Proof(stream, activeTheory->getSignature()));
 }
 
 void ProgramManager::saveProof(const ProofAssistant &assistant) const

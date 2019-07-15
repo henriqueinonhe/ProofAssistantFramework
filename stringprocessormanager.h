@@ -1,30 +1,37 @@
 #ifndef STRINGPROCESSORMANAGER_H
 #define STRINGPROCESSORMANAGER_H
 
+#include <memory>
 #include "formatter.h"
 #include <QVector>
 
 class QDataStream;
 
+using namespace std;
+
 class StringProcessorManager
 {
 public:
     StringProcessorManager();
-    StringProcessorManager(QDataStream &stream, const QVector<StringProcessor *> &processorList);
+    StringProcessorManager(const QVector<shared_ptr<StringProcessor>> &processors);
+    StringProcessorManager(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
 
-    void addProcessor(const QVector<StringProcessor *> &processorList, const unsigned int processorIndex);
-    void removeProcessor(const unsigned int processorIndex);
-    void moveProcessor(const unsigned int locationIndex, const unsigned int targetIndex);
+    void unserialize(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
 
-    void turnOnProcessor(const unsigned int processorIndex);
-    void turnOffProcessor(const unsigned int processorIndex);
-    void toggleProcessor(const unsigned int processorIndex);
+    void addProcessor(const shared_ptr<StringProcessor> &processor);
+    void removeProcessor(const unsigned int index);
 
-    QString format(const QString &input);
+    void turnOnProcessor(const unsigned int index);
+    void turnOffProcessor(const unsigned int index);
+    void toggleProcessor(const unsigned int index);
+
+    QString format(const QString &input) const;
+
+    QString toString() const;
 
 private:
+    QVector<shared_ptr<StringProcessor>> processors;
     Formatter formatter;
-    QVector<unsigned int> processorsIndexList;
 
     friend QDataStream &operator <<(QDataStream &stream, const StringProcessorManager &manager);
 };

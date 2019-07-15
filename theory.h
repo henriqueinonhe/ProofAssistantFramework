@@ -5,7 +5,7 @@
 #include <QString>
 #include "parser.h"
 #include "signature.h"
-#include "stringprocessormanager.h"
+#include "formatter.h"
 
 class StringProcessor;
 class InferenceTactic;
@@ -27,15 +27,33 @@ public:
 
     QString getName() const;
     QString getDescription() const;
-    shared_ptr<Signature> getSignature() const;
+    Signature *getSignature() const;
     QLinkedList<Formula> getAxioms() const;
 
     QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
-    QVector<shared_ptr<StringProcessor>> &getPreProcessors();
-    QVector<shared_ptr<StringProcessor>> &getPostProcessors();
+    QVector<shared_ptr<StringProcessor>> &getPreProcessorsOld();
+    QVector<shared_ptr<StringProcessor>> &getPostProcessorsOld();
     const QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics() const;
-    const QVector<shared_ptr<StringProcessor>> &getPreProcessors()  const;
-    const QVector<shared_ptr<StringProcessor>> &getPostProcessors() const;
+    const QVector<shared_ptr<StringProcessor>> &getPreProcessorsOld()  const;
+    const QVector<shared_ptr<StringProcessor>> &getPostProcessorsOld() const;
+
+    //String Processors
+    QVector<StringProcessor *> getPreProcessors() const;
+    QVector<StringProcessor *> getPostProcessors() const;
+
+    void addPreProcessor(const shared_ptr<StringProcessor> &preProcessor);
+    void addPostProcessor(const shared_ptr<StringProcessor> &postProcessor);
+    void turnOnPreProcessor(const unsigned int index);
+    void turnOnPostProcessor(const unsigned int index);
+    void turnOffPreProcessor(const unsigned int index);
+    void turnOffPostProcessor(const unsigned int index);
+    void togglePreProcessor(const unsigned int index);
+    void tooflePostProcessor(const unsigned int index);
+    void removePreProcessor(const unsigned int index);
+    void removePostProcessor(const unsigned int index);
+
+    Formatter getPreFormatter() const;
+    Formatter getPostFormatter() const;
 
 protected:
     Theory(const LogicalSystem * const parentLogic,
@@ -43,8 +61,6 @@ protected:
            const QString &description,
            const shared_ptr<Signature> &signature,
            const QLinkedList<Formula> &axioms);
-
-    void serializePlugins() const;
 
     const LogicalSystem *parentLogic;
 
@@ -57,6 +73,9 @@ protected:
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
+
+    Formatter preFormatter;
+    Formatter postFormatter;
 
     friend class ProofAssistant;
     friend class TheoryBuilder;

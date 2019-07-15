@@ -21,9 +21,9 @@
 #include "proof.h"
 #include "justification.h"
 #include "proofassistant.h"
-#include "stringprocessormanager.h"
 #include "basicpreprocessor.h"
 #include "basicpostprocessor.h"
+#include "stringprocessormanager.h"
 
 TEST_CASE("File System Setup")
 {
@@ -246,8 +246,8 @@ TEST_CASE("Theory")
     Theory theory = theoryBuilder.build();
 
     theory.getInferenceTactics().push_back(make_shared<DummyInferenceTactic>());
-    theory.getPreProcessors().push_back(make_shared<DummyPreProcessor>());
-    theory.getPostProcessors().push_back(make_shared<DummyPostProcessor>());
+    theory.getPreProcessorsOld().push_back(make_shared<DummyPreProcessor>());
+    theory.getPostProcessorsOld().push_back(make_shared<DummyPostProcessor>());
 
     CHECK(theory.getName() == "Dummy Theory");
     CHECK(theory.getDescription() == "Lorem Ipsum");
@@ -541,21 +541,22 @@ TEST_CASE("String Processor Manager")
     signature.addToken(CoreToken("->", Type("[o,o]->o")));
     signature.addToken(CoreToken("~", Type("o->o")));
 
-    BasicPreProcessor preProcessor(&signature);
-    preProcessor.addTokenRecord("->", 1);
-    preProcessor.addTokenRecord("^", 1);
-    preProcessor.addTokenRecord("~", 0);
+    shared_ptr<BasicPreProcessor> preProcessor = make_shared<BasicPreProcessor>(&signature);
+    preProcessor->addTokenRecord("->", 1);
+    preProcessor->addTokenRecord("^", 1);
+    preProcessor->addTokenRecord("~", 0);
 
-    BasicPostProcessor postProcessor(&signature);
-    postProcessor.addTokenRecord("->", 1);
-    postProcessor.addTokenRecord("^", 1);
-    postProcessor.addTokenRecord("~", 0);
+    shared_ptr<BasicPostProcessor> postProcessor = make_shared<BasicPostProcessor>(&signature);
+    postProcessor->addTokenRecord("->", 1);
+    postProcessor->addTokenRecord("^", 1);
+    postProcessor->addTokenRecord("~", 0);
+
 
     //Testing
     StringProcessorManager manager;
-    QVector<StringProcessor *> processorList({&preProcessor, &postProcessor, &postProcessor, &preProcessor, &postProcessor});
-    manager.addProcessor(processorList, 0);
-    manager.addProcessor(processorList, 4);
+    QVector<shared_ptr<StringProcessor>> processorList({preProcessor, postProcessor, postProcessor, preProcessor, postProcessor});
+    manager.addProcessor(preProcessor);
+    manager.addProcessor(postProcessor);
 
     CHECK(manager.format("P ^ ~ Q -> ~ Q ^ P") == "P ^ ~ Q -> ~ Q ^ P");
 

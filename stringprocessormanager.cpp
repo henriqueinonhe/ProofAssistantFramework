@@ -1,73 +1,70 @@
 #include "stringprocessormanager.h"
-
-#include <QDataStream>
+#include "containerauxiliarytools.h"
 
 StringProcessorManager::StringProcessorManager()
 {
 
 }
 
-StringProcessorManager::StringProcessorManager(QDataStream &stream, const QVector<StringProcessor *> &processorList)
+StringProcessorManager::StringProcessorManager(const QVector<shared_ptr<StringProcessor> > &processors) :
+    processors(processors)
 {
-    stream >> processorsIndexList;
-    QVector<StringProcessor *> actualProcessorList;
-    for(const auto index : processorsIndexList)
-    {
-        actualProcessorList.push_back(processorList[index]);
-    }
-    formatter.unserialize(stream, actualProcessorList);
+
 }
 
-void StringProcessorManager::addProcessor(const QVector<StringProcessor *> &processorList, const unsigned int processorListIndex)
+StringProcessorManager::StringProcessorManager(QDataStream &stream, const QVector<shared_ptr<StringProcessor> > &processors)
 {
-    if(processorListIndex >= static_cast<uint>(processorList.size()))
-    {
-        throw invalid_argument("There is no processor associated with this index!");
-    }
-
-    formatter.addProcessor(processorList[processorListIndex]);
-    processorsIndexList.push_back(processorListIndex);
+    unserialize(stream, processors);
 }
 
-void StringProcessorManager::removeProcessor(const unsigned int processorIndex)
+void StringProcessorManager::unserialize(QDataStream &stream, const QVector<shared_ptr<StringProcessor> > &processors)
 {
-    formatter.removeProcessor(processorIndex);
-    processorsIndexList.remove(processorIndex);
+    QVector<StringProcessor *> processorsPtrs;
+    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(processors, processorsPtrs);
+
+    this->processors = processors;
+    formatter.unserialize(stream, processorsPtrs);
 }
 
-void StringProcessorManager::moveProcessor(const unsigned int locationIndex, const unsigned int targetIndex)
+void StringProcessorManager::addProcessor(const shared_ptr<StringProcessor> &processor)
 {
-    //FIXME
-    formatter.moveProcessor(locationIndex, targetIndex);
-
-    const unsigned int tempLocationIndex = processorsIndexList[locationIndex];
-    processorsIndexList.remove(locationIndex);
-    processorsIndexList.insert(targetIndex, tempLocationIndex);
+    processors.push_back(processor);
+    formatter.addProcessor(processor.get());
 }
 
-void StringProcessorManager::turnOnProcessor(const unsigned int processorIndex)
+void StringProcessorManager::removeProcessor(const unsigned int index)
 {
-    formatter.turnOnProcessor(processorIndex);
+    processors.remove(index);
+    formatter.removeProcessor(index);
 }
 
-void StringProcessorManager::turnOffProcessor(const unsigned int processorIndex)
+void StringProcessorManager::turnOnProcessor(const unsigned int index)
 {
-    formatter.turnOffProcessor(processorIndex);
+    formatter.turnOnProcessor(index);
 }
 
-void StringProcessorManager::toggleProcessor(const unsigned int processorIndex)
+void StringProcessorManager::turnOffProcessor(const unsigned int index)
 {
-    formatter.toggleProcessor(processorIndex);
+    formatter.turnOffProcessor(index);
 }
 
-QString StringProcessorManager::format(const QString &input)
+void StringProcessorManager::toggleProcessor(const unsigned int index)
+{
+    formatter.toggleProcessor(index);
+}
+
+QString StringProcessorManager::format(const QString &input) const
 {
     return formatter.format(input);
 }
 
+QString StringProcessorManager::toString() const
+{
+    return formatter.toString();
+}
+
 QDataStream &operator <<(QDataStream &stream, const StringProcessorManager &manager)
 {
-    stream << manager.processorsIndexList
-           << manager.formatter;
+    stream << manager.formatter;
     return stream;
 }
