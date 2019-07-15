@@ -3,7 +3,7 @@
 #include <QDataStream>
 
 LineOfProof::LineOfProof(QDataStream &stream, Signature * const signature) :
-    formula(stream, signature) //There might be an issue here, not sure...
+    formula(stream, signature)
 {
     stream >> justification >> comment;
 }

@@ -4,7 +4,6 @@
 #include <QDataStream>
 #include "containerauxiliarytools.h"
 
-
 const QVector<shared_ptr<const InferenceTactic> > &Theory::getInferenceTactics() const
 {
     return inferenceTactics;
@@ -43,6 +42,7 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
 Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QVector<shared_ptr<const InferenceTactic> > &inferenceTactics, const QVector<shared_ptr<StringProcessor> > &preProcessors, const QVector<shared_ptr<StringProcessor> > &postProcessors, QDataStream &stream) :
     parentLogic(parentLogic),
     signature(signature),
+    parser(new Parser(getSignature(), parentLogic->getWffType())),
     inferenceTactics(inferenceTactics)
 {
     //Note to self: Why didn't I initialize everything using QDataStream
@@ -50,8 +50,10 @@ Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &si
     //Because I'm unable to initialize QString with QDataStream, therefore there is no other way
     //In the future I can implement a "QString factory" so I can initialize it the right way
 
-    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
-    stream >> *this;
+    stream >> this->name
+           >> this->description
+           >> this->signature;
+    axioms = Formula::unserializeList(stream, signature.get());
     preFormatter.unserialize(stream, preProcessors);
     postFormatter.unserialize(stream, postProcessors);
 }
@@ -84,17 +86,6 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory)
            << theory.axioms
            << theory.preFormatter
            << theory.postFormatter;
-
-    return stream;
-}
-
-QDataStream &operator >>(QDataStream &stream, Theory &theory)
-{
-    //FIXME This is hard to understand and error-prone, I need to come up with a uniform way to serialize-deserialize
-    stream >> theory.name
-           >> theory.description
-           >> theory.signature;
-    theory.axioms = Formula::unserializeList(stream, theory.signature.get());
 
     return stream;
 }

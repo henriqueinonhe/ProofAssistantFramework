@@ -22,6 +22,7 @@ INCLUDEPATH += ../Language/Parser \
                ../Language/Utils
 
 SOURCES += main.cpp \
+    ../Language/qtclassesdeserialization.cpp \
     logicalsystempluginsrecord.cpp \
     stringprocessormanager.cpp \
     tests.cpp \
@@ -54,7 +55,6 @@ SOURCES += main.cpp \
     ../Language/Type/typeparsingtreenode.cpp \
     ../Language/Type/typetoken.cpp \
     ../Language/Type/typetokenstring.cpp \
-    ../Language/Utils/dirtyfix.cpp \
     logicalsystem.cpp \
     theory.cpp \
     proof.cpp \
@@ -90,6 +90,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
+    ../Language/qtclassesdeserialization.h \
     catch.hpp \
     ../Language/Parser/formula.h \
     ../Language/Parser/lexer.h \
@@ -123,7 +124,6 @@ HEADERS += \
     ../Language/Type/typetoken.h \
     ../Language/Type/typetokenstring.h \
     ../Language/Utils/containerauxiliarytools.h \
-    ../Language/Utils/dirtyfix.h \
     ../Language/Utils/parsingauxiliarytools.h \
     ../Language/Utils/pool.h \
     dummyclasses.h \
