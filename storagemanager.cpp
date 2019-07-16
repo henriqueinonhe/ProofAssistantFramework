@@ -382,7 +382,7 @@ void StorageManager::saveLogicalSystem(const LogicalSystem &system)
 QVector<shared_ptr<const InferenceRule>> StorageManager::loadInferenceRules(const QString &systemName)
 {
     LogicalSystemPluginsRecord pluginsRecord;
-    readComponent(logicalSystemPluginsDataFilePath(systemName), pluginsRecord);
+    readComponent(logicalSystemPluginsDataFilePath(systemName), pluginsRecord); //NOTE Refactor
 
     const QStringList inferenceRulesNames = pluginsRecord.getInferenceRulesNamesList();
     const QStringList inferenceRulesPaths = convertPluginNamesToPaths(inferenceRulesNames, inferenceRulePluginPath);
@@ -424,6 +424,18 @@ void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem 
     accessFile(dataFile, QIODevice::ReadOnly);
     QDataStream stream(&dataFile);
     loadedSystem = new LogicalSystem(stream, inferenceRules);
+}
+
+LogicalSystemPluginsRecord StorageManager::retrieveLogicalSystemPluginsRecord(const QString &systemName)
+{
+    LogicalSystemPluginsRecord pluginsRecord;
+    readComponent(logicalSystemPluginsDataFilePath(systemName), pluginsRecord);
+    return pluginsRecord;
+}
+
+void StorageManager::storeLogicalSystemPluginsRecord(const QString &systemName, const LogicalSystemPluginsRecord &pluginsRecord)
+{
+    writeComponent(logicalSystemPluginsDataFilePath(systemName), pluginsRecord);
 }
 
 QVector<TheoryRecord> StorageManager::retrieveTheoriesRecords(const QString &logicalSystemName)
@@ -494,6 +506,18 @@ void StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString 
                         preProcessors,
                         postProcessors,
                         stream);
+}
+
+TheoryPluginsRecord StorageManager::retrieveTheoryPluginsRecord(const QString &logicalSystemName, const QString &theoryName)
+{
+    TheoryPluginsRecord pluginsRecord;
+    readComponent(theoryPluginsDataFilePath(logicalSystemName, theoryName), pluginsRecord);
+    return pluginsRecord;
+}
+
+void StorageManager::storeTheoryPluginsRecord(const QString &logicalSystemName, const QString &theoryName, const TheoryPluginsRecord &pluginsRecord)
+{
+    writeComponent(theoryPluginsDataFilePath(logicalSystemName, theoryName), pluginsRecord);
 }
 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)

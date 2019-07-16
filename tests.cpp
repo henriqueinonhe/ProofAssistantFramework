@@ -23,6 +23,7 @@
 #include "basicpreprocessor.h"
 #include "basicpostprocessor.h"
 #include "stringprocessormanager.h"
+#include "../General Sources/catchprinters.hpp"
 
 TEST_CASE("File System Setup")
 {
@@ -608,7 +609,7 @@ TEST_CASE("Storage Manager")
     CHECK(StorageManager::inferenceTacticPluginPath("DummyInferenceTactic") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Tactics/DummyInferenceTactic.dll");
     CHECK(StorageManager::preProcessorPluginPath("DummyPreProcessor") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Pre Processors/DummyPreProcessor.dll");
     CHECK(StorageManager::postProcessorPluginPath("DummyPostProcessor") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Post Processors/DummyPostProcessor.dll");
-    CHECK(StorageManager::proofPluginPath("Dummy Proof") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Post Processors/Dummy Proof.dll");
+    CHECK(StorageManager::proofPluginPath("Dummy Proof") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Proofs/Dummy Proof.dll");
     CHECK(StorageManager::signaturePluginsList() == QStringList({"AutomaticPropositionalLogicSignature.dll", "TableSignaturePlugin.dll"}));
     //CHECK(StorageManager::inferenceRulesPluginsList() == QStringList({"DummyInferenceRulePlugin.dll"})); FIXME!
     CHECK(StorageManager::inferenceTacticsPluginsList() == QStringList({"DummyInferenceTactic.dll"}));

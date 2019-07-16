@@ -40,6 +40,8 @@ public:
     void addLineOfProof(const LineOfProof &lineOfProof);
     virtual void setComment(const unsigned int lineNumber, const QString &comment);
 
+    virtual QString printLineOfProof(const unsigned int lineNumber) const;
+
     bool getLinkedWithAxioms() const;
 
     unsigned int getId() const;

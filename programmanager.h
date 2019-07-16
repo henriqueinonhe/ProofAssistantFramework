@@ -45,6 +45,12 @@ public:
     Theory *getActiveTheory() const;
     //TODO Edit Theory
 
+     //Theory Plugins
+    void addPreProcessorPlugin(const QString &processorPluginName) const;
+    void addPostProcessorPlugin(const QString &processorPluginName) const;
+    void removePreProcessorPlugin(const unsigned int processorIndex) const;
+    void removePostProcessorPlugin(const unsigned int processorIndex) const;
+
     //Proof
     void createProof(const QString &name,
                      const QString &description,

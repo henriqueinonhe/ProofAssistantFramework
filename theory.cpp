@@ -9,22 +9,22 @@ const QVector<shared_ptr<const InferenceTactic> > &Theory::getInferenceTactics()
     return inferenceTactics;
 }
 
-StringProcessorManager &Theory::getPreFormatter()
-{
-    return preFormatter;
-}
-
 const StringProcessorManager &Theory::getPreFormatter() const
 {
     return preFormatter;
 }
 
-StringProcessorManager &Theory::getPostFormatter()
+const StringProcessorManager &Theory::getPostFormatter() const
 {
     return postFormatter;
 }
 
-const StringProcessorManager &Theory::getPostFormatter() const
+StringProcessorManager &Theory::getPreFormatter()
+{
+    return preFormatter;
+}
+
+StringProcessorManager &Theory::getPostFormatter()
 {
     return postFormatter;
 }

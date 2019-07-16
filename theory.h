@@ -32,10 +32,10 @@ public:
 
     QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
     const QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics() const;
-    StringProcessorManager &getPreFormatter();
     const StringProcessorManager &getPreFormatter() const;
-    StringProcessorManager &getPostFormatter();
     const StringProcessorManager &getPostFormatter() const;
+    StringProcessorManager &getPreFormatter();
+    StringProcessorManager &getPostFormatter();
 
 protected:
     Theory(const LogicalSystem * const parentLogic,

@@ -53,6 +53,36 @@ Theory *ProgramManager::getActiveTheory() const
     return activeTheory.get();
 }
 
+void ProgramManager::addPreProcessorPlugin(const QString &processorPluginName) const
+{
+    checkActiveTheory();
+    const shared_ptr<StringProcessor> processor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::preProcessorPluginPath(processorPluginName));
+
+    Theory &theory = *activeTheory;
+    theory.getPreFormatter().addProcessor(processor);
+
+    const QString logicalSystemName = activeLogicalSystem->getName();
+    const QString theoryName = activeTheory->getName();
+    TheoryPluginsRecord pluginsRecord = StorageManager::retrieveTheoryPluginsRecord(logicalSystemName, theoryName);
+    pluginsRecord.preProcessorsPluginsNameList << processorPluginName;
+    StorageManager::storeTheoryPluginsRecord(logicalSystemName, theoryName, pluginsRecord);
+}
+
+void ProgramManager::addPostProcessorPlugin(const QString &processorPluginName) const
+{
+    checkActiveTheory();
+    const shared_ptr<StringProcessor> processor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::postProcessorPluginPath(processorPluginName));
+
+    Theory &theory = *activeTheory;
+    theory.getPostFormatter().addProcessor(processor);
+
+    const QString logicalSystemName = activeLogicalSystem->getName();
+    const QString theoryName = activeTheory->getName();
+    TheoryPluginsRecord pluginsRecord = StorageManager::retrieveTheoryPluginsRecord(logicalSystemName, theoryName);
+    pluginsRecord.postProcessorsPluginsNameList << processorPluginName;
+    StorageManager::storeTheoryPluginsRecord(logicalSystemName, theoryName, pluginsRecord);
+}
+
 void ProgramManager::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const
 {
     checkActiveTheory();
@@ -91,6 +121,7 @@ void ProgramManager::createProof(const QString &name, const QString &description
 
 ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
 {
+    //FIXME Load Proof plugin
     checkActiveTheory();
 
     QFile file(StorageManager::proofDataFilePath(activeLogicalSystem->getName(), activeTheory->getName(), proofId));
@@ -192,9 +223,11 @@ void ProgramManager::loadSignature(const QString &signatureName, shared_ptr<Sign
 
 void ProgramManager::loadProofPlugin(const QString &proofName, shared_ptr<Proof> &proof) const
 {
+    //NOTE Refactor
     if(proofName == "")
     {
         proof = make_shared<Proof>();
+        return;
     }
     QString proofPath = StorageManager::proofPluginPath(proofName);
     proof = PluginManager::fetchPlugin<Proof>(proofPath);

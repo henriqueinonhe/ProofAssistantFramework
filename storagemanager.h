@@ -38,7 +38,8 @@ public:
     static void deleteLogicalSystemDir(const QString &systemName);
     static void saveLogicalSystem(const LogicalSystem &system);
     static void loadLogicalSystem(const QString &systemName, LogicalSystem *&loadedSystem);
-
+    static LogicalSystemPluginsRecord retrieveLogicalSystemPluginsRecord(const QString &systemName);
+    static void storeLogicalSystemPluginsRecord(const QString &systemName, const LogicalSystemPluginsRecord &pluginsRecord);
 
     //Theory
     static QVector<TheoryRecord> retrieveTheoriesRecords(const QString &logicalSystemName);
@@ -49,6 +50,8 @@ public:
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
     static void saveTheory(Theory &theory);
     static void loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, Theory *&theory);
+    static TheoryPluginsRecord retrieveTheoryPluginsRecord(const QString &logicalSystemName, const QString &theoryName);
+    static void storeTheoryPluginsRecord(const QString &logicalSystemName, const QString &theoryName, const TheoryPluginsRecord &pluginsRecord);
 
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName);

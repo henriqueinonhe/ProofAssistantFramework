@@ -115,6 +115,11 @@ void Proof::setComment(const unsigned int lineNumber, const QString &comment)
     linesOfProof[lineNumber].setComment(comment);
 }
 
+QString Proof::printLineOfProof(const unsigned int lineNumber) const
+{
+    return getLineOfProof(lineNumber).getFormula().formattedString();
+}
+
 QVector<LineOfProof> Proof::getLinesOfProof() const
 {
     return linesOfProof;
