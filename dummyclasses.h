@@ -27,7 +27,7 @@ public:
 
     // InferenceRule interface
 public:
-    LineOfProof apply(const Parser &parser, const Proof &proof, const QStringList &argumentList) const
+    LineOfProof apply(const Parser &parser, Proof &proof, const QStringList &argumentList) const
     {
 
     }

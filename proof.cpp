@@ -2,17 +2,15 @@
 #include <QDataStream>
 #include "formula.h"
 
-
 Proof::Proof(QDataStream &stream, Signature * const signature) :
-    premises(Formula::unserializeVector(stream, signature)),
+    premises(Formula::deserializeVector(stream, signature)),
     conclusion(stream, signature),
-    linesOfProof(LineOfProof::unserializeVector(stream, signature))
+    linesOfProof(LineOfProof::deserializeVector(stream, signature))
 {
     stream >> id
            >> name
            >> description
            >> sectioning
-           >> specialData
            >> linkedWithAxioms;
 }
 
@@ -25,6 +23,30 @@ Proof::Proof(const uint id, const QString &name, const QString &description, con
     linkedWithAxioms(false)
 {
     insertPremisesAsLinesOfProof();
+}
+
+void Proof::serialize(QDataStream &stream) const
+{
+    stream << premises
+           << conclusion
+           << linesOfProof
+           << id
+           << name
+           << description
+           << sectioning
+           << linkedWithAxioms;
+}
+
+void Proof::deserialize(QDataStream &stream, Signature * const signature)
+{
+    premises = Formula::deserializeVector(stream, signature);
+    conclusion = Formula::deserialize(stream, signature);
+    linesOfProof = LineOfProof::deserializeVector(stream, signature);
+    stream >> id
+           >> name
+           >> description
+           >> sectioning
+           >> linkedWithAxioms;
 }
 
 bool Proof::isFinished() const
@@ -82,16 +104,6 @@ void Proof::insertPremisesAsLinesOfProof()
     }
 }
 
-QByteArray Proof::getSpecialData() const
-{
-    return specialData;
-}
-
-void Proof::setSpecialData(const QByteArray &value) const
-{
-    specialData = value;
-}
-
 void Proof::addLineOfProof(const LineOfProof &lineOfProof)
 {
     linesOfProof.push_back(lineOfProof);
@@ -132,15 +144,7 @@ void Proof::setDescription(const QString &value)
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof)
 {
-    stream << proof.premises
-           << proof.conclusion
-           << proof.linesOfProof
-           << proof.id
-           << proof.name
-           << proof.description
-           << proof.sectioning
-           << proof.specialData
-           << proof.linkedWithAxioms;
+    proof.serialize(stream);
     return stream;
 }
 

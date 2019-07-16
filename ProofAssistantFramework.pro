@@ -73,7 +73,6 @@ SOURCES += main.cpp \
     theorybuilder.cpp \
     theorypluginsrecord.cpp \
     theoryrecord.cpp \
-    logosprogrammanager.cpp \
     ../Language/Parser/parsingtreeconstiterator.cpp \
     pluginmanager.cpp \
     proofrecord.cpp

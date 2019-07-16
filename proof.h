@@ -12,6 +12,7 @@ class QDataStream;
 class Proof
 {
 public:
+    Proof() = default;
     Proof(QDataStream &stream, Signature * const signature);
     Proof(const uint id,
           const QString &name,
@@ -19,7 +20,10 @@ public:
           const QVector<Formula> &premises,
           const Formula &conclusion);
 
-    bool isFinished() const;
+    virtual void serialize(QDataStream &stream) const;
+    virtual void deserialize(QDataStream &stream, Signature * const signature);
+
+    virtual bool isFinished() const;
 
     QString getName() const;
     void setName(const QString &value);
@@ -34,16 +38,13 @@ public:
     QVector<LineOfProof> getLinesOfProof() const;
     LineOfProof getLineOfProof(const int lineNumber) const;
     void addLineOfProof(const LineOfProof &lineOfProof);
-    void setComment(const unsigned int lineNumber, const QString &comment);
+    virtual void setComment(const unsigned int lineNumber, const QString &comment);
 
     bool getLinkedWithAxioms() const;
 
     unsigned int getId() const;
 
-    QByteArray getSpecialData() const;
-    void setSpecialData(const QByteArray &value) const;
-
-private:
+protected:
     void insertPremisesAsLinesOfProof();
 
     unsigned int id;
@@ -53,7 +54,6 @@ private:
     Formula conclusion;
     QVector<LineOfProof> linesOfProof;
     LineOfProofSectionManager sectioning;
-    mutable QByteArray specialData;
     bool linkedWithAxioms;
 
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);

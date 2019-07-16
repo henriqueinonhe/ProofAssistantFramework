@@ -27,6 +27,7 @@ public:
                              const QString &description,
                              const QStringList &inferenceRulesNamesList,
                              const QString &signatureName,
+                             const QString &proofName,
                              const Type &wffType) const;
     void loadLogicalSystem(const QString &name);
     void unloadLogicalSystem();
@@ -57,6 +58,7 @@ private:
     void checkActiveTheory() const;
     void loadInferenceRules(const QStringList &inferenceRulesNames, QVector<shared_ptr<const InferenceRule>> &inferenceRules) const;
     void loadSignature(const QString &signatureName, shared_ptr<Signature> &signature) const;
+    void loadProofPlugin(const QString &proofName, shared_ptr<Proof> &proof) const;
     void makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const;
     void linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const;
     ProofLinks linkConclusion(const unsigned int currentProofId, const Formula &conclusion, QVector<ProofRecord> &proofsRecords) const;

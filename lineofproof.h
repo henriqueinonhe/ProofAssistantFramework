@@ -16,7 +16,7 @@ class LineOfProof
 public:
     LineOfProof(const Formula &formula, const Justification &justification, const QString &comment = "");
     LineOfProof(QDataStream &stream, Signature * const signature);
-    static QVector<LineOfProof> unserializeVector(QDataStream &stream, Signature * const signature);
+    static QVector<LineOfProof> deserializeVector(QDataStream &stream, Signature * const signature);
 
     bool operator==(const LineOfProof &other) const;
     bool operator!=(const LineOfProof &other) const;

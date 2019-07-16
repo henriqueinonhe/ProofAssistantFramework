@@ -21,6 +21,13 @@ public:
         root(this, nullptr, T())
     {}
 
+    Tree &operator =(const Tree &other)
+    {
+        this->root.children = QVector<shared_ptr<TreeNode<T>>>();
+        this->root = other.root;
+        return *this;
+    }
+
     bool operator==(const Tree &other) const
     {
         return this->root == other.root;
@@ -60,6 +67,23 @@ template <class T>
 class TreeNode
 {
 public:
+
+    TreeNode &operator =(const TreeNode &other)
+    {
+        this->obj = other.obj;
+
+        for(const auto &otherChild : other.children)
+        {
+            this->appendChild(otherChild->getObj());
+        }
+
+        for(int index = 0; index < this->children.size(); index++)
+        {
+            *(this->children[index]) = *(other.children[index]);
+        }
+
+        return *this;
+    }
 
     bool operator==(const TreeNode &other) const
     {
@@ -202,6 +226,11 @@ public:
 
     unsigned int getOwnChildNumber() const
     {
+        if(this->isRoot())
+        {
+            throw invalid_argument("Cannot get own child number of root!");
+        }
+
         const TreeNode<T> *ptr = parent;
 
         unsigned int ownChildNumber = 0;
@@ -252,7 +281,7 @@ private:
         });
     }
 
-    void unserialize(QDataStream &stream, const Tree<T> * const tree, const TreeNode<T> * const parent)
+    void deserialize(QDataStream &stream, const Tree<T> * const tree, const TreeNode<T> * const parent)
     {
         this->tree = tree;
         this->parent = parent;
@@ -260,13 +289,13 @@ private:
 
         std::for_each(children.begin(), children.end(), [&stream, this](const shared_ptr<TreeNode<T>> &node)
         {
-            node->unserialize(stream, this->tree, this);
+            node->deserialize(stream, this->tree, this);
         });
     }
 
     Tree<T> *tree;
     TreeNode<T> *parent;
-    QVector<shared_ptr<TreeNode<T>>> children;
+    QVector<shared_ptr<TreeNode<T>>> children; //Smart Pointers here in order to preserve references when Vector resizes (due to parent ptr)
     T obj;
 
 friend class Tree<T>;
@@ -409,7 +438,6 @@ public:
     {
         return *currentNode;
     }
-
 
 private:
     bool checkPathStringValidity(const QString &path)

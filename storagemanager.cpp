@@ -36,6 +36,7 @@ const QString StorageManager::signaturePluginsDirName = "Signatures";
 const QString StorageManager::inferenceTacticsPluginsDirName = "Inference Tactics";
 const QString StorageManager::preProcessorPluginsDirName = "Pre Processors";
 const QString StorageManager::postProcessorPluginsDirName = "Post Processors";
+const QString StorageManager::proofPluginsDirName = "Proofs";
 
 QString StorageManager::logicalSystemsRecordsPath()
 {
@@ -172,6 +173,11 @@ QString StorageManager::postProcessorPluginsDirPath()
     return pluginsDirPath() + "/" + postProcessorPluginsDirName;
 }
 
+QString StorageManager::proofPluginsDirPath()
+{
+    return pluginsDirPath() + "/" + proofPluginsDirName;
+}
+
 QStringList StorageManager::postProcessorPluginsList()
 {
     return listDirPlugins(postProcessorPluginsDirPath());
@@ -180,6 +186,16 @@ QStringList StorageManager::postProcessorPluginsList()
 bool StorageManager::postProcessorPluginExists(const QString &pluginName)
 {
     return postProcessorPluginsList().contains(pluginName + ".dll");
+}
+
+QStringList StorageManager::proofPluginsList()
+{
+    return listDirPlugins(proofPluginsDirPath());
+}
+
+bool StorageManager::prooPluginExists(const QString &pluginName)
+{
+    return proofPluginsList().contains(pluginName + ".dll");
 }
 
 QString StorageManager::inferenceRulePluginPath(const QString &pluginName)
@@ -205,6 +221,11 @@ QString StorageManager::preProcessorPluginPath(const QString &pluginName)
 QString StorageManager::postProcessorPluginPath(const QString &pluginName)
 {
     return postProcessorPluginsDirPath() + "/" + pluginName + ".dll";
+}
+
+QString StorageManager::proofPluginPath(const QString &pluginName)
+{
+    return proofPluginsDirPath() + "/" + pluginName + ".dll";
 }
 
 QStringList StorageManager::convertPluginNamesToPaths(const QStringList &pluginNamesList, QString pluginPathFunction(const QString&))

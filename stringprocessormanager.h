@@ -16,7 +16,7 @@ public:
     StringProcessorManager(const QVector<shared_ptr<StringProcessor>> &processors);
     StringProcessorManager(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
 
-    void unserialize(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
+    void deserialize(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
 
     void addProcessor(const shared_ptr<StringProcessor> &processor);
     void removeProcessor(const unsigned int index);

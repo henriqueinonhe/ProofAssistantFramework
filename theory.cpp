@@ -53,9 +53,9 @@ Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &si
     stream >> this->name
            >> this->description
            >> this->signature;
-    axioms = Formula::unserializeList(stream, signature.get());
-    preFormatter.unserialize(stream, preProcessors);
-    postFormatter.unserialize(stream, postProcessors);
+    axioms = Formula::deserializeList(stream, signature.get());
+    preFormatter.deserialize(stream, preProcessors);
+    postFormatter.deserialize(stream, postProcessors);
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -120,6 +120,6 @@ QDataStream &operator <<(QDataStream &stream, const QVector<shared_ptr<StringPro
 
 QDataStream &operator >>(QDataStream &stream, QVector<shared_ptr<StringProcessor> > &processors)
 {
-    ContainerAuxiliaryTools::unserializeSmartPointerContainer(stream, processors);
+    ContainerAuxiliaryTools::deserializeSmartPointerContainer(stream, processors);
     return stream;
 }

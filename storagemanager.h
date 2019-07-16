@@ -70,6 +70,8 @@ public:
     static bool preProcessorPluginExists(const QString &pluginName);
     static QStringList postProcessorPluginsList();
     static bool postProcessorPluginExists(const QString &pluginName);
+    static QStringList proofPluginsList();
+    static bool prooPluginExists(const QString &pluginName);
 
     // Files, Dirs and Paths
 
@@ -115,17 +117,20 @@ public:
     static const QString inferenceTacticsPluginsDirName;
     static const QString preProcessorPluginsDirName;
     static const QString postProcessorPluginsDirName;
+    static const QString proofPluginsDirName;
     static QString pluginsDirPath();
     static QString signaturePluginsDirPath();
     static QString inferenceRulePluginsDirPath();
     static QString inferenceTacticPluginsDirPath();
     static QString preProcessorPluginsDirPath();
     static QString postProcessorPluginsDirPath();
+    static QString proofPluginsDirPath();
     static QString signaturePluginPath(const QString &pluginName);
     static QString inferenceRulePluginPath(const QString &pluginName);
     static QString inferenceTacticPluginPath(const QString &pluginName);
     static QString preProcessorPluginPath(const QString &pluginName);
     static QString postProcessorPluginPath(const QString &pluginName);
+    static QString proofPluginPath(const QString &pluginName);
     static QStringList convertPluginNamesToPaths(const QStringList &pluginNamesList, QString pluginPathFunction(const QString &));
 
 private:

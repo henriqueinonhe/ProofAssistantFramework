@@ -8,7 +8,7 @@ LineOfProof::LineOfProof(QDataStream &stream, Signature * const signature) :
     stream >> justification >> comment;
 }
 
-QVector<LineOfProof> LineOfProof::unserializeVector(QDataStream &stream, Signature * const signature)
+QVector<LineOfProof> LineOfProof::deserializeVector(QDataStream &stream, Signature * const signature)
 {
     int size;
     stream >> size;

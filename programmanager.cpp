@@ -190,6 +190,16 @@ void ProgramManager::loadSignature(const QString &signatureName, shared_ptr<Sign
     signature = PluginManager::fetchPlugin<Signature>(signaturePath);
 }
 
+void ProgramManager::loadProofPlugin(const QString &proofName, shared_ptr<Proof> &proof) const
+{
+    if(proofName == "")
+    {
+        proof = make_shared<Proof>();
+    }
+    QString proofPath = StorageManager::proofPluginPath(proofName);
+    proof = PluginManager::fetchPlugin<Proof>(proofPath);
+}
+
 void ProgramManager::makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const
 {
     for(const QString &formula : premises)
@@ -237,6 +247,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
                                          const QStringList &inferenceRulesNamesList,
                                          const QString &signatureName,
+                                         const QString &proofName,
                                          const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -246,9 +257,11 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //Logical System
     QVector<shared_ptr<const InferenceRule>> inferenceRules;
-    loadInferenceRules(inferenceRulesNamesList, inferenceRules);
     shared_ptr<Signature> signature;
+    shared_ptr<Proof> proof;
+    loadInferenceRules(inferenceRulesNamesList, inferenceRules);
     loadSignature(signatureName, signature);
+    loadProofPlugin(proofName, proof);
     LogicalSystem logicalSystem(name, description, inferenceRules, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
 
     //LogicalSystemRecord
@@ -257,7 +270,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     //File management
-    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signatureName);
+    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signatureName, proofName);
     StorageManager::storeLogicalSystemsRecords(records);
     StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
 }
