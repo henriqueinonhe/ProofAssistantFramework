@@ -18,10 +18,10 @@ public:
 
     LogicalSystem(QDataStream &stream, const QVector<shared_ptr<const InferenceRule>> &inferenceRules);
 
-    QString getName() const;
-    QString getDescription() const;
-    QVector<shared_ptr<const InferenceRule>> getInferenceRules() const;
-    Type getWffType() const;
+    const QString &getName() const;
+    const QString &getDescription() const;
+    const QVector<shared_ptr<const InferenceRule>> &getInferenceRules() const;
+    const Type &getWffType() const;
 
 protected:
     void setName(const QString &value);

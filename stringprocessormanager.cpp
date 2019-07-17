@@ -1,11 +1,6 @@
 #include "stringprocessormanager.h"
 #include "containerauxiliarytools.h"
 
-StringProcessorManager::StringProcessorManager()
-{
-
-}
-
 StringProcessorManager::StringProcessorManager(const QVector<shared_ptr<StringProcessor> > &processors) :
     processors(processors)
 {

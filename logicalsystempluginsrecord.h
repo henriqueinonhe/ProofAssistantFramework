@@ -6,22 +6,16 @@
 
 class QDataStream;
 
-class LogicalSystemPluginsRecord
+struct LogicalSystemPluginsRecord
 {
 public:
     LogicalSystemPluginsRecord();
     LogicalSystemPluginsRecord(const QStringList &inferenceRulesNamesList, const QString &signatureName, const QString &proofName);
 
-    QStringList getInferenceRulesNamesList() const;
-    void setInferenceRulesNamesList(const QStringList &value);
+    const QStringList &getInferenceRulesNamesList() const;
+    const QString &getSignatureName() const;
+    const QString &getProofName() const;
 
-    QString getSignatureName() const;
-    void setSignatureName(const QString &value);
-
-    QString getProofName() const;
-    void setProofName(const QString &value);
-
-private:
     QStringList inferenceRulesNamesList;
     QString signatureName;
     QString proofName;

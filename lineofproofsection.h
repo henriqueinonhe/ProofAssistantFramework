@@ -17,7 +17,7 @@ public:
     unsigned int getBeginIndex() const;
     unsigned int getEndIndex() const;
 
-    QString getLabel() const;
+    const QString &getLabel() const;
     void setLabel(const QString &value);
 
     bool getCollapsed() const;

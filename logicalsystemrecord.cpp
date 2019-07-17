@@ -1,4 +1,4 @@
-﻿#include "logicalsystemrecord.h"
+#include "logicalsystemrecord.h"
 
 LogicalSystemRecord::LogicalSystemRecord()
 {
@@ -12,29 +12,19 @@ LogicalSystemRecord::LogicalSystemRecord(const QString &name, const QString &des
 
 }
 
-QString LogicalSystemRecord::getName() const
+const QString &LogicalSystemRecord::getName() const
 {
     return name;
 }
 
-void LogicalSystemRecord::setName(const QString &value)
-{
-    name = value;
-}
-
-QString LogicalSystemRecord::getDescription() const
+const QString &LogicalSystemRecord::getDescription() const
 {
     return description;
 }
 
-void LogicalSystemRecord::setDescription(const QString &value)
-{
-    description = value;
-}
-
 QDataStream &operator <<(QDataStream &stream, const LogicalSystemRecord &record)
 {
-    stream << record.getName() << record.getDescription();
+    stream << record.name << record.description;
     return stream;
 }
 

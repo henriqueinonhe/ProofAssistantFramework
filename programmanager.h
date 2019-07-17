@@ -62,11 +62,11 @@ public:
 private:
     void checkActiveLogicalSystem() const;
     void checkActiveTheory() const;
-    void loadInferenceRules(const QStringList &inferenceRulesNames, QVector<shared_ptr<const InferenceRule>> &inferenceRules) const;
-    void loadSignature(const QString &signatureName, shared_ptr<Signature> &signature) const;
-    void loadProofPlugin(const QString &proofName, shared_ptr<Proof> &proof) const;
-    void makePremisesFormulas(const QStringList &premises, QVector<Formula> &premisesFormulas, const Parser *parser) const;
-    void linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords, QVector<ProofLinks> &premisesLinks) const;
+    QVector<shared_ptr<const InferenceRule> > loadInferenceRules(const QStringList &inferenceRulesNames) const;
+    shared_ptr<Signature> loadSignature(const QString &signatureName) const;
+    shared_ptr<Proof> loadProofPlugin(const QString &proofName) const;
+    QVector<Formula> makePremisesFormulas(const QStringList &premises, const Parser *parser) const;
+    QVector<ProofLinks> linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords) const;
     ProofLinks linkConclusion(const unsigned int currentProofId, const Formula &conclusion, QVector<ProofRecord> &proofsRecords) const;
 
     QVector<LogicalSystemRecord> getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const;

@@ -9,11 +9,11 @@
 class DummyInferenceRule : public InferenceRule
 {
 public:
-    QString name() const
+    QString name() const override
     {
         return "Dummy Inference Rule";
     }
-    QString callCommand() const
+    QString callCommand() const override
     {
         return "Dummy Call Command";
     }
@@ -27,7 +27,7 @@ public:
 
     // InferenceRule interface
 public:
-    LineOfProof apply(const Parser &parser, Proof &proof, const QStringList &argumentList) const
+    LineOfProof apply(const Parser &parser, Proof &proof, const QStringList &argumentList) const override
     {
 
     }
@@ -40,18 +40,18 @@ public:
 
     // InferenceProcedure interface
 public:
-    QString name() const
+    QString name() const override
     {
         return "Dummy Inference Tactic";
     }
-    QString callCommand() const
+    QString callCommand() const override
     {
         return "Dummy Call Command";
     }
 
     // InferenceTactic interface
 public:
-    void apply(const ProofAssistant * const assistant, const QStringList &argumentList)
+    void apply(const ProofAssistant * const assistant, const QStringList &argumentList) override
     {
 
     }
@@ -62,11 +62,11 @@ class DummyPreProcessor : public StringProcessor
 
     // StringProcessor interface
 public:
-    QString processString(const QString &string) const
+    QString processString(const QString &string) const override
     {
 
     }
-    QString toString() const
+    QString toString() const override
     {
         return "Dummy Pre Processor";
     }
@@ -78,11 +78,11 @@ class DummyPostProcessor : public StringProcessor
 
     // StringProcessor interface
 public:
-    QString processString(const QString &string) const
+    QString processString(const QString &string) const override
     {
 
     }
-    QString toString() const
+    QString toString() const override
     {
         return "Dummy Post Processor";
     }

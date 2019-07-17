@@ -24,12 +24,12 @@ bool Justification::operator!=(const Justification &other) const
     return !(*this == other);
 }
 
-QString Justification::getInferenceRuleCallCommand() const
+const QString &Justification::getInferenceRuleCallCommand() const
 {
     return inferenceRuleCallCommand;
 }
 
-QStringList Justification::getArgumentList() const
+const QStringList &Justification::getArgumentList() const
 {
     return argumentList;
 }

@@ -65,7 +65,7 @@ bool Proof::isFinished() const
     //NOTE Not sure if it is done
 }
 
-QString Proof::getName() const
+const QString &Proof::getName() const
 {
     return name;
 }
@@ -75,12 +75,12 @@ void Proof::setName(const QString &value)
     name = value;
 }
 
-QVector<Formula> Proof::getPremises() const
+const QVector<Formula> &Proof::getPremises() const
 {
     return premises;
 }
 
-Formula Proof::getConclusion() const
+const Formula &Proof::getConclusion() const
 {
     return conclusion;
 }
@@ -120,12 +120,12 @@ QString Proof::printLineOfProof(const unsigned int lineNumber) const
     return getLineOfProof(lineNumber).getFormula().formattedString();
 }
 
-QVector<LineOfProof> Proof::getLinesOfProof() const
+const QVector<LineOfProof> &Proof::getLinesOfProof() const
 {
     return linesOfProof;
 }
 
-LineOfProof Proof::getLineOfProof(const int lineNumber) const
+const LineOfProof &Proof::getLineOfProof(const int lineNumber) const
 {
     if(lineNumber <= 0)
     {
@@ -136,7 +136,7 @@ LineOfProof Proof::getLineOfProof(const int lineNumber) const
     return linesOfProof[lineNumber - zeroIndexCompensation];
 }
 
-QString Proof::getDescription() const
+const QString &Proof::getDescription() const
 {
     return description;
 }

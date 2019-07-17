@@ -32,7 +32,7 @@ void LineOfProofSection::setIndexes(const unsigned int beginIndex, const unsigne
     this->endIndex = endIndex;
 }
 
-QString LineOfProofSection::getLabel() const
+const QString &LineOfProofSection::getLabel() const
 {
     return label;
 }

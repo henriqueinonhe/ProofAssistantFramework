@@ -24,11 +24,11 @@ public:
     }
 };
 
-typedef PluginFactoryInterface<Signature> SignatureFactoryPlugin;
-typedef PluginFactoryInterface<const InferenceRule> InferenceRuleFactoryPlugin;
-typedef PluginFactoryInterface<const InferenceTactic> InferenceTacticFactoryPlugin;
-typedef PluginFactoryInterface<StringProcessor> StringProcessorFactoryPlugin;
-typedef PluginFactoryInterface<Proof> ProofFactoryPlugin;
+using SignatureFactoryPlugin = PluginFactoryInterface<Signature>;
+using InferenceRuleFactoryPlugin = PluginFactoryInterface<const InferenceRule>;
+using InferenceTacticFactoryPlugin = PluginFactoryInterface<const InferenceTactic>;
+using StringProcessorFactoryPlugin = PluginFactoryInterface<StringProcessor>;
+using ProofFactoryPlugin = PluginFactoryInterface<Proof>;
 
 Q_DECLARE_INTERFACE(SignatureFactoryPlugin, "SignatureFactoryPlugin")
 Q_DECLARE_INTERFACE(InferenceRuleFactoryPlugin, "PluginFactoryInterface<const InferenceRule>")

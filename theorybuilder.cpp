@@ -5,23 +5,14 @@
 #include "storagemanager.h"
 #include "pluginmanager.h"
 
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const QString &name, const QString &description, const shared_ptr<Signature> &signature) :
+TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QString &name, const QString &description) :
+    parentLogic(parentLogic),
+    signature(signature),
     name(name),
     description(description),
-    signature(signature),
     parser(new Parser(signature.get(), parentLogic->getWffType()))
 {
     checkParentLogicPointer(parentLogic);
-    this->parentLogic = parentLogic;
-}
-
-TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature) :
-    parentLogic(parentLogic),
-    signature(signature)
-{
-    checkParentLogicPointer(parentLogic);
-    this->parentLogic = parentLogic;
-    parser.reset(new Parser(signature.get(), parentLogic->getWffType()));
 }
 
 Theory TheoryBuilder::build() const
@@ -59,8 +50,7 @@ void TheoryBuilder::checkAxiomCollision(const Formula &newAxiom) const
 
 void TheoryBuilder::addAxiom(const QString &axiom)
 {
-    Formula newAxiom(parser->parse(axiom));
-
+    auto newAxiom = parser->parse(axiom);
     checkAxiomCollision(newAxiom);
 
     axioms.push_back(newAxiom);
@@ -68,7 +58,7 @@ void TheoryBuilder::addAxiom(const QString &axiom)
 
 void TheoryBuilder::removeAxiom(const QString &axiom)
 {
-    for(const Formula &axiomFormula : axioms)
+    for(const auto &axiomFormula : axioms)
     {
         if(axiomFormula.formattedString() == axiom)
         {

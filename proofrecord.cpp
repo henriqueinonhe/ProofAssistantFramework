@@ -29,7 +29,7 @@ ProofRecord::ProofRecord(const unsigned int id, const QString &name, const QStri
 {
 }
 
-QString ProofRecord::getName() const
+const QString &ProofRecord::getName() const
 {
     return name;
 }
@@ -39,7 +39,7 @@ void ProofRecord::setName(const QString &value)
     name = value;
 }
 
-QString ProofRecord::getDescription() const
+const QString &ProofRecord::getDescription() const
 {
     return description;
 }
@@ -52,7 +52,7 @@ void ProofRecord::setDescription(const QString &value)
 QStringList ProofRecord::getPremises() const
 {
     QStringList premises;
-    for(const ProofLinks &link : premisesLinks)
+    for(const auto &link : premisesLinks)
     {
         premises << link.getFormula();
     }
@@ -72,7 +72,7 @@ QVector<ProofLinks> ProofRecord::getPremisesLinks() const
 
 void ProofRecord::addPremissLinkId(const Formula &formula, const unsigned int id)
 {
-    for(ProofLinks &links : premisesLinks)
+    for(auto &links : premisesLinks)
     {
         if(links.getFormula() == formula.formattedString())
         {

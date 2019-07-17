@@ -6,12 +6,14 @@
 class TheoryBuilder
 {
 public:
+    TheoryBuilder() = delete;
     TheoryBuilder(const LogicalSystem *parentLogic,
-                  const QString &name,
-                  const QString &description,
-                  const shared_ptr<Signature> &signature);
-    TheoryBuilder(const LogicalSystem *parentLogic,
-                  const shared_ptr<Signature> &signature);
+                  const shared_ptr<Signature> &signature,
+                  const QString &name = "",
+                  const QString &description = "");
+    TheoryBuilder(const TheoryBuilder &) = delete;
+
+    TheoryBuilder &operator =(const TheoryBuilder &) = delete;
 
     Theory build() const;
 
@@ -33,9 +35,9 @@ protected:
     void loadSignature(const QString &signatureName);
 
     const LogicalSystem *parentLogic;
+    shared_ptr<Signature> signature;
     QString name;
     QString description;
-    shared_ptr<Signature> signature;
     unique_ptr<const Parser> parser;
     QLinkedList<Formula> axioms;
 

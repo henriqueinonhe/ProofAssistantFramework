@@ -14,8 +14,11 @@ class ProofLinks
 public:
     ProofLinks(QDataStream &stream);
     ProofLinks(const Formula &formula, const QVector<unsigned int> linkedProofsIds);
+    ProofLinks(const ProofLinks &other) = default;
 
-    QString getFormula() const;
+    ProofLinks &operator=(const ProofLinks &other) = default;
+
+    const QString &getFormula() const;
     QVector<unsigned int> getLinkedProofsIds() const;
     void addLinkedProofId(const unsigned int id);
 

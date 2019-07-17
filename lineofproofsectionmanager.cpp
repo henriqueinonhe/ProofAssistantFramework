@@ -9,8 +9,8 @@ LineOfProofSectionManager::LineOfProofSectionManager()
 void LineOfProofSectionManager::testForSiblingsIndexesCross(const LineOfProofSection &section, const unsigned int currentNodeIndex, TreeIterator<LineOfProofSection> iter)
 {
     iter.goToParent();
-    const unsigned int currentNodeAlreadyCheckedCompensation = 1;
-    for(unsigned int index = currentNodeIndex + currentNodeAlreadyCheckedCompensation; index < iter->getChildrenNumber(); index++)
+    const auto currentNodeAlreadyCheckedCompensation = 1;
+    for(auto index = currentNodeIndex + currentNodeAlreadyCheckedCompensation; index < iter->getChildrenNumber(); index++)
     {
         iter.goToChild(index);
         if(section.indexesCross(iter->getObj()))

@@ -14,7 +14,7 @@ QVector<LineOfProof> LineOfProof::deserializeVector(QDataStream &stream, Signatu
     stream >> size;
 
     QVector<LineOfProof> vec;
-    for(int index = 0; index < size; index++)
+    for(auto index = 0; index < size; index++)
     {
         vec.push_back(LineOfProof(stream, signature));
     }
@@ -41,7 +41,7 @@ bool LineOfProof::operator!=(const LineOfProof &other) const
     return !(*this == other);
 }
 
-QString LineOfProof::getComment() const
+const QString &LineOfProof::getComment() const
 {
     return comment;
 }
@@ -56,12 +56,12 @@ LineOfProof::LineOfProof()
 
 }
 
-Justification LineOfProof::getJustification() const
+const Justification &LineOfProof::getJustification() const
 {
     return justification;
 }
 
-Formula LineOfProof::getFormula() const
+const Formula &LineOfProof::getFormula() const
 {
     return formula;
 }

@@ -12,9 +12,10 @@ using namespace std;
 class StringProcessorManager
 {
 public:
-    StringProcessorManager();
+    StringProcessorManager() = default;
     StringProcessorManager(const QVector<shared_ptr<StringProcessor>> &processors);
     StringProcessorManager(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
+    StringProcessorManager(const StringProcessorManager &) = default;
 
     void deserialize(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);
 

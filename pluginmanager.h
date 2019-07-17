@@ -24,18 +24,18 @@ public:
             throw std::invalid_argument(errorMsg.toStdString());
         }
 
-        PluginFactoryInterface<T> *factory = qobject_cast<PluginFactoryInterface<T> *>(loader.instance());
+        auto *factory = qobject_cast<PluginFactoryInterface<T> *>(loader.instance());
         return factory->instance();
     }
 
     template <class T> static QVector<shared_ptr<T>> fetchPluginVector(const QStringList &pluginPathList)
     {
         QVector<shared_ptr<T>> vec;
-        std::for_each(pluginPathList.begin(), pluginPathList.end(), [&vec](const QString &pluginPath)
+        for(const auto &pluginPath : pluginPathList)
         {
-            shared_ptr<T> ptr = fetchPlugin<T>(pluginPath);
+            auto ptr = fetchPlugin<T>(pluginPath);
             vec.push_back(ptr);
-        });
+        }
 
         return vec;
     }

@@ -14,8 +14,8 @@ ProofAssistant::ProofAssistant(const Theory * const theory, const Proof &proof) 
 
 void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStringList &argumentList)
 {
-    const LogicalSystem &logicalSystem = *theory->getParentLogic();
-    const InferenceRule *rule = queryInferenceProcedure(logicalSystem.getInferenceRules(), callCommand);
+    const auto &logicalSystem = *theory->getParentLogic();
+    const auto *rule = queryInferenceProcedure(logicalSystem.getInferenceRules(), callCommand);
 
     if(rule == nullptr)
     {
@@ -27,7 +27,7 @@ void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStrin
 
 void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const
 {
-    const InferenceTactic *tactic = queryInferenceProcedure(theory->getInferenceTactics(), callCommand);
+    const auto *tactic = queryInferenceProcedure(theory->getInferenceTactics(), callCommand);
 
     if(tactic == nullptr)
     {

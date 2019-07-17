@@ -3,19 +3,15 @@
 
 #include <QString>
 
-class TheoryRecord
+struct TheoryRecord
 {
 public:
     TheoryRecord();
     TheoryRecord(const QString &name, const QString &description);
 
-    QString getName() const;
-    void setName(const QString &value);
+    const QString &getName() const;
+    const QString &getDescription() const;
 
-    QString getDescription() const;
-    void setDescription(const QString &value);
-
-private:
     QString name;
     QString description;
 

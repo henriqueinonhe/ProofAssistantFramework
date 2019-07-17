@@ -25,18 +25,18 @@ public:
 
     virtual bool isFinished() const;
 
-    QString getName() const;
+    const QString &getName() const;
     void setName(const QString &value);
 
-    QString getDescription() const;
+    const QString &getDescription() const;
     void setDescription(const QString &value);
 
-    QVector<Formula> getPremises() const;
+    const QVector<Formula> &getPremises() const;
 
-    Formula getConclusion() const;
+    const Formula &getConclusion() const;
 
-    QVector<LineOfProof> getLinesOfProof() const;
-    LineOfProof getLineOfProof(const int lineNumber) const;
+    const QVector<LineOfProof> &getLinesOfProof() const;
+    const LineOfProof &getLineOfProof(const int lineNumber) const;
     void addLineOfProof(const LineOfProof &lineOfProof);
     virtual void setComment(const unsigned int lineNumber, const QString &comment);
 

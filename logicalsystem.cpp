@@ -16,7 +16,7 @@ LogicalSystem::LogicalSystem(QDataStream &stream, const QVector<shared_ptr<const
     stream >> *this;
 }
 
-QString LogicalSystem::getName() const
+const QString &LogicalSystem::getName() const
 {
     return name;
 }
@@ -27,17 +27,17 @@ void LogicalSystem::setName(const QString &value)
 }
 
 
-QVector<shared_ptr<const InferenceRule> > LogicalSystem::getInferenceRules() const
+const QVector<shared_ptr<const InferenceRule> > &LogicalSystem::getInferenceRules() const
 {
     return inferenceRules;
 }
 
-Type LogicalSystem::getWffType() const
+const Type &LogicalSystem::getWffType() const
 {
     return *wffType;
 }
 
-QString LogicalSystem::getDescription() const
+const QString &LogicalSystem::getDescription() const
 {
     return description;
 }

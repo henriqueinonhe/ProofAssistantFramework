@@ -14,36 +14,20 @@ LogicalSystemPluginsRecord::LogicalSystemPluginsRecord(const QStringList &infere
 
 }
 
-QStringList LogicalSystemPluginsRecord::getInferenceRulesNamesList() const
+const QStringList &LogicalSystemPluginsRecord::getInferenceRulesNamesList() const
 {
     return inferenceRulesNamesList;
 }
 
-void LogicalSystemPluginsRecord::setInferenceRulesNamesList(const QStringList &value)
-{
-    inferenceRulesNamesList = value;
-}
-
-QString LogicalSystemPluginsRecord::getSignatureName() const
+const QString &LogicalSystemPluginsRecord::getSignatureName() const
 {
     return signatureName;
 }
 
-void LogicalSystemPluginsRecord::setSignatureName(const QString &value)
-{
-    signatureName = value;
-}
-
-QString LogicalSystemPluginsRecord::getProofName() const
+const QString &LogicalSystemPluginsRecord::getProofName() const
 {
     return proofName;
 }
-
-void LogicalSystemPluginsRecord::setProofName(const QString &value)
-{
-    proofName = value;
-}
-
 
 QDataStream &operator <<(QDataStream &stream, const LogicalSystemPluginsRecord &pluginsRecord)
 {

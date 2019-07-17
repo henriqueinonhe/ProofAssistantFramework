@@ -232,7 +232,7 @@ TEST_CASE("Theory")
     vec.push_back(make_shared<const DummyInferenceRule>());
     LogicalSystem logicalSystem("A", "A", vec, Type("o"));
 
-    TheoryBuilder theoryBuilder(&logicalSystem, "Dummy Theory", "Lorem Ipsum", make_shared<TableSignature>());
+    TheoryBuilder theoryBuilder(&logicalSystem, make_shared<TableSignature>(), "Dummy Theory", "Lorem Ipsum");
 
     shared_ptr<Signature> signature = theoryBuilder.getSignature();
     TableSignature *tableSignature = dynamic_cast<TableSignature *>(signature.get());
@@ -844,9 +844,9 @@ TEST_CASE("Framework Integration II")
     //Setup Theory
     shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("AutomaticPropositionalLogicSignature"));
     TheoryBuilder builder(manager.getActiveLogicalSystem(),
+                          signature,
                           "First Theory",
-                          "Just a testing theory.",
-                          signature);
+                          "Just a testing theory.");
     builder.addAxiom("A");
     builder.addAxiom("B");
 

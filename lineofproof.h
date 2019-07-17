@@ -21,11 +21,11 @@ public:
     bool operator==(const LineOfProof &other) const;
     bool operator!=(const LineOfProof &other) const;
 
-    Formula getFormula() const;
+    const Formula &getFormula() const;
 
-    Justification getJustification() const;
+    const Justification &getJustification() const;
 
-    QString getComment() const;
+    const QString &getComment() const;
     void setComment(const QString &value);
 
 protected:

@@ -16,6 +16,7 @@ namespace std
 class ProofAssistant
 {
 public:
+    ProofAssistant() = delete;
     ProofAssistant(const Theory * const theory, const Proof &proof);
 
     void applyInferenceRule(const QString &callCommand, const QStringList &argumentList);

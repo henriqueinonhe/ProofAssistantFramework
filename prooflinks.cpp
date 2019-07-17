@@ -13,7 +13,7 @@ ProofLinks::ProofLinks(const Formula &formula, const QVector<unsigned int> linke
 {
 }
 
-QString ProofLinks::getFormula() const
+const QString &ProofLinks::getFormula() const
 {
     return formula;
 }

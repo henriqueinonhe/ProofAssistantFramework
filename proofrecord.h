@@ -20,10 +20,10 @@ public:
 
     unsigned int getId() const;
 
-    QString getName() const;
+    const QString &getName() const;
     void setName(const QString &value);
 
-    QString getDescription() const;
+    const QString &getDescription() const;
     void setDescription(const QString &value);
 
     QStringList getPremises() const;

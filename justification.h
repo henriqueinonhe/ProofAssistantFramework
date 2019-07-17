@@ -13,9 +13,9 @@ public:
     bool operator==(const Justification &other) const;
     bool operator!=(const Justification &other) const;
 
-    QString getInferenceRuleCallCommand() const;
+    const QString &getInferenceRuleCallCommand() const;
 
-    QStringList getArgumentList() const;
+    const QStringList &getArgumentList() const;
 
 private:
     Justification();
