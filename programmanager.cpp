@@ -61,11 +61,9 @@ void ProgramManager::addPreProcessorPlugin(const QString &processorPluginName) c
     auto &theory = *activeTheory;
     theory.getPreFormatter().addProcessor(processor);
 
-    const auto logicalSystemName = activeLogicalSystem->getName();
-    const auto theoryName = activeTheory->getName();
-    auto pluginsRecord = StorageManager::retrieveTheoryPluginsRecord(logicalSystemName, theoryName);
+    auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.preProcessorsPluginsNameList << processorPluginName;
-    StorageManager::storeTheoryPluginsRecord(logicalSystemName, theoryName, pluginsRecord);
+    storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
 void ProgramManager::addPostProcessorPlugin(const QString &processorPluginName) const
@@ -76,11 +74,60 @@ void ProgramManager::addPostProcessorPlugin(const QString &processorPluginName) 
     auto &theory = *activeTheory;
     theory.getPostFormatter().addProcessor(processor);
 
-    const auto logicalSystemName = activeLogicalSystem->getName();
-    const auto theoryName = activeTheory->getName();
-    auto pluginsRecord = StorageManager::retrieveTheoryPluginsRecord(logicalSystemName, theoryName);
+    auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.postProcessorsPluginsNameList << processorPluginName;
-    StorageManager::storeTheoryPluginsRecord(logicalSystemName, theoryName, pluginsRecord);
+    storeActiveTheoryPluginsRecord(pluginsRecord);
+}
+
+void ProgramManager::removePreProcessorPlugin(const unsigned int processorIndex) const
+{
+    checkActiveTheory();
+    auto &theory = *activeTheory;
+    theory.getPreFormatter().removeProcessor(processorIndex);
+
+    auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
+    pluginsRecord.preProcessorsPluginsNameList.pop_back();
+    storeActiveTheoryPluginsRecord(pluginsRecord);
+}
+
+void ProgramManager::removePostProcessorPlugin(const unsigned int processorIndex) const
+{
+    checkActiveTheory();
+    auto &theory = *activeTheory;
+    theory.getPostFormatter().removeProcessor(processorIndex);
+
+    auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
+    pluginsRecord.postProcessorsPluginsNameList.pop_back();
+    storeActiveTheoryPluginsRecord(pluginsRecord);
+}
+
+void ProgramManager::addInferenceTacticPlugin(const QString &tacticPluginName) const
+{
+    checkActiveTheory();
+    const auto inferenceTactic = PluginManager::fetchPlugin<const InferenceTactic>(StorageManager::inferenceTacticPluginPath(tacticPluginName));
+
+    auto &theory = *activeTheory;
+    theory.getInferenceTactics().push_back(inferenceTactic);
+
+    auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
+    pluginsRecord.inferenceTacticsPluginsNameList << tacticPluginName;
+    storeActiveTheoryPluginsRecord(pluginsRecord);
+}
+
+void ProgramManager::removeInferenceTacticPlugin(const unsigned int tacticIndex) const
+{
+    checkActiveTheory();
+    auto &theory = *activeTheory;
+    const auto zeroIndexCompensation = 1;
+    if(static_cast<int>(tacticIndex) >= theory.getInferenceTactics().size() - zeroIndexCompensation)
+    {
+        throw invalid_argument("There is no inference tactic associated with this index!");
+    }
+    theory.getInferenceTactics().removeAt(tacticIndex);
+
+    auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
+    pluginsRecord.inferenceTacticsPluginsNameList.removeAt(tacticIndex);
+    storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
 void ProgramManager::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const
@@ -119,13 +166,23 @@ void ProgramManager::createProof(const QString &name, const QString &description
 
 ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
 {
-    //FIXME Load Proof plugin
     checkActiveTheory();
 
     QFile file(StorageManager::proofDataFilePath(activeLogicalSystem->getName(), activeTheory->getName(), proofId));
     file.open(QIODevice::ReadOnly);
     QDataStream stream(&file);
-    return ProofAssistant(activeTheory.get(), Proof(stream, activeTheory->getSignature()));
+    const auto logicalSystemPluginsRecord = retrieveActiveLogicalSystemPluginsRecord();
+    const auto proofPluginName = logicalSystemPluginsRecord.getProofName();
+    if(proofPluginName != "")
+    {
+        auto proofPlugin = PluginManager::fetchPlugin<Proof>(StorageManager::proofPluginPath(proofPluginName));
+        proofPlugin->deserialize(stream, activeTheory->getSignature());
+        return ProofAssistant(activeTheory.get(), *proofPlugin);
+    }
+    else
+    {
+        return ProofAssistant(activeTheory.get(), Proof(stream, activeTheory->getSignature()));
+    }
 }
 
 void ProgramManager::saveProof(const ProofAssistant &assistant) const
@@ -205,6 +262,36 @@ void ProgramManager::checkActiveTheory() const
     {
         throw std::invalid_argument("There is currently no active theory!");
     }
+}
+
+LogicalSystemPluginsRecord ProgramManager::retrieveActiveLogicalSystemPluginsRecord() const
+{
+    checkActiveLogicalSystem();
+    const auto activeSystemName = activeLogicalSystem->getName();
+    return StorageManager::retrieveLogicalSystemPluginsRecord(activeSystemName);
+}
+
+void ProgramManager::storeActiveLogicalSystemPluginsRecord(const LogicalSystemPluginsRecord &pluginsRecord) const
+{
+    checkActiveLogicalSystem();
+    const auto activeSystemName = activeLogicalSystem->getName();
+    StorageManager::storeLogicalSystemPluginsRecord(activeSystemName, pluginsRecord);
+}
+
+TheoryPluginsRecord ProgramManager::retrieveActiveTheoryPluginsRecord() const
+{
+    checkActiveTheory();
+    const auto activeSystemName = activeLogicalSystem->getName();
+    const auto activeTheoryName = activeTheory->getName();
+    return StorageManager::retrieveTheoryPluginsRecord(activeSystemName, activeTheoryName);
+}
+
+void ProgramManager::storeActiveTheoryPluginsRecord(const TheoryPluginsRecord &pluginsRecord) const
+{
+    checkActiveTheory();
+    const auto activeSystemName = activeLogicalSystem->getName();
+    const auto activeTheoryName = activeTheory->getName();
+    StorageManager::storeTheoryPluginsRecord(activeSystemName, activeTheoryName, pluginsRecord);
 }
 
 QVector<shared_ptr<const InferenceRule>> ProgramManager::loadInferenceRules(const QStringList &inferenceRulesNames) const

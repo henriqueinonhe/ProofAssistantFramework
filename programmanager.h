@@ -50,6 +50,8 @@ public:
     void addPostProcessorPlugin(const QString &processorPluginName) const;
     void removePreProcessorPlugin(const unsigned int processorIndex) const;
     void removePostProcessorPlugin(const unsigned int processorIndex) const;
+    void addInferenceTacticPlugin(const QString &tacticPluginName) const;
+    void removeInferenceTacticPlugin(const unsigned int tacticIndex) const;
 
     //Proof
     void createProof(const QString &name,
@@ -62,9 +64,16 @@ public:
 private:
     void checkActiveLogicalSystem() const;
     void checkActiveTheory() const;
+
+    LogicalSystemPluginsRecord retrieveActiveLogicalSystemPluginsRecord() const;
+    void storeActiveLogicalSystemPluginsRecord(const LogicalSystemPluginsRecord &pluginsRecord) const;
+    TheoryPluginsRecord retrieveActiveTheoryPluginsRecord() const;
+    void storeActiveTheoryPluginsRecord(const TheoryPluginsRecord &pluginsRecord) const;
+
     QVector<shared_ptr<const InferenceRule> > loadInferenceRules(const QStringList &inferenceRulesNames) const;
     shared_ptr<Signature> loadSignature(const QString &signatureName) const;
     shared_ptr<Proof> loadProofPlugin(const QString &proofName) const;
+
     QVector<Formula> makePremisesFormulas(const QStringList &premises, const Parser *parser) const;
     QVector<ProofLinks> linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords) const;
     ProofLinks linkConclusion(const unsigned int currentProofId, const Formula &conclusion, QVector<ProofRecord> &proofsRecords) const;
