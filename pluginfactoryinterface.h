@@ -11,12 +11,33 @@ class InferenceRule;
 class InferenceTactic;
 class StringProcessor;
 class Proof;
+class QString;
+class Formula;
+template <class> class QVector;
 
 template <class T>
 class PluginFactoryInterface
 {
 public:
     virtual shared_ptr<T> instance() const = 0;
+
+    virtual ~PluginFactoryInterface()
+    {
+
+    }
+};
+
+template <>
+class PluginFactoryInterface<Proof>
+{
+public:
+    virtual shared_ptr<Proof> instance(const uint id,
+                                       const QString &name,
+                                       const QString &description,
+                                       const QVector<Formula> &premises,
+                                       const Formula &conclusion) const = 0;
+
+    virtual shared_ptr<Proof> instance() const = 0;
 
     virtual ~PluginFactoryInterface()
     {

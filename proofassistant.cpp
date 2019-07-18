@@ -6,7 +6,7 @@
 #include "inferencetactic.h"
 
 
-ProofAssistant::ProofAssistant(const Theory * const theory, const Proof &proof) :
+ProofAssistant::ProofAssistant(const Theory * const theory, const shared_ptr<Proof> &proof) :
     theory(theory),
     proof(proof)
 {
@@ -22,7 +22,7 @@ void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStrin
         throw std::invalid_argument("There is no inference rule associated with this call command!");
     }
 
-    proof.addLineOfProof(rule->apply(*theory->parser, proof, argumentList));
+    proof->addLineOfProof(rule->apply(*theory->parser, *proof, argumentList));
 }
 
 void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const
@@ -39,12 +39,12 @@ void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStr
 
 void ProofAssistant::setLineOfProofComment(const unsigned int lineNumber, const QString &comment)
 {
-    proof.setComment(lineNumber, comment);
+    proof->setComment(lineNumber, comment);
 }
 
-Proof ProofAssistant::getProof() const
+const Proof &ProofAssistant::getProof() const
 {
-    return proof;
+    return *proof;
 }
 
 

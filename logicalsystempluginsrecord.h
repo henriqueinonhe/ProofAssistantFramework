@@ -10,15 +10,15 @@ struct LogicalSystemPluginsRecord
 {
 public:
     LogicalSystemPluginsRecord();
-    LogicalSystemPluginsRecord(const QStringList &inferenceRulesNamesList, const QString &signatureName, const QString &proofName);
+    LogicalSystemPluginsRecord(const QStringList &inferenceRulesNamesList, const QString &signaturePluginName, const QString &proofPluginName);
 
     const QStringList &getInferenceRulesNamesList() const;
-    const QString &getSignatureName() const;
-    const QString &getProofName() const;
+    const QString &getSignaturePluginName() const;
+    const QString &getProofPluginName() const;
 
     QStringList inferenceRulesNamesList;
-    QString signatureName;
-    QString proofName;
+    QString signaturePluginName;
+    QString proofPluginName;
 
     friend QDataStream &operator << (QDataStream &, const LogicalSystemPluginsRecord &);
     friend QDataStream &operator >> (QDataStream &, LogicalSystemPluginsRecord &);

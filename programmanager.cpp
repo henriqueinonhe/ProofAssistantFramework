@@ -154,13 +154,19 @@ void ProgramManager::createProof(const QString &name, const QString &description
     proofsRecords.push_back(record);
 
     //Create Proof
-    Proof proof(currentProofId, name, description, premisesFormulas, conclusionFormula);
+    const auto proofPluginPath = StorageManager::retrieveLogicalSystemPluginsRecord(activeLogicalSystemName).proofPluginName;
+    const auto proof = loadProofPlugin(proofPluginPath,
+                                       currentProofId,
+                                       name,
+                                       description,
+                                       premisesFormulas,
+                                       conclusionFormula);
 
     //Store
     const auto proofDataFilePath = StorageManager::proofDataFilePath(activeLogicalSystemName, activeTheoryName, currentProofId);
     const auto newProofId = currentProofId + 1;
     StorageManager::storeProofsRecords(activeLogicalSystemName, activeTheoryName, proofsRecords);
-    StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
+    StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, *proof);
     StorageManager::storeCurrentProofId(activeLogicalSystemName, activeTheoryName, newProofId);
 }
 
@@ -172,16 +178,16 @@ ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
     file.open(QIODevice::ReadOnly);
     QDataStream stream(&file);
     const auto logicalSystemPluginsRecord = retrieveActiveLogicalSystemPluginsRecord();
-    const auto proofPluginName = logicalSystemPluginsRecord.getProofName();
+    const auto proofPluginName = logicalSystemPluginsRecord.getProofPluginName();
     if(proofPluginName != "")
     {
         auto proofPlugin = PluginManager::fetchPlugin<Proof>(StorageManager::proofPluginPath(proofPluginName));
         proofPlugin->deserialize(stream, activeTheory->getSignature());
-        return ProofAssistant(activeTheory.get(), *proofPlugin);
+        return ProofAssistant(activeTheory.get(), proofPlugin);
     }
     else
     {
-        return ProofAssistant(activeTheory.get(), Proof(stream, activeTheory->getSignature()));
+        return ProofAssistant(activeTheory.get(), make_shared<Proof>(stream, activeTheory->getSignature()));
     }
 }
 
@@ -307,9 +313,33 @@ shared_ptr<Signature> ProgramManager::loadSignature(const QString &signatureName
     return PluginManager::fetchPlugin<Signature>(signaturePath);
 }
 
-shared_ptr<Proof> ProgramManager::loadProofPlugin(const QString &proofName) const
+shared_ptr<Proof> ProgramManager::loadProofPlugin(const QString &proofName,
+                                                  const uint id,
+                                                  const QString &name,
+                                                  const QString &description,
+                                                  const QVector<Formula> &premises,
+                                                  const Formula &conclusion) const
 {
     //NOTE Refactor
+    if(proofName == "")
+    {
+        return make_shared<Proof>(id,
+                                  name,
+                                  description,
+                                  premises,
+                                  conclusion);
+    }
+    auto proofPath = StorageManager::proofPluginPath(proofName);
+    return PluginManager::fetchPlugin(proofPath,
+                                      id,
+                                      name,
+                                      description,
+                                      premises,
+                                      conclusion);
+}
+
+shared_ptr<Proof> ProgramManager::loadProofPlugin(const QString &proofName) const
+{
     if(proofName == "")
     {
         return make_shared<Proof>();
@@ -380,6 +410,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
     //Logical System
     const auto inferenceRules = loadInferenceRules(inferenceRulesNamesList);
     const auto signature = loadSignature(signatureName);
+    //FIXME! Create a proof plugin test function
     const auto proof = loadProofPlugin(proofName);
     LogicalSystem logicalSystem(name, description, inferenceRules, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
 

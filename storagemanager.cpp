@@ -193,7 +193,7 @@ QStringList StorageManager::proofPluginsList()
     return listDirPlugins(proofPluginsDirPath());
 }
 
-bool StorageManager::prooPluginExists(const QString &pluginName)
+bool StorageManager::proofPluginExists(const QString &pluginName)
 {
     return proofPluginsList().contains(pluginName + ".dll");
 }
@@ -406,7 +406,7 @@ void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const Q
     readComponent(logicalSystemPluginsDataFilePath(logicalSystemName), systemPluginsRecord);
     readComponent(theoryPluginsDataFilePath(logicalSystemName, theoryName), theoryPluginsRecord);
 
-    const auto signaturePluginPath = StorageManager::signaturePluginPath(systemPluginsRecord.getSignatureName());
+    const auto signaturePluginPath = StorageManager::signaturePluginPath(systemPluginsRecord.getSignaturePluginName());
     const auto inferenceTacticsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.inferenceTacticsPluginsNameList, inferenceTacticPluginPath);
     const auto preProcessorsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.preProcessorsPluginsNameList, preProcessorPluginPath);
     const auto postProcessorsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.postProcessorsPluginsNameList, postProcessorPluginPath);

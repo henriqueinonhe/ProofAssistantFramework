@@ -72,6 +72,7 @@ private:
 
     QVector<shared_ptr<const InferenceRule> > loadInferenceRules(const QStringList &inferenceRulesNames) const;
     shared_ptr<Signature> loadSignature(const QString &signatureName) const;
+    shared_ptr<Proof> loadProofPlugin(const QString &proofName, const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) const;
     shared_ptr<Proof> loadProofPlugin(const QString &proofName) const;
 
     QVector<Formula> makePremisesFormulas(const QStringList &premises, const Parser *parser) const;

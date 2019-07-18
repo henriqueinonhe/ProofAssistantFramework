@@ -8,8 +8,8 @@ LogicalSystemPluginsRecord::LogicalSystemPluginsRecord()
 
 LogicalSystemPluginsRecord::LogicalSystemPluginsRecord(const QStringList &inferenceRulesNamesList, const QString &signatureName, const QString &proofName) :
     inferenceRulesNamesList(inferenceRulesNamesList),
-    signatureName(signatureName),
-    proofName(proofName)
+    signaturePluginName(signatureName),
+    proofPluginName(proofName)
 {
 
 }
@@ -19,24 +19,24 @@ const QStringList &LogicalSystemPluginsRecord::getInferenceRulesNamesList() cons
     return inferenceRulesNamesList;
 }
 
-const QString &LogicalSystemPluginsRecord::getSignatureName() const
+const QString &LogicalSystemPluginsRecord::getSignaturePluginName() const
 {
-    return signatureName;
+    return signaturePluginName;
 }
 
-const QString &LogicalSystemPluginsRecord::getProofName() const
+const QString &LogicalSystemPluginsRecord::getProofPluginName() const
 {
-    return proofName;
+    return proofPluginName;
 }
 
 QDataStream &operator <<(QDataStream &stream, const LogicalSystemPluginsRecord &pluginsRecord)
 {
-    stream << pluginsRecord.inferenceRulesNamesList << pluginsRecord.signatureName << pluginsRecord.proofName;
+    stream << pluginsRecord.inferenceRulesNamesList << pluginsRecord.signaturePluginName << pluginsRecord.proofPluginName;
     return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, LogicalSystemPluginsRecord &pluginsRecord)
 {
-    stream >> pluginsRecord.inferenceRulesNamesList >> pluginsRecord.signatureName >> pluginsRecord.proofName;
+    stream >> pluginsRecord.inferenceRulesNamesList >> pluginsRecord.signaturePluginName >> pluginsRecord.proofPluginName;
     return stream;
 }

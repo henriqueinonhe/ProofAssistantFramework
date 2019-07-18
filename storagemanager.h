@@ -74,7 +74,7 @@ public:
     static QStringList postProcessorPluginsList();
     static bool postProcessorPluginExists(const QString &pluginName);
     static QStringList proofPluginsList();
-    static bool prooPluginExists(const QString &pluginName);
+    static bool proofPluginExists(const QString &pluginName);
 
     // Files, Dirs and Paths
 

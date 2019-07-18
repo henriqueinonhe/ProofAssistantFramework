@@ -28,6 +28,27 @@ public:
         return factory->instance();
     }
 
+    static shared_ptr<Proof> fetchPlugin(const QString &pluginPath,
+                                         const uint id,
+                                         const QString &name,
+                                         const QString &description,
+                                         const QVector<Formula> &premises,
+                                         const Formula &conclusion)
+    {
+        QPluginLoader loader(pluginPath);
+        if(!loader.load())
+        {
+            QString errorMsg;
+            errorMsg += "The plugin at \"";
+            errorMsg += pluginPath;
+            errorMsg += "\" couldn't be loaded!";
+            throw std::invalid_argument(errorMsg.toStdString());
+        }
+
+        auto *factory = qobject_cast<PluginFactoryInterface<Proof> *>(loader.instance());
+        return factory->instance(id, name, description, premises, conclusion);
+    }
+
     template <class T> static QVector<shared_ptr<T>> fetchPluginVector(const QStringList &pluginPathList)
     {
         QVector<shared_ptr<T>> vec;

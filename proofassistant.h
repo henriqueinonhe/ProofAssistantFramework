@@ -17,13 +17,13 @@ class ProofAssistant
 {
 public:
     ProofAssistant() = delete;
-    ProofAssistant(const Theory * const theory, const Proof &proof);
+    ProofAssistant(const Theory * const theory, const shared_ptr<Proof> &proof);
 
     void applyInferenceRule(const QString &callCommand, const QStringList &argumentList);
     void applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const;
     void setLineOfProofComment(const unsigned int lineNumber, const QString &comment);
 
-    Proof getProof() const;
+    const Proof &getProof() const;
 
 private:
     template <class T>
@@ -42,7 +42,7 @@ private:
     }
 
     const Theory * const theory;
-    Proof proof;
+    shared_ptr<Proof> proof;
 };
 
 #endif // PROOFASSISTANT_H
