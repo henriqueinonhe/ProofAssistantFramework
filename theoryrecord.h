@@ -9,8 +9,8 @@ public:
     TheoryRecord();
     TheoryRecord(const QString &name, const QString &description);
 
-    const QString &getName() const;
-    const QString &getDescription() const;
+    QString getName() const;
+    QString getDescription() const;
 
     QString name;
     QString description;

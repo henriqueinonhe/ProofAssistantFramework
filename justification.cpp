@@ -1,9 +1,11 @@
 #include "justification.h"
 #include <QDataStream>
+#include "qtclassesdeserialization.h"
 
-Justification::Justification(QDataStream &stream)
+Justification::Justification(QDataStream &stream) :
+    inferenceRuleCallCommand(QtDeserialization::deserializeQString(stream)),
+    argumentList(QtDeserialization::deserializeQStringList(stream))
 {
-    stream >> *this;
 }
 
 Justification::Justification(const QString &inferenceRuleCallCommand, const QStringList &argumentList) :
@@ -32,11 +34,6 @@ const QString &Justification::getInferenceRuleCallCommand() const
 const QStringList &Justification::getArgumentList() const
 {
     return argumentList;
-}
-
-Justification::Justification()
-{
-
 }
 
 QDataStream &operator <<(QDataStream &stream, const Justification &justification)

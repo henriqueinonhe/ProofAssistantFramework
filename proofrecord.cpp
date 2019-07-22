@@ -29,7 +29,7 @@ ProofRecord::ProofRecord(const unsigned int id, const QString &name, const QStri
 {
 }
 
-const QString &ProofRecord::getName() const
+QString ProofRecord::getName() const
 {
     return name;
 }
@@ -39,7 +39,7 @@ void ProofRecord::setName(const QString &value)
     name = value;
 }
 
-const QString &ProofRecord::getDescription() const
+QString ProofRecord::getDescription() const
 {
     return description;
 }

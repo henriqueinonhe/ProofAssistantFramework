@@ -1,14 +1,14 @@
 #include <QCoreApplication>
 
-#define CATCH_CONFIG_MAIN
 
+#define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 
-#ifndef CATCH_CONFIG_MAIN
+int main( int argc, char* argv[] ) {
 
-int main()
-{
-    return 0;
+  int result = Catch::Session().run( argc, argv );
+
+
+  return result;
 }
 
-#endif

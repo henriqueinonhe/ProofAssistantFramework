@@ -16,6 +16,13 @@ class Proof;
 class Theory
 {
 public:
+    Theory() = delete;
+    Theory(const Theory &) = delete;
+    Theory(Theory &&) noexcept = default;
+    Theory &operator =(const Theory &) = default;
+    Theory &operator =(Theory &&) noexcept = default;
+    ~Theory() noexcept = default;
+
     Theory(const LogicalSystem *logicalSystem,
            const shared_ptr<Signature> &signature,
            const QVector<shared_ptr<const InferenceTactic>> &inferenceTactics,

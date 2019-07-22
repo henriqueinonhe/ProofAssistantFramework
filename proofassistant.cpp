@@ -4,7 +4,7 @@
 #include "logicalsystem.h"
 #include "theory.h"
 #include "inferencetactic.h"
-
+#include "lineofproof.h"
 
 ProofAssistant::ProofAssistant(const Theory * const theory, const shared_ptr<Proof> &proof) :
     theory(theory),

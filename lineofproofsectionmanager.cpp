@@ -6,6 +6,12 @@ LineOfProofSectionManager::LineOfProofSectionManager()
 
 }
 
+LineOfProofSectionManager::LineOfProofSectionManager(QDataStream &stream) :
+    sections(stream)
+{
+
+}
+
 void LineOfProofSectionManager::testForSiblingsIndexesCross(const LineOfProofSection &section, const unsigned int currentNodeIndex, TreeIterator<LineOfProofSection> iter)
 {
     iter.goToParent();

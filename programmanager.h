@@ -20,13 +20,15 @@ using namespace std;
 class ProgramManager
 {
 public:
+    static const QString defaultProofPluginName;
+
     ProgramManager();
 
     //Logical System
     void createLogicalSystem(const QString &name,
                              const QString &description,
                              const QStringList &inferenceRulesNamesList,
-                             const QString &signatureName,
+                             const QString &signaturePluginName,
                              const QString &proofName,
                              const Type &wffType) const;
     void loadLogicalSystem(const QString &name);
@@ -72,8 +74,8 @@ private:
 
     QVector<shared_ptr<const InferenceRule> > loadInferenceRules(const QStringList &inferenceRulesNames) const;
     shared_ptr<Signature> loadSignature(const QString &signatureName) const;
-    shared_ptr<Proof> loadProofPlugin(const QString &proofName, const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) const;
-    shared_ptr<Proof> loadProofPlugin(const QString &proofName) const;
+    shared_ptr<Proof> loadProofPlugin(const QString &proofPluginName, const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) const;
+    void testLoadProofPlugin(const QString &proofPluginName) const;
 
     QVector<Formula> makePremisesFormulas(const QStringList &premises, const Parser *parser) const;
     QVector<ProofLinks> linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords) const;

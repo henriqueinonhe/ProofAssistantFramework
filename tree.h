@@ -21,6 +21,11 @@ public:
         root(this, nullptr, T())
     {}
 
+    Tree(QDataStream &stream) :
+        root(stream, this, nullptr)
+    {
+    }
+
     Tree &operator =(const Tree &other)
     {
         this->root.children = QVector<shared_ptr<TreeNode<T>>>();
@@ -271,6 +276,11 @@ private:
     {
     }
 
+    TreeNode(QDataStream &stream, Tree<T> * const tree, TreeNode<T> * const parent)
+    {
+        deserialize(stream, tree, parent);
+    }
+
     void serialize(QDataStream &stream)
     {
         stream << obj;
@@ -281,7 +291,7 @@ private:
         });
     }
 
-    void deserialize(QDataStream &stream, const Tree<T> * const tree, const TreeNode<T> * const parent)
+    void deserialize(QDataStream &stream, Tree<T> * const tree, TreeNode<T> * const parent)
     {
         this->tree = tree;
         this->parent = parent;

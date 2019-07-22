@@ -27,7 +27,7 @@ public:
 
     // InferenceRule interface
 public:
-    LineOfProof apply(const Parser &parser, Proof &proof, const QStringList &argumentList) const override
+    shared_ptr<LineOfProof> apply(const Parser &parser, Proof &proof, const QStringList &argumentList) const override
     {
 
     }

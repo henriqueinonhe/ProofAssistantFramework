@@ -1,7 +1,6 @@
 #ifndef PLUGINFACTORYINTERFACE_H
 #define PLUGINFACTORYINTERFACE_H
 
-#include <memory>
 #include <QtPlugin>
 
 using namespace std;
@@ -13,7 +12,14 @@ class StringProcessor;
 class Proof;
 class QString;
 class Formula;
+class LineOfProof;
+class LineOfProofSectionManager;
 template <class> class QVector;
+
+namespace std
+{
+    template <class> class shared_ptr;
+}
 
 template <class T>
 class PluginFactoryInterface
@@ -37,7 +43,9 @@ public:
                                        const QVector<Formula> &premises,
                                        const Formula &conclusion) const = 0;
 
-    virtual shared_ptr<Proof> instance() const = 0;
+    virtual shared_ptr<Proof> instance(QDataStream &stream) const = 0;
+
+    virtual shared_ptr<Proof> instance() const = 0; //Test Loading
 
     virtual ~PluginFactoryInterface()
     {

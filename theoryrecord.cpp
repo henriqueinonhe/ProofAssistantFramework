@@ -13,12 +13,12 @@ TheoryRecord::TheoryRecord(const QString &name, const QString &description) :
 
 }
 
-const QString &TheoryRecord::getName() const
+QString TheoryRecord::getName() const
 {
     return name;
 }
 
-const QString &TheoryRecord::getDescription() const
+QString TheoryRecord::getDescription() const
 {
     return description;
 }

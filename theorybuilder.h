@@ -7,13 +7,16 @@ class TheoryBuilder
 {
 public:
     TheoryBuilder() = delete;
+    TheoryBuilder(const TheoryBuilder &) = delete;
+    TheoryBuilder(TheoryBuilder &&) noexcept = default;
+    TheoryBuilder &operator =(const TheoryBuilder &) = delete;
+    TheoryBuilder &operator =(TheoryBuilder &&) = delete;
+    ~TheoryBuilder() noexcept = default;
+
     TheoryBuilder(const LogicalSystem *parentLogic,
                   const shared_ptr<Signature> &signature,
                   const QString &name = "",
                   const QString &description = "");
-    TheoryBuilder(const TheoryBuilder &) = delete;
-
-    TheoryBuilder &operator =(const TheoryBuilder &) = delete;
 
     Theory build() const;
 
@@ -42,7 +45,7 @@ protected:
     QLinkedList<Formula> axioms;
 
 private:
-    void checkParentLogicPointer(const LogicalSystem *parentLogic) const;
+    const LogicalSystem *checkParentLogicPointer(const LogicalSystem *parentLogic) const;
     void checkAxiomCollision(const Formula &newAxiom) const;
 };
 

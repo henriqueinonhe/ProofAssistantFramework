@@ -3,11 +3,19 @@
 
 #include "lineofproofsection.h"
 #include "tree.h"
+class QDataStream;
 
 class LineOfProofSectionManager
 {
 public:
     LineOfProofSectionManager();
+    LineOfProofSectionManager(const LineOfProofSectionManager &) = default;
+    LineOfProofSectionManager(LineOfProofSectionManager &&) = delete; //Must implement Tree Move Ctor First
+    LineOfProofSectionManager &operator =(const LineOfProofSectionManager &) = default;
+    LineOfProofSectionManager &operator =(LineOfProofSectionManager &&) = delete;
+    ~LineOfProofSectionManager() noexcept = default;
+
+    LineOfProofSectionManager(QDataStream &stream);
 
     void addSection(const LineOfProofSection &section);
     LineOfProofSection getSection(const unsigned int beginIndex, const unsigned int endIndex) const;

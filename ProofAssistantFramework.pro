@@ -1,7 +1,7 @@
 QT += core
 QT -= gui
 
-CONFIG += c++11
+CONFIG += c++17
 
 QMAKE_CXXFLAGS += -gdwarf-2
 
@@ -22,7 +22,7 @@ INCLUDEPATH += ../Language/Parser \
                ../Language/Utils
 
 SOURCES += main.cpp \
-    ../Language/qtclassesdeserialization.cpp \
+    ../Language/Type/typeparsingtreeconstiterator.cpp \
     logicalsystempluginsrecord.cpp \
     stringprocessormanager.cpp \
     tests.cpp \
@@ -55,6 +55,7 @@ SOURCES += main.cpp \
     ../Language/Type/typeparsingtreenode.cpp \
     ../Language/Type/typetoken.cpp \
     ../Language/Type/typetokenstring.cpp \
+    ../Language/Utils/qtclassesdeserialization.cpp \
     logicalsystem.cpp \
     theory.cpp \
     proof.cpp \
@@ -89,8 +90,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
-    ../General Sources/catchprinters.hpp \
-    ../Language/qtclassesdeserialization.h \
+    ../Language/Type/typeparsingtreeconstiterator.h \
     catch.hpp \
     ../Language/Parser/formula.h \
     ../Language/Parser/lexer.h \
@@ -126,6 +126,7 @@ HEADERS += \
     ../Language/Utils/containerauxiliarytools.h \
     ../Language/Utils/parsingauxiliarytools.h \
     ../Language/Utils/pool.h \
+    ../Language/Utils/qtclassesdeserialization.h \
     dummyclasses.h \
     logicalsystem.h \
     logicalsystempluginsrecord.h \

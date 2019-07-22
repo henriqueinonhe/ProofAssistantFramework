@@ -1,52 +1,42 @@
 #include "proof.h"
 #include <QDataStream>
 #include "formula.h"
+#include "lineofproof.h"
+#include "containerauxiliarytools.h"
+#include "qtclassesdeserialization.h"
 
 Proof::Proof(QDataStream &stream, Signature * const signature) :
+    id(QtDeserialization::deserializeUInt(stream)),
+    name(QtDeserialization::deserializeQString(stream)),
+    description(QtDeserialization::deserializeQString(stream)),
     premises(Formula::deserializeVector(stream, signature)),
     conclusion(stream, signature),
-    linesOfProof(LineOfProof::deserializeVector(stream, signature))
+    linesOfProof(LineOfProof::deserializeVector(stream, signature)),
+    sectioning(stream),
+    linkedWithAxioms(QtDeserialization::deserializeBool(stream))
 {
-    stream >> id
-           >> name
-           >> description
-           >> sectioning
-           >> linkedWithAxioms;
 }
+
 
 Proof::Proof(const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) :
     id(id),
     name(name),
     description(description),
     premises(premises),
-    conclusion(conclusion),
-    linkedWithAxioms(false)
+    conclusion(conclusion)
 {
-    insertPremisesAsLinesOfProof();
 }
 
 void Proof::serialize(QDataStream &stream) const
 {
-    stream << premises
-           << conclusion
-           << linesOfProof
-           << id
+    stream << id
            << name
            << description
+           << premises
+           << conclusion
+           << linesOfProof
            << sectioning
            << linkedWithAxioms;
-}
-
-void Proof::deserialize(QDataStream &stream, Signature * const signature)
-{
-    premises = Formula::deserializeVector(stream, signature);
-    conclusion = Formula::deserialize(stream, signature);
-    linesOfProof = LineOfProof::deserializeVector(stream, signature);
-    stream >> id
-           >> name
-           >> description
-           >> sectioning
-           >> linkedWithAxioms;
 }
 
 bool Proof::isFinished() const
@@ -57,15 +47,12 @@ bool Proof::isFinished() const
     }
     else
     {
-        const Formula lastLineOfProofFormula = linesOfProof.last().getFormula();
-
-        return conclusion == lastLineOfProofFormula;
+        const auto lastLineOfProofFormula = linesOfProof.last()->getFormula();
+        return conclusion == lastLineOfProofFormula && isFinishedAdditionalChecks();
     }
-
-    //NOTE Not sure if it is done
 }
 
-const QString &Proof::getName() const
+QString Proof::getName() const
 {
     return name;
 }
@@ -75,12 +62,12 @@ void Proof::setName(const QString &value)
     name = value;
 }
 
-const QVector<Formula> &Proof::getPremises() const
+QVector<Formula> Proof::getPremises() const
 {
     return premises;
 }
 
-const Formula &Proof::getConclusion() const
+Formula Proof::getConclusion() const
 {
     return conclusion;
 }
@@ -100,29 +87,38 @@ void Proof::insertPremisesAsLinesOfProof()
     Justification justification("Premiss", QStringList());
     for(const Formula &premiss : premises)
     {
-        linesOfProof.push_back(LineOfProof(premiss, justification, "Premiss"));
+        linesOfProof.push_back(createLineOfProof(premiss, justification));
     }
 }
 
-void Proof::addLineOfProof(const LineOfProof &lineOfProof)
+shared_ptr<LineOfProof> Proof::createLineOfProof(const Formula &premiss, const Justification &justification) const
+{
+    return make_shared<LineOfProof>(premiss, justification);
+}
+
+void Proof::addLineOfProof(const shared_ptr<LineOfProof> &lineOfProof)
 {
     linesOfProof.push_back(lineOfProof);
+}
+
+bool Proof::isFinishedAdditionalChecks() const
+{
+    //Designed to be overriden by subclasses to implement additional constraints
+    //in considering a proof finished
+    return true;
 }
 
 void Proof::setComment(const unsigned int lineNumber, const QString &comment)
 {
     //NOTE Maybe add a boundary check
-    linesOfProof[lineNumber].setComment(comment);
+    linesOfProof[lineNumber]->setComment(comment);
 }
 
-QString Proof::printLineOfProof(const unsigned int lineNumber) const
+QVector<const LineOfProof *> Proof::getLinesOfProof() const
 {
-    return getLineOfProof(lineNumber).getFormula().formattedString();
-}
-
-const QVector<LineOfProof> &Proof::getLinesOfProof() const
-{
-    return linesOfProof;
+    QVector<const LineOfProof *> vector;
+    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(linesOfProof, vector);
+    return vector;
 }
 
 const LineOfProof &Proof::getLineOfProof(const int lineNumber) const
@@ -133,10 +129,10 @@ const LineOfProof &Proof::getLineOfProof(const int lineNumber) const
     }
 
     const int zeroIndexCompensation = 1;
-    return linesOfProof[lineNumber - zeroIndexCompensation];
+    return *linesOfProof[lineNumber - zeroIndexCompensation];
 }
 
-const QString &Proof::getDescription() const
+QString Proof::getDescription() const
 {
     return description;
 }

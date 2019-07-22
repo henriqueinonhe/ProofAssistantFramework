@@ -7,6 +7,13 @@
 class Justification
 {
 public:
+    Justification() = delete;
+    Justification(const Justification &) = default;
+    Justification(Justification &&) noexcept = default;
+    Justification &operator =(const Justification &) = default;
+    Justification &operator =(Justification &&) noexcept = default;
+    ~Justification() noexcept = default;
+
     Justification(QDataStream &stream);
     Justification(const QString &inferenceRuleCallCommand, const QStringList &argumentList);
 
@@ -18,12 +25,9 @@ public:
     const QStringList &getArgumentList() const;
 
 private:
-    Justification();
-
     QString inferenceRuleCallCommand;
     QStringList argumentList;
 
-    friend class LineOfProof;
     friend QDataStream &operator <<(QDataStream &stream, const Justification &justification);
     friend QDataStream &operator >>(QDataStream &stream, Justification &justification);
 };

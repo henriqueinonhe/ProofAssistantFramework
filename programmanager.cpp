@@ -9,6 +9,8 @@
 #include "proofassistant.h"
 #include "logicalsystempluginsrecord.h"
 
+const QString ProgramManager::defaultProofPluginName = "";
+
 ProgramManager::ProgramManager() :
     activeLogicalSystem(nullptr),
     activeTheory(nullptr)
@@ -179,21 +181,21 @@ ProofAssistant ProgramManager::loadProof(const unsigned int proofId) const
     QDataStream stream(&file);
     const auto logicalSystemPluginsRecord = retrieveActiveLogicalSystemPluginsRecord();
     const auto proofPluginName = logicalSystemPluginsRecord.getProofPluginName();
-    if(proofPluginName != "")
+    if(proofPluginName == defaultProofPluginName)
     {
-        auto proofPlugin = PluginManager::fetchPlugin<Proof>(StorageManager::proofPluginPath(proofPluginName));
-        proofPlugin->deserialize(stream, activeTheory->getSignature());
-        return ProofAssistant(activeTheory.get(), proofPlugin);
+        return ProofAssistant(activeTheory.get(), make_shared<Proof>(stream, activeTheory->getSignature()));
     }
     else
     {
-        return ProofAssistant(activeTheory.get(), make_shared<Proof>(stream, activeTheory->getSignature()));
+        const auto proofPluginPath = StorageManager::proofPluginPath(proofPluginName);
+        auto proof = PluginManager::fetchPlugin<Proof>(proofPluginPath, stream);
+        return ProofAssistant(activeTheory.get(), proof);
     }
 }
 
 void ProgramManager::saveProof(const ProofAssistant &assistant) const
 {
-    const auto proof = assistant.getProof();
+    const auto &proof = assistant.getProof();
     const auto activeLogicalSystemName = activeLogicalSystem->getName();
     const auto activeTheoryName = activeTheory->getName();
     StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
@@ -313,39 +315,44 @@ shared_ptr<Signature> ProgramManager::loadSignature(const QString &signatureName
     return PluginManager::fetchPlugin<Signature>(signaturePath);
 }
 
-shared_ptr<Proof> ProgramManager::loadProofPlugin(const QString &proofName,
+shared_ptr<Proof> ProgramManager::loadProofPlugin(const QString &proofPluginName,
                                                   const uint id,
                                                   const QString &name,
                                                   const QString &description,
                                                   const QVector<Formula> &premises,
                                                   const Formula &conclusion) const
 {
-    //NOTE Refactor
-    if(proofName == "")
+    if(proofPluginName == defaultProofPluginName)
     {
-        return make_shared<Proof>(id,
-                                  name,
-                                  description,
-                                  premises,
-                                  conclusion);
+        return Proof::createNewProof<Proof>(id,
+                                            name,
+                                            description,
+                                            premises,
+                                            conclusion);
     }
-    auto proofPath = StorageManager::proofPluginPath(proofName);
-    return PluginManager::fetchPlugin(proofPath,
-                                      id,
-                                      name,
-                                      description,
-                                      premises,
-                                      conclusion);
+    else
+    {
+        auto prooPluginfPath = StorageManager::proofPluginPath(proofPluginName);
+        return PluginManager::fetchPlugin(prooPluginfPath,
+                                          id,
+                                          name,
+                                          description,
+                                          premises,
+                                          conclusion);
+    }
 }
 
-shared_ptr<Proof> ProgramManager::loadProofPlugin(const QString &proofName) const
+void ProgramManager::testLoadProofPlugin(const QString &proofPluginName) const
 {
-    if(proofName == "")
+    if(proofPluginName == defaultProofPluginName)
     {
-        return make_shared<Proof>();
+        return;
     }
-    auto proofPath = StorageManager::proofPluginPath(proofName);
-    return PluginManager::fetchPlugin<Proof>(proofPath);
+    else
+    {
+        auto proofPluginPath = StorageManager::proofPluginPath(proofPluginName);
+        PluginManager::fetchPlugin<Proof>(proofPluginPath);
+    }
 }
 
 QVector<Formula> ProgramManager::makePremisesFormulas(const QStringList &premises, const Parser *parser) const
@@ -398,8 +405,8 @@ ProofLinks ProgramManager::linkConclusion(const unsigned int currentProofId, con
 void ProgramManager::createLogicalSystem(const QString &name,
                                          const QString &description,
                                          const QStringList &inferenceRulesNamesList,
-                                         const QString &signatureName,
-                                         const QString &proofName,
+                                         const QString &signaturePluginName,
+                                         const QString &proofPluginName,
                                          const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -409,9 +416,8 @@ void ProgramManager::createLogicalSystem(const QString &name,
 
     //Logical System
     const auto inferenceRules = loadInferenceRules(inferenceRulesNamesList);
-    const auto signature = loadSignature(signatureName);
-    //FIXME! Create a proof plugin test function
-    const auto proof = loadProofPlugin(proofName);
+    const auto signature = loadSignature(signaturePluginName);
+    testLoadProofPlugin(proofPluginName);
     LogicalSystem logicalSystem(name, description, inferenceRules, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
 
     //LogicalSystemRecord
@@ -420,7 +426,7 @@ void ProgramManager::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     //File management
-    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signatureName, proofName);
+    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName);
     StorageManager::storeLogicalSystemsRecords(records);
     StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
 }

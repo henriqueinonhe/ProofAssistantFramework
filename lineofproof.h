@@ -14,22 +14,30 @@ using namespace std;
 class LineOfProof
 {
 public:
+    LineOfProof() = delete;
+    LineOfProof &operator =(const LineOfProof &) = delete;
+    LineOfProof &operator =(LineOfProof &&) = delete;
+    ~LineOfProof() noexcept = default;
+
     LineOfProof(const Formula &formula, const Justification &justification, const QString &comment = "");
     LineOfProof(QDataStream &stream, Signature * const signature);
-    static QVector<LineOfProof> deserializeVector(QDataStream &stream, Signature * const signature);
+    static QVector<shared_ptr<LineOfProof> > deserializeVector(QDataStream &stream, Signature * const signature);
 
     bool operator==(const LineOfProof &other) const;
     bool operator!=(const LineOfProof &other) const;
 
-    const Formula &getFormula() const;
+    Formula getFormula() const;
 
-    const Justification &getJustification() const;
+    Justification getJustification() const;
 
-    const QString &getComment() const;
+    QString getComment() const;
     void setComment(const QString &value);
 
 protected:
-    LineOfProof();
+    LineOfProof(const LineOfProof &) = default;
+    LineOfProof(LineOfProof &&) noexcept = default;
+
+    virtual bool isEqual(const LineOfProof &other) const;
 
     Formula formula;
     Justification justification;
@@ -37,9 +45,11 @@ protected:
 
     friend class QVector<LineOfProof>;
     friend class ProofAssistant;
+    friend QDataStream &operator <<(QDataStream &stream, const shared_ptr<LineOfProof> &lineOfProof);
     friend QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
 };
 
+QDataStream &operator <<(QDataStream &stream, const shared_ptr<LineOfProof> &lineOfProof);
 QDataStream &operator <<(QDataStream &stream, const LineOfProof &lineOfProof);
 
 #endif // LINEOFPROOF_H

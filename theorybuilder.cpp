@@ -6,13 +6,12 @@
 #include "pluginmanager.h"
 
 TheoryBuilder::TheoryBuilder(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QString &name, const QString &description) :
-    parentLogic(parentLogic),
+    parentLogic(checkParentLogicPointer(parentLogic)),
     signature(signature),
     name(name),
     description(description),
     parser(new Parser(signature.get(), parentLogic->getWffType()))
 {
-    checkParentLogicPointer(parentLogic);
 }
 
 Theory TheoryBuilder::build() const
@@ -96,12 +95,13 @@ QLinkedList<Formula> TheoryBuilder::getAxioms() const
     return axioms;
 }
 
-void TheoryBuilder::checkParentLogicPointer(const LogicalSystem *parentLogic) const
+const LogicalSystem *TheoryBuilder::checkParentLogicPointer(const LogicalSystem *parentLogic) const
 {
     if(parentLogic == nullptr)
     {
         throw std::runtime_error("Parent logic pointer is null!");
     }
+    return parentLogic;
 }
 
 void TheoryBuilder::setName(const QString &value)
