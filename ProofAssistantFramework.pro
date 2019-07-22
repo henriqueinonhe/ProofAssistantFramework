@@ -23,7 +23,9 @@ INCLUDEPATH += ../Language/Parser \
 
 SOURCES += main.cpp \
     ../Language/Type/typeparsingtreeconstiterator.cpp \
+    logicalsystemassistant.cpp \
     logicalsystempluginsrecord.cpp \
+    programassistant.cpp \
     proofprinter.cpp \
     prooftester.cpp \
     stringprocessormanager.cpp \
@@ -73,6 +75,7 @@ SOURCES += main.cpp \
     storagemanager.cpp \
     logicalsystemrecord.cpp \
     programmanager.cpp \
+    theoryassistant.cpp \
     theorybuilder.cpp \
     theorypluginsrecord.cpp \
     theoryrecord.cpp \
@@ -131,9 +134,11 @@ HEADERS += \
     ../Language/Utils/qtclassesdeserialization.h \
     dummyclasses.h \
     logicalsystem.h \
+    logicalsystemassistant.h \
     logicalsystempluginsrecord.h \
     pch.h \
     pluginfactoryinterface.h \
+    programassistant.h \
     proofprinter.h \
     prooftester.h \
     smartpointersserialization.h \
@@ -143,6 +148,7 @@ HEADERS += \
     lineofproof.h \
     prooflinks.h \
     inferencerule.h \
+    theoryassistant.h \
     theorybuilder.h \
     theorypluginsrecord.h \
     tree.h \

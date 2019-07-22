@@ -11,6 +11,13 @@ using namespace std;
 class LogicalSystem
 {
 public:
+    LogicalSystem() = default;
+    LogicalSystem(const LogicalSystem &) = delete;
+    LogicalSystem(LogicalSystem &&) noexcept = default;
+    LogicalSystem &operator =(const LogicalSystem &) = delete;
+    LogicalSystem &operator =(const LogicalSystem &&) = delete;
+    ~LogicalSystem() noexcept = default;
+
     LogicalSystem(const QString &name,
                   const QString &description,
                   const QVector<shared_ptr<const InferenceRule>> &inferenceRules,

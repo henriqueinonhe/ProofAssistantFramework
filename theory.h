@@ -19,8 +19,8 @@ public:
     Theory() = delete;
     Theory(const Theory &) = delete;
     Theory(Theory &&) noexcept = default;
-    Theory &operator =(const Theory &) = default;
-    Theory &operator =(Theory &&) noexcept = default;
+    Theory &operator =(const Theory &) = delete;
+    Theory &operator =(Theory &&) noexcept = delete;
     ~Theory() noexcept = default;
 
     Theory(const LogicalSystem *logicalSystem,

@@ -599,18 +599,23 @@ TEST_CASE("Storage Manager")
     CHECK(StorageManager::proofsDirPath("Dummy Logical System", "Dummy Theory") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Dummy Logical System/Theories/Dummy Theory/Proofs");
     CHECK(StorageManager::proofsRecordsFilePath("Dummy Logical System", "Dummy Theory") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Dummy Logical System/Theories/Dummy Theory/Proofs/proofsrecords.dat");
     CHECK(StorageManager::pluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins");
+
     CHECK(StorageManager::signaturePluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Signatures");
     CHECK(StorageManager::inferenceRulePluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules");
     CHECK(StorageManager::inferenceTacticPluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Tactics");
     CHECK(StorageManager::preProcessorPluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Pre Processors");
     CHECK(StorageManager::postProcessorPluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Post Processors");
     CHECK(StorageManager::proofPluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Proofs");
+    CHECK(StorageManager::proofPrinterPluginsDirPath() == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Proof Printers");
+
     CHECK(StorageManager::signaturePluginPath("DummySignaturePlugin") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Signatures/DummySignaturePlugin.dll");
     CHECK(StorageManager::inferenceRulePluginPath("DummyInferenceRule") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/DummyInferenceRule.dll");
     CHECK(StorageManager::inferenceTacticPluginPath("DummyInferenceTactic") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Tactics/DummyInferenceTactic.dll");
     CHECK(StorageManager::preProcessorPluginPath("DummyPreProcessor") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Pre Processors/DummyPreProcessor.dll");
     CHECK(StorageManager::postProcessorPluginPath("DummyPostProcessor") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Post Processors/DummyPostProcessor.dll");
     CHECK(StorageManager::proofPluginPath("Dummy Proof") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Proofs/Dummy Proof.dll");
+    CHECK(StorageManager::proofPrinterPluginPath("Dummy Printer") == "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Proofs/Dummy Printer.dll");
+
     CHECK(StorageManager::signaturePluginsList() == QStringList({"AutomaticPropositionalLogicSignature.dll", "TableSignaturePlugin.dll"}));
     //CHECK(StorageManager::inferenceRulesPluginsList() == QStringList({"DummyInferenceRulePlugin.dll"})); FIXME!
     CHECK(StorageManager::inferenceTacticsPluginsList() == QStringList({"DummyInferenceTactic.dll"}));
