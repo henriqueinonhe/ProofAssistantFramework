@@ -21,16 +21,21 @@ public:
         root(this, nullptr, T())
     {}
 
-    Tree(QDataStream &stream) :
-        root(stream, this, nullptr)
+    Tree(const Tree &other) :
+        root(other.root, this, nullptr)
     {
     }
 
     Tree &operator =(const Tree &other)
     {
-        this->root.children = QVector<shared_ptr<TreeNode<T>>>();
+        this->root.children = QVector<shared_ptr<TreeNode<T>>>(); //Reseting root children before copying
         this->root = other.root;
         return *this;
+    }
+
+    Tree(QDataStream &stream) :
+        root(stream, this, nullptr)
+    {
     }
 
     bool operator==(const Tree &other) const
@@ -62,7 +67,8 @@ friend QDataStream &operator <<(QDataStream &stream, const Tree<T> &tree)
 
 friend QDataStream &operator >>(QDataStream &stream, Tree<T> &tree)
 {
-    stream >> tree.root;
+    tree.root.children = QVector<shared_ptr<TreeNode<T>>>(); //Resetting tree before assignment deserialization
+    tree.root.deserialize(stream, &tree, nullptr);
     return stream;
 }
 
@@ -269,26 +275,42 @@ public:
     }
 
 private:
-    TreeNode(Tree<T> *tree, TreeNode<T> *parent, const T &obj) :
+    TreeNode(Tree<T> *const tree, TreeNode<T> * const parent, const T &obj) :
         tree(tree),
         parent(parent),
         obj(obj)
     {
     }
 
-    TreeNode(QDataStream &stream, Tree<T> * const tree, TreeNode<T> * const parent)
+    TreeNode(const TreeNode &other, Tree<T> *tree, TreeNode *parent) :
+        tree(tree),
+        parent(parent),
+        obj(other.obj)
     {
-        deserialize(stream, tree, parent);
+        for(const auto &otherChild : other.children)
+        {
+            this->children.push_back(shared_ptr<TreeNode<T>>(new TreeNode<T>(*otherChild, tree, this)));
+        }
     }
 
-    void serialize(QDataStream &stream)
+    TreeNode(QDataStream &stream, Tree<T> * const tree, TreeNode<T> * const parent) :
+        tree(tree),
+        parent(parent),
+        obj(stream),
+        children(deserializeChildren(stream))
     {
-        stream << obj;
+    }
 
-        std::for_each(children.begin(), children.end(), [&stream](const shared_ptr<TreeNode<T>> &node)
+    QVector<shared_ptr<TreeNode<T>>>deserializeChildren(QDataStream &stream)
+    {
+        int size;
+        stream >> size;
+        QVector<shared_ptr<TreeNode<T>>> children;
+        for(auto i = 0; i < size; i++)
         {
-            node->serialize(stream);
-        });
+            children.push_back(shared_ptr<TreeNode<T>>(new TreeNode<T>(stream, tree, this)));
+        }
+        return children;
     }
 
     void deserialize(QDataStream &stream, Tree<T> * const tree, TreeNode<T> * const parent)
@@ -296,6 +318,13 @@ private:
         this->tree = tree;
         this->parent = parent;
         stream >> obj;
+
+        int size;
+        stream >> size;
+        for(auto i = 0; i < size; i++)
+        {
+            children.push_back(shared_ptr<TreeNode<T>>(new TreeNode<T>(tree, parent, obj)));
+        }
 
         std::for_each(children.begin(), children.end(), [&stream, this](const shared_ptr<TreeNode<T>> &node)
         {
@@ -305,8 +334,9 @@ private:
 
     Tree<T> *tree;
     TreeNode<T> *parent;
-    QVector<shared_ptr<TreeNode<T>>> children; //Smart Pointers here in order to preserve references when Vector resizes (due to parent ptr)
     T obj;
+    QVector<shared_ptr<TreeNode<T>>> children; //Smart Pointers here in order to preserve references when Vector resizes (due to parent ptr)
+    friend QDataStream &operator >>(QDataStream &stream, Tree<T> &tree);
 
 friend class Tree<T>;
 friend class TreeIterator<T>;
@@ -323,22 +353,6 @@ friend QDataStream &operator <<(QDataStream &stream, const TreeNode &node)
     return stream;
 }
 
-friend QDataStream &operator >>(QDataStream &stream, TreeNode &node)
-{
-    unsigned int childrenNumber;
-    stream >> node.obj;
-    stream >> childrenNumber;
-    for(unsigned int index = 0; index < childrenNumber; index++)
-    {
-        node.appendChild(T());
-    }
-    for(shared_ptr<TreeNode> &child : node.children)
-    {
-        stream >> *child;
-    }
-    return stream;
-}
-
 };
 
 template <class T>
@@ -346,7 +360,7 @@ class TreeIterator
 {
 public:
     TreeIterator(QDataStream &stream, Tree<T> *tree) :
-        currentNode(tree->root)
+        currentNode(&tree->root)
     {
         QVector<unsigned int> coordinates;
         stream >> coordinates;

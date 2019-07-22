@@ -14,6 +14,7 @@ class QString;
 class Formula;
 class LineOfProof;
 class LineOfProofSectionManager;
+class ProofPrinter;
 template <class> class QVector;
 
 namespace std
@@ -58,11 +59,13 @@ using InferenceRuleFactoryPlugin = PluginFactoryInterface<const InferenceRule>;
 using InferenceTacticFactoryPlugin = PluginFactoryInterface<const InferenceTactic>;
 using StringProcessorFactoryPlugin = PluginFactoryInterface<StringProcessor>;
 using ProofFactoryPlugin = PluginFactoryInterface<Proof>;
+using ProofPrinterFactoryPlugin = PluginFactoryInterface<ProofPrinter>;
 
 Q_DECLARE_INTERFACE(SignatureFactoryPlugin, "SignatureFactoryPlugin")
 Q_DECLARE_INTERFACE(InferenceRuleFactoryPlugin, "PluginFactoryInterface<const InferenceRule>")
 Q_DECLARE_INTERFACE(InferenceTacticFactoryPlugin, "PluginFactoryInterface<const InferenceTactic>")
 Q_DECLARE_INTERFACE(StringProcessorFactoryPlugin, "PluginFactoryInterface<StringProcessor>")
-Q_DECLARE_INTERFACE(ProofFactoryPlugin, "ProofFactoryPlugin");
+Q_DECLARE_INTERFACE(ProofFactoryPlugin, "ProofFactoryPlugin")
+Q_DECLARE_INTERFACE(ProofPrinterFactoryPlugin, "ProofPrinterFactoryPlugin")
 
 #endif // PLUGINFACTORYINTERFACE_H

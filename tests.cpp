@@ -815,134 +815,133 @@ TEST_CASE("Framework Integration I")
 
 }
 
-//TEST_CASE("Framework Integration II")
-//{
-//    //Testing A Propositional Logic Setup
-//    ProgramManager manager;
+TEST_CASE("Framework Integration II")
+{
+    //Testing A Propositional Logic Setup
+    ProgramManager manager;
 
-//    //Logical System Setup
-//    QStringList inferenceRules;
-//    inferenceRules << "PropositionalAndEliminationPlugin";
-//    inferenceRules << "PropositionalAndIntroductionPlugin";
-//    inferenceRules << "PropositionalOrEliminationPlugin";
-//    inferenceRules << "PropositionalOrIntroductionPlugin";
-//    inferenceRules << "PropositionalBiconditionalEliminationPlugin";
-//    inferenceRules << "PropositionalBiconditionalIntroductionPlugin";
-//    inferenceRules << "PropositionalDoubleNegationEliminationPlugin";
-//    inferenceRules << "PropositionalNegationIntroductionPlugin";
-//    inferenceRules << "PropositionalImplicationIntroductionPlugin";
-//    inferenceRules << "PropositionalModusPonensPlugin";
-//    inferenceRules << "PropositionalHypothesisIntroductionPlugin";
-//    manager.createLogicalSystem("Propositional Logic2",
-//                                "Just a normal propositional logic system.",
-//                                inferenceRules,
-//                                "AutomaticPropositionalLogicSignature",
-//                                "",
-//                                Type("o"));
-//    manager.loadLogicalSystem("Propositional Logic2");
+    //Logical System Setup
+    QStringList inferenceRules;
+    inferenceRules << "PropositionalAndEliminationPlugin";
+    inferenceRules << "PropositionalAndIntroductionPlugin";
+    inferenceRules << "PropositionalOrEliminationPlugin";
+    inferenceRules << "PropositionalOrIntroductionPlugin";
+    inferenceRules << "PropositionalBiconditionalEliminationPlugin";
+    inferenceRules << "PropositionalBiconditionalIntroductionPlugin";
+    inferenceRules << "PropositionalDoubleNegationEliminationPlugin";
+    inferenceRules << "PropositionalNegationIntroductionPlugin";
+    inferenceRules << "PropositionalImplicationIntroductionPlugin";
+    inferenceRules << "PropositionalModusPonensPlugin";
+    inferenceRules << "PropositionalHypothesisIntroductionPlugin";
+    manager.createLogicalSystem("Propositional Logic2",
+                                "Just a normal propositional logic system.",
+                                inferenceRules,
+                                "AutomaticPropositionalLogicSignature",
+                                "",
+                                Type("o"));
+    manager.loadLogicalSystem("Propositional Logic2");
 
-//    //Setup Theory
-//    shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("AutomaticPropositionalLogicSignature"));
-//    TheoryBuilder builder(manager.getActiveLogicalSystem(),
-//                          signature,
-//                          "First Theory",
-//                          "Just a testing theory.");
-//    builder.addAxiom("A");
-//    builder.addAxiom("B");
+    //Setup Theory
+    shared_ptr<Signature> signature = PluginManager::fetchPlugin<Signature>(StorageManager::signaturePluginPath("AutomaticPropositionalLogicSignature"));
+    TheoryBuilder builder(manager.getActiveLogicalSystem(),
+                          signature,
+                          "First Theory",
+                          "Just a testing theory.");
+    builder.addAxiom("A");
+    builder.addAxiom("B");
 
-//    TheoryPluginsRecord pluginsRecords;
-//    manager.createTheory(builder, pluginsRecords);
-//    manager.loadTheory("First Theory");
+    TheoryPluginsRecord pluginsRecords;
+    manager.createTheory(builder, pluginsRecords);
+    manager.loadTheory("First Theory");
 
-//    //Proofs
-//    manager.createProof("Proof 1", "", QStringList({"A"}), "A");
-//    manager.createProof("Proof 2", "", QStringList({"B"}), "B");
-//    manager.createProof("Proof 3", "", QStringList({"A", "B"}), "(^ A B)");
-//    manager.createProof("Proof 4", "", QStringList({"(^ A B)"}), "(v A B)");
-//    manager.createProof("Proof 5", "", QStringList({"(v A B)", "(~ B)"}), "A");
-//    manager.createProof("Proof 6", "", QStringList({"A"}), "(v A B)");
-//    manager.createProof("Proof 7", "", QStringList({"B"}), "(v A B)");
+    //Proofs
+    manager.createProof("Proof 1", "", QStringList({"A"}), "A");
+    manager.createProof("Proof 2", "", QStringList({"B"}), "B");
+    manager.createProof("Proof 3", "", QStringList({"A", "B"}), "(^ A B)");
+    manager.createProof("Proof 4", "", QStringList({"(^ A B)"}), "(v A B)");
+    manager.createProof("Proof 5", "", QStringList({"(v A B)", "(~ B)"}), "A");
+    manager.createProof("Proof 6", "", QStringList({"A"}), "(v A B)");
+    manager.createProof("Proof 7", "", QStringList({"B"}), "(v A B)");
 
-//    //Testing IDs
-//    CHECK(manager.loadProof(0).getProof().getName() == "Proof 1");
-//    CHECK(manager.loadProof(1).getProof().getName() == "Proof 2");
-//    CHECK(manager.loadProof(2).getProof().getName() == "Proof 3");
-//    CHECK(manager.loadProof(3).getProof().getName() == "Proof 4");
-//    CHECK(manager.loadProof(4).getProof().getName() == "Proof 5");
-//    CHECK(manager.loadProof(5).getProof().getName() == "Proof 6");
-//    CHECK(manager.loadProof(6).getProof().getName() == "Proof 7");
+    //Testing IDs
+    CHECK(manager.loadProof(0).getProof().getName() == "Proof 1");
+    CHECK(manager.loadProof(1).getProof().getName() == "Proof 2");
+    CHECK(manager.loadProof(2).getProof().getName() == "Proof 3");
+    CHECK(manager.loadProof(3).getProof().getName() == "Proof 4");
+    CHECK(manager.loadProof(4).getProof().getName() == "Proof 5");
+    CHECK(manager.loadProof(5).getProof().getName() == "Proof 6");
+    CHECK(manager.loadProof(6).getProof().getName() == "Proof 7");
 
-//    //Testing Proof Links
-//    QVector<ProofRecord> proofRecords = StorageManager::retrieveProofsRecords(manager.getActiveLogicalSystem()->getName(), manager.getActiveTheory()->getName());
+    //Testing Proof Links
+    QVector<ProofRecord> proofRecords = StorageManager::retrieveProofsRecords(manager.getActiveLogicalSystem()->getName(), manager.getActiveTheory()->getName());
 
-//    //Proof 1
-//    //Premises
-//    CHECK(proofRecords[0].getPremisesLinks()[0].getFormula() == "A");
-//    CHECK(proofRecords[0].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({4}));
+    //Proof 1
+    //Premises
+    CHECK(proofRecords[0].getPremisesLinks()[0].getFormula() == "A");
+    CHECK(proofRecords[0].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({4}));
 
-//    //Conclusion
-//    CHECK(proofRecords[0].getConclusionLinks().getFormula() == "A");
-//    CHECK(proofRecords[0].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({2, 5}));
+    //Conclusion
+    CHECK(proofRecords[0].getConclusionLinks().getFormula() == "A");
+    CHECK(proofRecords[0].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({2, 5}));
 
-//    //Proof 2
-//    //Premises
-//    CHECK(proofRecords[1].getPremisesLinks()[0].getFormula() == "B");
-//    CHECK(proofRecords[1].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({}));
+    //Proof 2
+    //Premises
+    CHECK(proofRecords[1].getPremisesLinks()[0].getFormula() == "B");
+    CHECK(proofRecords[1].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({}));
 
-//    //Conclusion
-//    CHECK(proofRecords[1].getConclusionLinks().getFormula() == "B");
-//    CHECK(proofRecords[1].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({2, 6}));
+    //Conclusion
+    CHECK(proofRecords[1].getConclusionLinks().getFormula() == "B");
+    CHECK(proofRecords[1].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({2, 6}));
 
-//    //Proof 3
-//    //Premises
-//    CHECK(proofRecords[2].getPremisesLinks()[0].getFormula() == "A");
-//    CHECK(proofRecords[2].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({0, 4}));
-//    CHECK(proofRecords[2].getPremisesLinks()[1].getFormula() == "B");
-//    CHECK(proofRecords[2].getPremisesLinks()[1].getLinkedProofsIds() == QVector<unsigned int>({1}));
+    //Proof 3
+    //Premises
+    CHECK(proofRecords[2].getPremisesLinks()[0].getFormula() == "A");
+    CHECK(proofRecords[2].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({0, 4}));
+    CHECK(proofRecords[2].getPremisesLinks()[1].getFormula() == "B");
+    CHECK(proofRecords[2].getPremisesLinks()[1].getLinkedProofsIds() == QVector<unsigned int>({1}));
 
-//    //Conclusion
-//    CHECK(proofRecords[2].getConclusionLinks().getFormula() == "(^ A B)");
-//    CHECK(proofRecords[2].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({3}));
+    //Conclusion
+    CHECK(proofRecords[2].getConclusionLinks().getFormula() == "(^ A B)");
+    CHECK(proofRecords[2].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({3}));
 
-//    //Proof 4
-//    //Premises
-//    CHECK(proofRecords[3].getPremisesLinks()[0].getFormula() == "(^ A B)");
-//    CHECK(proofRecords[3].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({2}));
+    //Proof 4
+    //Premises
+    CHECK(proofRecords[3].getPremisesLinks()[0].getFormula() == "(^ A B)");
+    CHECK(proofRecords[3].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({2}));
 
-//    //Conclusion
-//    CHECK(proofRecords[3].getConclusionLinks().getFormula() == "(v A B)");
-//    CHECK(proofRecords[3].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({4}));
+    //Conclusion
+    CHECK(proofRecords[3].getConclusionLinks().getFormula() == "(v A B)");
+    CHECK(proofRecords[3].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({4}));
 
-//    //Proof 5
-//    //Premises
-//    CHECK(proofRecords[4].getPremisesLinks()[0].getFormula() == "(v A B)");
-//    CHECK(proofRecords[4].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({3, 5, 6}));
-//    CHECK(proofRecords[4].getPremisesLinks()[1].getFormula() == "(~ B)");
-//    CHECK(proofRecords[4].getPremisesLinks()[1].getLinkedProofsIds() == QVector<unsigned int>({}));
+    //Proof 5
+    //Premises
+    CHECK(proofRecords[4].getPremisesLinks()[0].getFormula() == "(v A B)");
+    CHECK(proofRecords[4].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({3, 5, 6}));
+    CHECK(proofRecords[4].getPremisesLinks()[1].getFormula() == "(~ B)");
+    CHECK(proofRecords[4].getPremisesLinks()[1].getLinkedProofsIds() == QVector<unsigned int>({}));
 
-//    //Conclusion
-//    CHECK(proofRecords[4].getConclusionLinks().getFormula() == "A");
-//    CHECK(proofRecords[4].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({0, 2, 5}));
+    //Conclusion
+    CHECK(proofRecords[4].getConclusionLinks().getFormula() == "A");
+    CHECK(proofRecords[4].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({0, 2, 5}));
 
-//    //Proof 6
-//    //Premises
-//    CHECK(proofRecords[5].getPremisesLinks()[0].getFormula() == "A");
-//    CHECK(proofRecords[5].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({0, 4}));
+    //Proof 6
+    //Premises
+    CHECK(proofRecords[5].getPremisesLinks()[0].getFormula() == "A");
+    CHECK(proofRecords[5].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({0, 4}));
 
-//    //Conclusion
-//    CHECK(proofRecords[5].getConclusionLinks().getFormula() == "(v A B)");
-//    CHECK(proofRecords[5].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({4}));
+    //Conclusion
+    CHECK(proofRecords[5].getConclusionLinks().getFormula() == "(v A B)");
+    CHECK(proofRecords[5].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({4}));
 
-//    //Proof 7
-//    //Premises
-//    CHECK(proofRecords[6].getPremisesLinks()[0].getFormula() == "B");
-//    CHECK(proofRecords[6].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({1}));
+    //Proof 7
+    //Premises
+    CHECK(proofRecords[6].getPremisesLinks()[0].getFormula() == "B");
+    CHECK(proofRecords[6].getPremisesLinks()[0].getLinkedProofsIds() == QVector<unsigned int>({1}));
 
-//    //Conclusion
-//    CHECK(proofRecords[6].getConclusionLinks().getFormula() == "(v A B)");
-//    CHECK(proofRecords[6].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({4}));
-
-//}
+    //Conclusion
+    CHECK(proofRecords[6].getConclusionLinks().getFormula() == "(v A B)");
+    CHECK(proofRecords[6].getConclusionLinks().getLinkedProofsIds() == QVector<unsigned int>({4}));
+}
 
 TEST_CASE("File System Teardown")
 {

@@ -31,6 +31,7 @@ public:
                                                                     premises,
                                                                     conclusion));
         instance->insertPremisesAsLinesOfProof();
+        instance->additionalSetup();
         return instance;
     }
 
@@ -64,14 +65,14 @@ protected:
           const QString &name,
           const QString &description,
           const QVector<Formula> &premises,
-          const Formula &conclusion); //Protected because createNewProof implements the virtual constructor idiom
+          const Formula &conclusion);
 
     virtual void serialize(QDataStream &stream) const;
-
 
 private:
     void addLineOfProof(const shared_ptr<LineOfProof> &lineOfProof);
     void insertPremisesAsLinesOfProof();
+    virtual void additionalSetup();
     virtual bool isFinishedAdditionalChecks() const;
     virtual shared_ptr<LineOfProof> createLineOfProof(const Formula &premiss, const Justification &justification) const;
 
@@ -91,7 +92,7 @@ private:
     friend class ProofAssistant;
     friend QDataStream &operator <<(QDataStream &stream, const Proof &proof);
     friend class PluginFactoryInterface<Proof>;
-    friend class PluginManager;
+    friend class ProofTester;
 };
 
 QDataStream &operator <<(QDataStream &stream, const Proof &proof);

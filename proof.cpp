@@ -17,16 +17,6 @@ Proof::Proof(QDataStream &stream, Signature * const signature) :
 {
 }
 
-
-Proof::Proof(const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) :
-    id(id),
-    name(name),
-    description(description),
-    premises(premises),
-    conclusion(conclusion)
-{
-}
-
 void Proof::serialize(QDataStream &stream) const
 {
     stream << id
@@ -82,6 +72,15 @@ unsigned int Proof::getId() const
     return id;
 }
 
+Proof::Proof(const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) :
+    id(id),
+    name(name),
+    description(description),
+    premises(premises),
+    conclusion(conclusion)
+{
+}
+
 void Proof::insertPremisesAsLinesOfProof()
 {
     Justification justification("Premiss", QStringList());
@@ -89,6 +88,11 @@ void Proof::insertPremisesAsLinesOfProof()
     {
         linesOfProof.push_back(createLineOfProof(premiss, justification));
     }
+}
+
+void Proof::additionalSetup()
+{
+
 }
 
 shared_ptr<LineOfProof> Proof::createLineOfProof(const Formula &premiss, const Justification &justification) const

@@ -6,12 +6,14 @@
 class LineOfProofSection
 {
 public:
+    LineOfProofSection();
+
     LineOfProofSection(const unsigned int beginIndex,
                        const unsigned int endIndex,
                        const QString &label,
                        const bool collapsed = true);
 
-    LineOfProofSection();
+    LineOfProofSection(QDataStream &stream);
 
     void setIndexes(const unsigned int beginIndex, const unsigned int endIndex);
     unsigned int getBeginIndex() const;

@@ -6,37 +6,43 @@ LogicalSystemPluginsRecord::LogicalSystemPluginsRecord()
 
 }
 
-LogicalSystemPluginsRecord::LogicalSystemPluginsRecord(const QStringList &inferenceRulesNamesList, const QString &signatureName, const QString &proofName) :
+LogicalSystemPluginsRecord::LogicalSystemPluginsRecord(const QStringList &inferenceRulesNamesList, const QString &signatureName, const QString &proofName, const QString &proofPrinterPluginName) :
     inferenceRulesNamesList(inferenceRulesNamesList),
     signaturePluginName(signatureName),
-    proofPluginName(proofName)
+    proofPluginName(proofName),
+    proofPrinterPluginName(proofPrinterPluginName)
 {
 
 }
 
-const QStringList &LogicalSystemPluginsRecord::getInferenceRulesNamesList() const
+QStringList LogicalSystemPluginsRecord::getInferenceRulesNamesList() const
 {
     return inferenceRulesNamesList;
 }
 
-const QString &LogicalSystemPluginsRecord::getSignaturePluginName() const
+QString LogicalSystemPluginsRecord::getSignaturePluginName() const
 {
     return signaturePluginName;
 }
 
-const QString &LogicalSystemPluginsRecord::getProofPluginName() const
+QString LogicalSystemPluginsRecord::getProofPluginName() const
 {
     return proofPluginName;
 }
 
+QString LogicalSystemPluginsRecord::getProofPrinterPluginName() const
+{
+    return proofPrinterPluginName;
+}
+
 QDataStream &operator <<(QDataStream &stream, const LogicalSystemPluginsRecord &pluginsRecord)
 {
-    stream << pluginsRecord.inferenceRulesNamesList << pluginsRecord.signaturePluginName << pluginsRecord.proofPluginName;
+    stream << pluginsRecord.inferenceRulesNamesList << pluginsRecord.signaturePluginName << pluginsRecord.proofPluginName << pluginsRecord.proofPrinterPluginName;
     return stream;
 }
 
 QDataStream &operator >>(QDataStream &stream, LogicalSystemPluginsRecord &pluginsRecord)
 {
-    stream >> pluginsRecord.inferenceRulesNamesList >> pluginsRecord.signaturePluginName >> pluginsRecord.proofPluginName;
+    stream >> pluginsRecord.inferenceRulesNamesList >> pluginsRecord.signaturePluginName >> pluginsRecord.proofPluginName >> pluginsRecord.proofPrinterPluginName;
     return stream;
 }

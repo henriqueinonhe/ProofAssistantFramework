@@ -1,5 +1,6 @@
 #include "lineofproofsection.h"
 #include <QDataStream>
+#include "qtclassesdeserialization.h"
 
 LineOfProofSection::LineOfProofSection()
 {
@@ -22,6 +23,15 @@ LineOfProofSection::LineOfProofSection::LineOfProofSection(const unsigned int be
     collapsed(collapsed)
 {
     checkIndexesOverlap(beginIndex, endIndex);
+}
+
+LineOfProofSection::LineOfProofSection(QDataStream &stream) :
+    beginIndex(QtDeserialization::deserializeUInt(stream)),
+    endIndex(QtDeserialization::deserializeUInt(stream)),
+    label(QtDeserialization::deserializeQString(stream)),
+    collapsed(QtDeserialization::deserializeBool(stream))
+{
+
 }
 
 void LineOfProofSection::setIndexes(const unsigned int beginIndex, const unsigned int endIndex)

@@ -24,6 +24,8 @@ INCLUDEPATH += ../Language/Parser \
 SOURCES += main.cpp \
     ../Language/Type/typeparsingtreeconstiterator.cpp \
     logicalsystempluginsrecord.cpp \
+    proofprinter.cpp \
+    prooftester.cpp \
     stringprocessormanager.cpp \
     tests.cpp \
     ../Language/Parser/formula.cpp \
@@ -132,6 +134,8 @@ HEADERS += \
     logicalsystempluginsrecord.h \
     pch.h \
     pluginfactoryinterface.h \
+    proofprinter.h \
+    prooftester.h \
     smartpointersserialization.h \
     stringprocessormanager.h \
     theory.h \
