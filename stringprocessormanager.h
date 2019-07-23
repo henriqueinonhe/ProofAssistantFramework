@@ -36,6 +36,7 @@ public:
     QString toString() const;
 
     QVector<StringProcessor *> getProcessors();
+    QVector<const StringProcessor *> getProcessors() const;
 
 private:
     QVector<shared_ptr<StringProcessor>> processors;

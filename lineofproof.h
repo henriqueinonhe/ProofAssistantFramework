@@ -20,8 +20,8 @@ public:
     ~LineOfProof() noexcept = default;
 
     LineOfProof(const Formula &formula, const Justification &justification, const QString &comment = "");
-    LineOfProof(QDataStream &stream, Signature * const signature);
-    static QVector<shared_ptr<LineOfProof> > deserializeVector(QDataStream &stream, Signature * const signature);
+    LineOfProof(QDataStream &stream, const Signature * const signature);
+    static QVector<shared_ptr<LineOfProof> > deserializeVector(QDataStream &stream, const Signature * const signature);
 
     bool operator==(const LineOfProof &other) const;
     bool operator!=(const LineOfProof &other) const;

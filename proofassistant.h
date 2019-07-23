@@ -17,7 +17,7 @@ class ProofAssistant
 {
 public:
     ProofAssistant() = delete;
-    ProofAssistant(const Theory * const theory, const shared_ptr<Proof> &proof);
+    ProofAssistant(const Theory &theory, const shared_ptr<Proof> &proof);
 
     void applyInferenceRule(const QString &callCommand, const QStringList &argumentList);
     void applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const;
@@ -41,7 +41,7 @@ private:
         return procedure;
     }
 
-    const Theory * const theory;
+    const Theory &theory;
     shared_ptr<Proof> proof;
 };
 

@@ -4,14 +4,14 @@
 #include "qtclassesdeserialization.h"
 #include <typeinfo>
 
-LineOfProof::LineOfProof(QDataStream &stream, Signature * const signature) :
+LineOfProof::LineOfProof(QDataStream &stream, const Signature * const signature) :
     formula(stream, signature),
     justification(stream),
     comment(QtDeserialization::deserializeQString(stream))
 {
 }
 
-QVector<shared_ptr<LineOfProof>> LineOfProof::deserializeVector(QDataStream &stream, Signature * const signature)
+QVector<shared_ptr<LineOfProof>> LineOfProof::deserializeVector(QDataStream &stream, const Signature * const signature)
 {
     int size;
     stream >> size;

@@ -35,7 +35,7 @@ public:
         return instance;
     }
 
-    Proof(QDataStream &stream, Signature * const signature);
+    Proof(QDataStream &stream, const Signature * const signature);
 
     bool isFinished() const;
 

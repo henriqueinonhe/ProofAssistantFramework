@@ -40,6 +40,11 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
 {
 }
 
+Parser Theory::getParser() const
+{
+    return parser;
+}
+
 Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QVector<shared_ptr<const InferenceTactic> > &inferenceTactics, const QVector<shared_ptr<StringProcessor> > &preProcessors, const QVector<shared_ptr<StringProcessor> > &postProcessors, QDataStream &stream) :
     parentLogic(parentLogic),
     name(QtDeserialization::deserializeQString(stream)),
@@ -59,7 +64,12 @@ const LogicalSystem *Theory::getParentLogic() const
     return parentLogic;
 }
 
-Signature *Theory::getSignature() const
+Signature *Theory::getSignature()
+{
+    return signature.get();
+}
+
+const Signature *Theory::getSignature() const
 {
     return signature.get();
 }
@@ -78,7 +88,6 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory)
 {
     stream << theory.name
            << theory.description
-           << theory.signature
            << theory.parser
            << theory.axioms
            << theory.preFormatter

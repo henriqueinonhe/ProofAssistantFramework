@@ -5,24 +5,21 @@
 #include "theoryrecord.h"
 #include "logicalsystempluginsrecord.h"
 #include "pluginmanager.h"
+#include "theoryassistant.h"
 
 const LogicalSystem &LogicalSystemAssistant::getActiveLogicalSystem() const
 {
     return activeLogicalSystem;
 }
 
-void LogicalSystemAssistant::loadTheory(const QString &name)
+TheoryAssistant LogicalSystemAssistant::loadTheory(const QString &name)
 {
-    checkActiveLogicalSystem();
-    Theory *theory = nullptr;
-    StorageManager::loadTheory(activeLogicalSystem, name, theory);
-    //Return TheoryAssistant
+    auto theory = StorageManager::loadTheory(activeLogicalSystem, name);
+    return TheoryAssistant(activeLogicalSystem, std::move(theory));
 }
 
 void LogicalSystemAssistant::createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const
 {
-    checkActiveLogicalSystem();
-
     const auto theoryName = builder.getName();
     const auto theoryDescription = builder.getDescription();
 
@@ -48,7 +45,6 @@ void LogicalSystemAssistant::createTheory(const TheoryBuilder &builder, const Th
 
 void LogicalSystemAssistant::removeTheory(const QString &theoryName) const
 {
-    checkActiveLogicalSystem();
     const auto logicalSystemName = activeLogicalSystem.getName();
     if(!checkTheoryNameCollision(logicalSystemName, theoryName))
     {
@@ -76,14 +72,12 @@ bool LogicalSystemAssistant::checkTheoryNameCollision(const QString &logicalSyst
 
 LogicalSystemPluginsRecord LogicalSystemAssistant::retrieveActiveLogicalSystemPluginsRecord() const
 {
-    checkActiveLogicalSystem();
     const auto activeSystemName = activeLogicalSystem.getName();
     return StorageManager::retrieveLogicalSystemPluginsRecord(activeSystemName);
 }
 
 void LogicalSystemAssistant::storeActiveLogicalSystemPluginsRecord(const LogicalSystemPluginsRecord &pluginsRecord) const
 {
-    checkActiveLogicalSystem();
     const auto activeSystemName = activeLogicalSystem.getName();
     StorageManager::storeLogicalSystemPluginsRecord(activeSystemName, pluginsRecord);
 }

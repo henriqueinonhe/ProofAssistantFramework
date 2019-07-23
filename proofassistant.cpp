@@ -6,7 +6,7 @@
 #include "inferencetactic.h"
 #include "lineofproof.h"
 
-ProofAssistant::ProofAssistant(const Theory * const theory, const shared_ptr<Proof> &proof) :
+ProofAssistant::ProofAssistant(const Theory &theory, const shared_ptr<Proof> &proof) :
     theory(theory),
     proof(proof)
 {
@@ -14,7 +14,7 @@ ProofAssistant::ProofAssistant(const Theory * const theory, const shared_ptr<Pro
 
 void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStringList &argumentList)
 {
-    const auto &logicalSystem = *theory->getParentLogic();
+    const auto &logicalSystem = *theory.getParentLogic();
     const auto *rule = queryInferenceProcedure(logicalSystem.getInferenceRules(), callCommand);
 
     if(rule == nullptr)
@@ -22,12 +22,12 @@ void ProofAssistant::applyInferenceRule(const QString &callCommand, const QStrin
         throw std::invalid_argument("There is no inference rule associated with this call command!");
     }
 
-    proof->addLineOfProof(rule->apply(*theory->parser, *proof, argumentList));
+    proof->addLineOfProof(rule->apply(theory.parser, *proof, argumentList));
 }
 
 void ProofAssistant::applyInferenceTactic(const QString &callCommand, const QStringList &argumentList) const
 {
-    const auto *tactic = queryInferenceProcedure(theory->getInferenceTactics(), callCommand);
+    const auto *tactic = queryInferenceProcedure(theory.getInferenceTactics(), callCommand);
 
     if(tactic == nullptr)
     {

@@ -8,6 +8,8 @@ class TheoryPluginsRecord;
 class LogicalSystemPluginsRecord;
 class Signature;
 class TheoryRecord;
+class TheoryAssistant;
+
 namespace std
 {
     template <class> class shared_ptr;
@@ -33,12 +35,11 @@ public:
 
     //Theory
     void createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const;
-    void loadTheory(const QString &name);
+    TheoryAssistant loadTheory(const QString &name);
     void removeTheory(const QString &theoryName) const;
     bool checkTheoryNameCollision(const QString &logicalSystemName, const QString &name) const;
 
 private:
-    void checkActiveLogicalSystem() const;
     LogicalSystemPluginsRecord retrieveActiveLogicalSystemPluginsRecord() const;
     void storeActiveLogicalSystemPluginsRecord(const LogicalSystemPluginsRecord &pluginsRecord) const;
     shared_ptr<Signature> loadSignature(const QString &signatureName) const;

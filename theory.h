@@ -34,7 +34,9 @@ public:
 
     QString getName() const;
     QString getDescription() const;
-    Signature *getSignature() const;
+    Signature *getSignature();
+    const Signature *getSignature() const;
+    Parser getParser() const;
     QLinkedList<Formula> getAxioms() const;
 
     QVector<shared_ptr<const InferenceTactic>> &getInferenceTactics();
@@ -70,7 +72,6 @@ protected:
 };
 
 QDataStream &operator <<(QDataStream &stream, const Theory &theory);
-QDataStream &operator >>(QDataStream &stream, Theory &theory);
 QDataStream &operator <<(QDataStream &stream, const shared_ptr<Signature> &signature);
 QDataStream &operator >>(QDataStream &stream,  shared_ptr<Signature> &signature);
 QDataStream &operator <<(QDataStream &stream, const QVector<shared_ptr<StringProcessor>> &processors);

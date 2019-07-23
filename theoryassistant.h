@@ -12,6 +12,7 @@ class Formula;
 class Parser;
 class ProofRecord;
 class Proof;
+class LogicalSystemPluginsRecord;
 
 namespace std
 {
@@ -30,7 +31,7 @@ public:
     //TODO Edit Theory
 
      //Theory Plugins
-    Signature &accessSignaturePlugin();
+    Signature *accessSignaturePlugin();
     void addPreProcessorPlugin(const QString &processorPluginName);
     void addPostProcessorPlugin(const QString &processorPluginName);
     void removePreProcessorPlugin(const unsigned int processorIndex);
@@ -44,12 +45,14 @@ public:
                      const QStringList &premises,
                      const QString &conclusion) const;
     ProofAssistant loadProof(const unsigned int proofId) const;
+    void saveProof(const ProofAssistant &assistant) const;
 
 private:
+    LogicalSystemPluginsRecord retrieveActiveLogicalSystemPluginsRecord() const;
     TheoryPluginsRecord retrieveActiveTheoryPluginsRecord() const;
     void storeActiveTheoryPluginsRecord(const TheoryPluginsRecord &pluginsRecord) const;
     shared_ptr<Proof> loadProofPlugin(const QString &proofPluginName, const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) const;
-    QVector<Formula> makePremisesFormulas(const QStringList &premises, const Parser *parser) const;
+    QVector<Formula> makePremisesFormulas(const QStringList &premises, const Parser &parser) const;
     QVector<ProofLinks> linkPremises(const unsigned int currentProofId, const QVector<Formula> &premises, QVector<ProofRecord> &proofsRecords) const;
     ProofLinks linkConclusion(const unsigned int currentProofId, const Formula &conclusion, QVector<ProofRecord> &proofsRecords) const;
 

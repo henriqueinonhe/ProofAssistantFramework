@@ -5,13 +5,13 @@
 #include "containerauxiliarytools.h"
 #include "qtclassesdeserialization.h"
 
-Proof::Proof(QDataStream &stream, Signature * const signature) :
+Proof::Proof(QDataStream &stream, const Signature * const signature) :
     id(QtDeserialization::deserializeUInt(stream)),
     name(QtDeserialization::deserializeQString(stream)),
     description(QtDeserialization::deserializeQString(stream)),
     premises(Formula::deserializeVector(stream, signature)),
     conclusion(stream, signature),
-    linesOfProof(LineOfProof::deserializeVector(stream, signature)),
+    linesOfProof(LineOfProof::deserializeVector(stream, signature)), //FIXME This is gonnna be a problem with polymorphic line of proof
     sectioning(stream),
     linkedWithAxioms(QtDeserialization::deserializeBool(stream))
 {
@@ -120,9 +120,10 @@ void Proof::setComment(const unsigned int lineNumber, const QString &comment)
 
 QVector<const LineOfProof *> Proof::getLinesOfProof() const
 {
-    QVector<const LineOfProof *> vector;
-    ContainerAuxiliaryTools::adaptFromSmartPointerContainer(linesOfProof, vector);
-    return vector;
+    //Note: It MUST be a raw pointer vector because it is both non owning
+    //and polymorphic
+    return ContainerAuxiliaryTools::adaptFromSmartPointerContainer
+            <QVector<shared_ptr<LineOfProof>>, QVector<const LineOfProof *>>(linesOfProof);
 }
 
 const LineOfProof &Proof::getLineOfProof(const int lineNumber) const

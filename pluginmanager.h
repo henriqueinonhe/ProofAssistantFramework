@@ -14,18 +14,36 @@ using namespace std;
 class PluginManager
 {
 public:
-    static const QString defaultProofPluginName;
+    //NOTE Maybe differentiate functions that just fetch
+    //the plugin to the ones that also deserialize them
 
-    template <class T> static shared_ptr<T> fetchPlugin(const QString &pluginPath)
+    template <class T>
+    static shared_ptr<T> fetchPlugin(const QString &pluginPath)
     {
         const auto factory = fetchPluginFactory<T>(pluginPath);
         return factory->instance();
     }
 
-    template <class T> static shared_ptr<T> fetchPlugin(const QString &pluginPath, QDataStream &stream)
+    template <class T>
+    static shared_ptr<T> fetchPlugin(QDataStream &stream, const QString &pluginPath)
     {
         const auto factory = fetchPluginFactory<T>(pluginPath);
         return factory->instance(stream);
+    }
+
+    static shared_ptr<StringProcessor> fetchPlugin(const QString &pluginPath,
+                                                   const Signature * const signature)
+    {
+        const auto factory = fetchPluginFactory<StringProcessor>(pluginPath);
+        return factory->instance(signature);
+    }
+
+    static shared_ptr<StringProcessor> fetchPlugin(QDataStream &stream,
+                                                   const QString &pluginPath,
+                                                   const Signature * const signature)
+    {
+        const auto factory = fetchPluginFactory<StringProcessor>(pluginPath);
+        return factory->instance(stream, signature);
     }
 
     static shared_ptr<Proof> fetchPlugin(const QString &pluginPath,
@@ -40,7 +58,8 @@ public:
     }
 
 
-    template <class T> static QVector<shared_ptr<T>> fetchPluginVector(const QStringList &pluginPathList)
+    template <class T>
+    static QVector<shared_ptr<T>> fetchPluginVector(const QStringList &pluginPathList)
     {
         QVector<shared_ptr<T>> vec;
         for(const auto &pluginPath : pluginPathList)
@@ -52,8 +71,36 @@ public:
         return vec;
     }
 
+    static QVector<shared_ptr<StringProcessor>> fetchPluginVector(const QStringList &pluginPathList,
+                                                                  const Signature * const signature)
+    {
+        QVector<shared_ptr<StringProcessor>> vec;
+        for(const auto &pluginPath : pluginPathList)
+        {
+            auto ptr = fetchPlugin(pluginPath, signature);
+            vec.push_back(ptr);
+        }
+
+        return vec;
+    }
+
+    static QVector<shared_ptr<StringProcessor>> fetchPluginVector(QDataStream &stream,
+                                                                  const QStringList &pluginPathList,
+                                                                  const Signature * const signature)
+    {
+        QVector<shared_ptr<StringProcessor>> vec;
+        for(const auto &pluginPath : pluginPathList)
+        {
+            auto ptr = fetchPlugin(stream, pluginPath, signature);
+            vec.push_back(ptr);
+        }
+
+        return vec;
+    }
+
 private:
-    template <class T> static PluginFactoryInterface<T> *fetchPluginFactory(const QString &pluginPath)
+    template <class T>
+    static PluginFactoryInterface<T> *fetchPluginFactory(const QString &pluginPath)
     {
         //NOTE Maybe I should unload the loader!
         QPluginLoader loader(pluginPath);

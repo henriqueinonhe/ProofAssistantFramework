@@ -5,6 +5,7 @@
 #include "proofrecord.h"
 #include "proofassistant.h"
 #include "parser.h"
+#include "logicalsystempluginsrecord.h"
 
 TheoryAssistant::TheoryAssistant(const LogicalSystem &activeLogicalSystem, Theory &&activeTheory) :
     activeLogicalSystem(activeLogicalSystem),
@@ -18,16 +19,16 @@ const Theory &TheoryAssistant::getActiveTheory() const
     return activeTheory;
 }
 
-Signature &TheoryAssistant::accessSignaturePlugin()
+Signature *TheoryAssistant::accessSignaturePlugin()
 {
-    return *activeTheory.getSignature();
+    return activeTheory.getSignature();
 }
 
 void TheoryAssistant::addPreProcessorPlugin(const QString &processorPluginName)
 {
-    const auto processor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::preProcessorPluginPath(processorPluginName));
-
     auto &theory = activeTheory;
+    const auto processor = PluginManager::fetchPlugin(StorageManager::preProcessorPluginPath(processorPluginName), activeTheory.getSignature());
+
     theory.getPreFormatter().addProcessor(processor);
 
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
@@ -37,9 +38,9 @@ void TheoryAssistant::addPreProcessorPlugin(const QString &processorPluginName)
 
 void TheoryAssistant::addPostProcessorPlugin(const QString &processorPluginName)
 {
-    const auto processor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::postProcessorPluginPath(processorPluginName));
-
     auto &theory = activeTheory;
+    const auto processor = PluginManager::fetchPlugin(StorageManager::postProcessorPluginPath(processorPluginName), activeTheory.getSignature());
+
     theory.getPostFormatter().addProcessor(processor);
 
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
@@ -97,13 +98,13 @@ void TheoryAssistant::removeInferenceTacticPlugin(const unsigned int tacticIndex
 void TheoryAssistant::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const
 {
     //Make Formulas
-    const auto parser = activeTheory.parser.get();
+    const auto parser = activeTheory.getParser();
     const auto premisesFormulas = makePremisesFormulas(premises, parser);
-    auto conclusionFormula = parser->parse(conclusion);
+    auto conclusionFormula = parser.parse(conclusion);
 
     //Proof Id
-    const auto activeLogicalSystemName = activeLogicalSystem->getName();
-    const auto activeTheoryName = activeTheory->getName();
+    const auto activeLogicalSystemName = activeLogicalSystem.getName();
+    const auto activeTheoryName = activeTheory.getName();
     const auto currentProofId = StorageManager::retrieveCurrentProofId(activeLogicalSystemName, activeTheoryName);
 
     //Proof Links
@@ -134,46 +135,48 @@ void TheoryAssistant::createProof(const QString &name, const QString &descriptio
 
 ProofAssistant TheoryAssistant::loadProof(const unsigned int proofId) const
 {
-    checkActiveTheory();
-
-    QFile file(StorageManager::proofDataFilePath(activeLogicalSystem->getName(), activeTheory->getName(), proofId));
+    QFile file(StorageManager::proofDataFilePath(activeLogicalSystem.getName(), activeTheory.getName(), proofId));
     file.open(QIODevice::ReadOnly);
     QDataStream stream(&file);
     const auto logicalSystemPluginsRecord = retrieveActiveLogicalSystemPluginsRecord();
     const auto proofPluginName = logicalSystemPluginsRecord.getProofPluginName();
-    if(proofPluginName == defaultProofPluginName)
+    if(proofPluginName == "") //TODO Refactor using a constant
     {
-        return ProofAssistant(activeTheory.get(), make_shared<Proof>(stream, activeTheory->getSignature()));
+        return ProofAssistant(activeTheory, make_shared<Proof>(stream, activeTheory.getSignature()));
     }
     else
     {
         const auto proofPluginPath = StorageManager::proofPluginPath(proofPluginName);
-        auto proof = PluginManager::fetchPlugin<Proof>(proofPluginPath, stream);
-        return ProofAssistant(activeTheory.get(), proof);
+        auto proof = PluginManager::fetchPlugin<Proof>(stream, proofPluginPath);
+        return ProofAssistant(activeTheory, proof);
     }
+}
+
+LogicalSystemPluginsRecord TheoryAssistant::retrieveActiveLogicalSystemPluginsRecord() const
+{
+    const auto activeSystemName = activeLogicalSystem.getName();
+    return StorageManager::retrieveLogicalSystemPluginsRecord(activeSystemName);
 }
 
 void TheoryAssistant::saveProof(const ProofAssistant &assistant) const
 {
     const auto &proof = assistant.getProof();
-    const auto activeLogicalSystemName = activeLogicalSystem->getName();
-    const auto activeTheoryName = activeTheory->getName();
+    const auto activeLogicalSystemName = activeLogicalSystem.getName();
+    const auto activeTheoryName = activeTheory.getName();
     StorageManager::storeProofData(activeLogicalSystemName, activeTheoryName, proof);
 }
 
 TheoryPluginsRecord TheoryAssistant::retrieveActiveTheoryPluginsRecord() const
 {
-    checkActiveTheory();
-    const auto activeSystemName = activeLogicalSystem->getName();
-    const auto activeTheoryName = activeTheory->getName();
+    const auto activeSystemName = activeLogicalSystem.getName();
+    const auto activeTheoryName = activeTheory.getName();
     return StorageManager::retrieveTheoryPluginsRecord(activeSystemName, activeTheoryName);
 }
 
 void TheoryAssistant::storeActiveTheoryPluginsRecord(const TheoryPluginsRecord &pluginsRecord) const
 {
-    checkActiveTheory();
-    const auto activeSystemName = activeLogicalSystem->getName();
-    const auto activeTheoryName = activeTheory->getName();
+    const auto activeSystemName = activeLogicalSystem.getName();
+    const auto activeTheoryName = activeTheory.getName();
     StorageManager::storeTheoryPluginsRecord(activeSystemName, activeTheoryName, pluginsRecord);
 }
 
@@ -184,7 +187,7 @@ shared_ptr<Proof> TheoryAssistant::loadProofPlugin(const QString &proofPluginNam
                                                   const QVector<Formula> &premises,
                                                   const Formula &conclusion) const
 {
-    if(proofPluginName == defaultProofPluginName)
+    if(proofPluginName == "") //TODO Refactor using a constant
     {
         return Proof::createNewProof<Proof>(id,
                                             name,
@@ -204,12 +207,12 @@ shared_ptr<Proof> TheoryAssistant::loadProofPlugin(const QString &proofPluginNam
     }
 }
 
-QVector<Formula> TheoryAssistant::makePremisesFormulas(const QStringList &premises, const Parser *parser) const
+QVector<Formula> TheoryAssistant::makePremisesFormulas(const QStringList &premises, const Parser &parser) const
 {
     QVector<Formula> premisesFormulas;
     for(const auto &formula : premises)
     {
-        premisesFormulas.push_back(parser->parse(formula));
+        premisesFormulas.push_back(parser.parse(formula));
     }
     return premisesFormulas;
 }

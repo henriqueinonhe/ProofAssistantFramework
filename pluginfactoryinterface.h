@@ -27,6 +27,34 @@ class PluginFactoryInterface
 {
 public:
     virtual shared_ptr<T> instance() const = 0;
+    virtual shared_ptr<T> instance(QDataStream &stream) const = 0;
+
+    virtual ~PluginFactoryInterface()
+    {
+
+    }
+};
+
+template<>
+class PluginFactoryInterface<const InferenceRule>
+{
+public:
+    virtual shared_ptr<const InferenceRule> instance() const = 0;
+};
+
+template <>
+class PluginFactoryInterface<const InferenceTactic>
+{
+public:
+    virtual shared_ptr<const InferenceTactic> instance() const = 0;
+};
+
+template <>
+class PluginFactoryInterface<StringProcessor>
+{
+public:
+    virtual shared_ptr<StringProcessor> instance(const Signature * const signature) const = 0;
+    virtual shared_ptr<StringProcessor> instance(QDataStream &stream, const Signature * const signature) const = 0;
 
     virtual ~PluginFactoryInterface()
     {

@@ -58,9 +58,14 @@ QString StringProcessorManager::toString() const
 
 QVector<StringProcessor *> StringProcessorManager::getProcessors()
 {
-    QVector<StringProcessor *> processorsPtrs;
-    ContainerAuxiliaryTools::adaptFromSmartPointerContainer(processors, processorsPtrs);
-    return processorsPtrs;
+    return ContainerAuxiliaryTools::adaptFromSmartPointerContainer
+           <QVector<shared_ptr<StringProcessor>>, QVector<StringProcessor *>>(processors);
+}
+
+QVector<const StringProcessor *> StringProcessorManager::getProcessors() const
+{
+    return ContainerAuxiliaryTools::adaptFromSmartPointerContainer
+           <QVector<shared_ptr<StringProcessor>>, QVector<const StringProcessor *>>(processors);
 }
 
 QDataStream &operator <<(QDataStream &stream, const StringProcessorManager &manager)
@@ -68,3 +73,4 @@ QDataStream &operator <<(QDataStream &stream, const StringProcessorManager &mana
     stream << manager.formatter;
     return stream;
 }
+

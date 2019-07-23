@@ -243,13 +243,13 @@ TEST_CASE("Theory")
 
     theoryBuilder.addAxiom("P");
     theoryBuilder.addAxiom("(~ P)");
-    CHECK_THROWS(theoryBuilder.addAxiom("(~ P")); //Testing anti axiom collision
+    CHECK_THROWS(theoryBuilder.addAxiom("(~ P)")); //Testing anti axiom collision
 
     Theory theory = theoryBuilder.build();
 
     theory.getInferenceTactics().push_back(make_shared<DummyInferenceTactic>());
-    theory.getPreFormatter().addProcessor(make_shared<DummyPreProcessor>());
-    theory.getPostFormatter().addProcessor(make_shared<DummyPostProcessor>());
+    theory.getPreFormatter().addProcessor(make_shared<DummyPreProcessor>(signature.get()));
+    theory.getPostFormatter().addProcessor(make_shared<DummyPostProcessor>(signature.get()));
 
     CHECK(theory.getName() == "Dummy Theory");
     CHECK(theory.getDescription() == "Lorem Ipsum");
@@ -261,21 +261,27 @@ TEST_CASE("Theory")
     CHECK(theory.getPostFormatter().getProcessors()[0]->toString() == "Dummy Post Processor");
 
     //Serialization
-    QBuffer buffer;
-    buffer.open(QIODevice::WriteOnly);
-    QDataStream stream(&buffer);
-    stream << theory;
+    QBuffer theoryBuffer;
+    QBuffer pluginsBuffer;
+    theoryBuffer.open(QIODevice::WriteOnly);
+    pluginsBuffer.open(QIODevice::WriteOnly);
+    QDataStream theoryStream(&theoryBuffer);
+    QDataStream pluginsStream(&pluginsBuffer);
+    theoryStream << theory;
+    pluginsStream << *theory.getSignature();
 
-    buffer.close();
-    buffer.open(QIODevice::ReadOnly);
-    shared_ptr<TableSignature> signature2 = make_shared<TableSignature>();
+    theoryBuffer.close();
+    pluginsBuffer.close();
+    theoryBuffer.open(QIODevice::ReadOnly);
+    pluginsBuffer.open(QIODevice::ReadOnly);
+    shared_ptr<TableSignature> signature2 = make_shared<TableSignature>(pluginsStream);
     QVector<shared_ptr<const InferenceTactic>> tactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
     tactics.push_back(make_shared<DummyInferenceTactic>());
-    preProcessors.push_back(make_shared<DummyPreProcessor>());
-    postProcessors.push_back(make_shared<DummyPostProcessor>());
-    Theory theory2(&logicalSystem, signature2, tactics, preProcessors, postProcessors, stream);
+    preProcessors.push_back(make_shared<DummyPreProcessor>(signature.get()));
+    postProcessors.push_back(make_shared<DummyPostProcessor>(signature.get()));
+    Theory theory2(&logicalSystem, signature2, tactics, preProcessors, postProcessors, theoryStream);
 
     CHECK(theory2.getName() == theory.getName());
     CHECK(theory2.getDescription() == theory.getDescription());
@@ -651,11 +657,11 @@ TEST_CASE("Plugins")
     CHECK(tactic->callCommand() == "Dummy Call Command");
 
     //Pre Processor
-    shared_ptr<StringProcessor> preProcessor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::preProcessorPluginPath("DummyPreProcessorPlugin"));
+    shared_ptr<StringProcessor> preProcessor = PluginManager::fetchPlugin(StorageManager::preProcessorPluginPath("DummyPreProcessorPlugin"), signature.get());
     CHECK(preProcessor->toString() == "Dummy Pre Processor");
 
     //Post Processor
-    shared_ptr<StringProcessor> postProcessor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::postProcessorPluginPath("DummyPostProcessorPlugin"));
+    shared_ptr<StringProcessor> postProcessor = PluginManager::fetchPlugin(StorageManager::postProcessorPluginPath("DummyPostProcessorPlugin"), signature.get());
     CHECK(postProcessor->toString() == "Dummy Post Processor");
 }
 

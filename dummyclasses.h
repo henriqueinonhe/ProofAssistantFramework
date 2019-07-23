@@ -6,6 +6,7 @@
 #include "inferencetactic.h"
 #include "stringprocessor.h"
 #include "proofprinter.h"
+#include <QDataStream>
 
 class DummyInferenceRule : public InferenceRule
 {
@@ -63,6 +64,12 @@ class DummyPreProcessor : public StringProcessor
 
     // StringProcessor interface
 public:
+    DummyPreProcessor(const Signature * const signature) :
+        StringProcessor(signature)
+    {
+
+    }
+
     QString processString(const QString &string) const override
     {
         return string;
@@ -71,14 +78,26 @@ public:
     {
         return "Dummy Pre Processor";
     }
+
+    // StringProcessor interface
+protected:
+    void serialize(QDataStream &) const override
+    {
+    }
+    void deserialize(QDataStream &) override
+    {
+    }
 };
 
 class DummyPostProcessor : public StringProcessor
 {
-
-
-    // StringProcessor interface
 public:
+    DummyPostProcessor(const Signature * const signature) :
+        StringProcessor(signature)
+    {
+
+    }
+
     QString processString(const QString &string) const override
     {
         return string;
@@ -86,6 +105,17 @@ public:
     QString toString() const override
     {
         return "Dummy Post Processor";
+    }
+
+    // StringProcessor interface
+protected:
+    void serialize(QDataStream &) const override
+    {
+
+    }
+    void deserialize(QDataStream &) override
+    {
+
     }
 };
 

@@ -43,7 +43,7 @@ void TheoryBuilder::checkAxiomCollision(const Formula &newAxiom) const
         errorMsg += newAxiom.formattedString();
         errorMsg += "' already exists.";
 
-        throw std::runtime_error(errorMsg.toStdString());
+        throw std::invalid_argument(errorMsg.toStdString());
     }
 }
 
