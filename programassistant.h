@@ -25,16 +25,17 @@ public:
                              const QStringList &inferenceRulesNamesList,
                              const QString &signaturePluginName,
                              const QString &proofName,
+                             const QString &proofPrinterPluginName,
                              const Type &wffType) const;
     void loadLogicalSystem(const QString &name);
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;
 
 private:
-    QVector<shared_ptr<const InferenceRule> > loadInferenceRules(const QStringList &inferenceRulesNames) const;
-    shared_ptr<Signature> loadSignature(const QString &signatureName) const;
-    shared_ptr<Proof> loadProofPlugin(const QString &proofPluginName, const uint id, const QString &name, const QString &description, const QVector<Formula> &premises, const Formula &conclusion) const;
-    void testLoadProofPlugin(const QString &proofPluginName) const;
+    QVector<shared_ptr<const InferenceRule> > loadInferenceRulesPlugins(const QStringList &inferenceRulesNames) const;
+    shared_ptr<Signature> validateSignaturePlugin(const QString &signatureName) const;
+    void validateProofPlugin(const QString &proofPluginName) const;
+    void validateProofPrinterPlugin(const QString &proofPrinterPluginName) const;
 
     QVector<LogicalSystemRecord> getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const;
 };

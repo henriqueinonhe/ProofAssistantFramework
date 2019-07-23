@@ -20,49 +20,22 @@ bool ProgramAssistant::checkLogicalSystemNameCollision(const QString &name) cons
     });
 }
 
-QVector<shared_ptr<const InferenceRule>> ProgramAssistant::loadInferenceRules(const QStringList &inferenceRulesNames) const
+QVector<shared_ptr<const InferenceRule>> ProgramAssistant::loadInferenceRulesPlugins(const QStringList &inferenceRulesNames) const
 {
     QVector<shared_ptr<const InferenceRule>> inferenceRules;
     auto inferenceRulesPathList = StorageManager::convertPluginNamesToPaths(inferenceRulesNames, StorageManager::inferenceRulePluginPath);
     return PluginManager::fetchPluginVector<const InferenceRule>(inferenceRulesPathList);
 }
 
-shared_ptr<Signature> ProgramAssistant::loadSignature(const QString &signatureName) const
+shared_ptr<Signature> ProgramAssistant::validateSignaturePlugin(const QString &signatureName) const
 {
     auto signaturePath = StorageManager::signaturePluginPath(signatureName);
     return PluginManager::fetchPlugin<Signature>(signaturePath);
 }
 
-shared_ptr<Proof> ProgramAssistant::loadProofPlugin(const QString &proofPluginName,
-                                                  const uint id,
-                                                  const QString &name,
-                                                  const QString &description,
-                                                  const QVector<Formula> &premises,
-                                                  const Formula &conclusion) const
+void ProgramAssistant::validateProofPlugin(const QString &proofPluginName) const
 {
-    if(proofPluginName == "")//TODO Refactor using a constant
-    {
-        return Proof::createNewProof<Proof>(id,
-                                            name,
-                                            description,
-                                            premises,
-                                            conclusion);
-    }
-    else
-    {
-        auto prooPluginfPath = StorageManager::proofPluginPath(proofPluginName);
-        return PluginManager::fetchPlugin(prooPluginfPath,
-                                          id,
-                                          name,
-                                          description,
-                                          premises,
-                                          conclusion);
-    }
-}
-
-void ProgramAssistant::testLoadProofPlugin(const QString &proofPluginName) const
-{
-    if(proofPluginName == "") //Refactor using a constat
+    if(proofPluginName == "") //Refactor using a constant
     {
         return;
     }
@@ -73,11 +46,18 @@ void ProgramAssistant::testLoadProofPlugin(const QString &proofPluginName) const
     }
 }
 
+void ProgramAssistant::validateProofPrinterPlugin(const QString &proofPrinterPluginName) const
+{
+    auto proofPrinterPluginPath = StorageManager::proofPrinterPluginPath(proofPrinterPluginName);
+    PluginManager::fetchPlugin<ProofPrinter>(proofPrinterPluginPath);
+}
+
 void ProgramAssistant::createLogicalSystem(const QString &name,
                                            const QString &description,
                                            const QStringList &inferenceRulesNamesList,
                                            const QString &signaturePluginName,
                                            const QString &proofPluginName,
+                                           const QString &proofPrinterPluginName,
                                            const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -86,10 +66,14 @@ void ProgramAssistant::createLogicalSystem(const QString &name,
     }
 
     //Logical System
-    const auto inferenceRules = loadInferenceRules(inferenceRulesNamesList);
-    const auto signature = loadSignature(signaturePluginName);
-    testLoadProofPlugin(proofPluginName);
-    LogicalSystem logicalSystem(name, description, inferenceRules, wffType); //If Logical System creation is unsuccesfull for whatever reason (like problems loading plugins) it will throw an exception and the directories and records creation won't be carried out
+    /* If Logical System creation is unsuccesfull for
+     * whatever reason (like problems loading plugins)
+     * it will throw an exception and the directories
+     * and records creation won't be carried out */
+    const auto inferenceRules = loadInferenceRulesPlugins(inferenceRulesNamesList);
+    validateSignaturePlugin(signaturePluginName);
+    validateProofPlugin(proofPluginName);
+    LogicalSystem logicalSystem(name, description, inferenceRules, wffType);
 
     //LogicalSystemRecord
     LogicalSystemRecord newSystemRecord(name, description);
@@ -97,7 +81,7 @@ void ProgramAssistant::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     //File management
-    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName);
+    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName, proofPrinterPluginName);
     StorageManager::storeLogicalSystemsRecords(records);
     StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
 }

@@ -37,10 +37,9 @@ void TheoryAssistant::addPreProcessorPlugin(const QString &processorPluginName)
 
 void TheoryAssistant::addPostProcessorPlugin(const QString &processorPluginName)
 {
-    checkActiveTheory();
     const auto processor = PluginManager::fetchPlugin<StringProcessor>(StorageManager::postProcessorPluginPath(processorPluginName));
 
-    auto &theory = *activeTheory;
+    auto &theory = activeTheory;
     theory.getPostFormatter().addProcessor(processor);
 
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
@@ -48,10 +47,9 @@ void TheoryAssistant::addPostProcessorPlugin(const QString &processorPluginName)
     storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
-void TheoryAssistant::removePreProcessorPlugin(const unsigned int processorIndex) const
+void TheoryAssistant::removePreProcessorPlugin(const unsigned int processorIndex)
 {
-    checkActiveTheory();
-    auto &theory = *activeTheory;
+    auto &theory = activeTheory;
     theory.getPreFormatter().removeProcessor(processorIndex);
 
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
@@ -59,10 +57,9 @@ void TheoryAssistant::removePreProcessorPlugin(const unsigned int processorIndex
     storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
-void TheoryAssistant::removePostProcessorPlugin(const unsigned int processorIndex) const
+void TheoryAssistant::removePostProcessorPlugin(const unsigned int processorIndex)
 {
-    checkActiveTheory();
-    auto &theory = *activeTheory;
+    auto &theory = activeTheory;
     theory.getPostFormatter().removeProcessor(processorIndex);
 
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
@@ -70,12 +67,11 @@ void TheoryAssistant::removePostProcessorPlugin(const unsigned int processorInde
     storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
-void TheoryAssistant::addInferenceTacticPlugin(const QString &tacticPluginName) const
+void TheoryAssistant::addInferenceTacticPlugin(const QString &tacticPluginName)
 {
-    checkActiveTheory();
     const auto inferenceTactic = PluginManager::fetchPlugin<const InferenceTactic>(StorageManager::inferenceTacticPluginPath(tacticPluginName));
 
-    auto &theory = *activeTheory;
+    auto &theory = activeTheory;
     theory.getInferenceTactics().push_back(inferenceTactic);
 
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
@@ -83,10 +79,9 @@ void TheoryAssistant::addInferenceTacticPlugin(const QString &tacticPluginName) 
     storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
-void TheoryAssistant::removeInferenceTacticPlugin(const unsigned int tacticIndex) const
+void TheoryAssistant::removeInferenceTacticPlugin(const unsigned int tacticIndex)
 {
-    checkActiveTheory();
-    auto &theory = *activeTheory;
+    auto &theory = activeTheory;
     const auto zeroIndexCompensation = 1;
     if(static_cast<int>(tacticIndex) >= theory.getInferenceTactics().size() - zeroIndexCompensation)
     {
@@ -101,8 +96,6 @@ void TheoryAssistant::removeInferenceTacticPlugin(const unsigned int tacticIndex
 
 void TheoryAssistant::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const
 {
-    checkActiveTheory();
-
     //Make Formulas
     const auto parser = activeTheory->parser.get();
     const auto premisesFormulas = makePremisesFormulas(premises, parser);

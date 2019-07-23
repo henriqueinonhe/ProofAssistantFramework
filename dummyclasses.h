@@ -5,6 +5,7 @@
 #include "lineofproof.h"
 #include "inferencetactic.h"
 #include "stringprocessor.h"
+#include "proofprinter.h"
 
 class DummyInferenceRule : public InferenceRule
 {
@@ -27,7 +28,7 @@ public:
 
     // InferenceRule interface
 public:
-    shared_ptr<LineOfProof> apply(const Parser &parser, Proof &proof, const QStringList &argumentList) const override
+    shared_ptr<LineOfProof> apply(const Parser &, Proof &, const QStringList &) const override
     {
 
     }
@@ -51,7 +52,7 @@ public:
 
     // InferenceTactic interface
 public:
-    void apply(const ProofAssistant * const assistant, const QStringList &argumentList) override
+    void apply(const ProofAssistant * const, const QStringList &) override
     {
 
     }
@@ -64,7 +65,7 @@ class DummyPreProcessor : public StringProcessor
 public:
     QString processString(const QString &string) const override
     {
-
+        return string;
     }
     QString toString() const override
     {
@@ -80,12 +81,17 @@ class DummyPostProcessor : public StringProcessor
 public:
     QString processString(const QString &string) const override
     {
-
+        return string;
     }
     QString toString() const override
     {
         return "Dummy Post Processor";
     }
+};
+
+class DummyProofPrinter : public ProofPrinter
+{
+
 };
 
 #endif // DUMMYCLASSES_H

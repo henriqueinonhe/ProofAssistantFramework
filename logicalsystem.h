@@ -11,7 +11,7 @@ using namespace std;
 class LogicalSystem
 {
 public:
-    LogicalSystem() = default;
+    LogicalSystem() = delete; //NOTE Maybe this is being used somewhere
     LogicalSystem(const LogicalSystem &) = delete;
     LogicalSystem(LogicalSystem &&) noexcept = default;
     LogicalSystem &operator =(const LogicalSystem &) = delete;
@@ -25,10 +25,10 @@ public:
 
     LogicalSystem(QDataStream &stream, const QVector<shared_ptr<const InferenceRule>> &inferenceRules);
 
-    const QString &getName() const;
-    const QString &getDescription() const;
-    const QVector<shared_ptr<const InferenceRule>> &getInferenceRules() const;
-    const Type &getWffType() const;
+    QString getName() const;
+    QString getDescription() const;
+    QVector<shared_ptr<const InferenceRule>> getInferenceRules() const;
+    Type getWffType() const;
 
 protected:
     void setName(const QString &value);
@@ -37,14 +37,12 @@ protected:
     QString name;
     QString description;
     QVector<shared_ptr<const InferenceRule>> inferenceRules;
-    unique_ptr<const Type> wffType;
+    Type wffType;
 
-    friend QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);
     friend QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
     friend class ProgramManager;
 };
 
-QDataStream &operator >>(QDataStream &stream, LogicalSystem &logicalSystem);
 QDataStream &operator <<(QDataStream &stream, const LogicalSystem &logicalSystem);
 
 
