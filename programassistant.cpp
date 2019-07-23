@@ -116,11 +116,9 @@ void ProgramAssistant::removeLogicalSystem(const QString &name) const
     StorageManager::deleteLogicalSystemDir(name);
 }
 
-void ProgramAssistant::loadLogicalSystem(const QString &name)
+LogicalSystemAssistant ProgramAssistant::loadLogicalSystem(const QString &name)
 {
-    LogicalSystem *system = nullptr;
-    StorageManager::loadLogicalSystem(name, system);
-    //Return LogicalSystemAssistant
+    return StorageManager::loadLogicalSystem(name);
 }
 
 

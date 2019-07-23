@@ -74,14 +74,6 @@ bool LogicalSystemAssistant::checkTheoryNameCollision(const QString &logicalSyst
     });
 }
 
-void LogicalSystemAssistant::checkActiveLogicalSystem() const
-{
-    if(activeLogicalSystem == nullptr)
-    {
-        throw std::invalid_argument("There is currently no active logical system!");
-    }
-}
-
 LogicalSystemPluginsRecord LogicalSystemAssistant::retrieveActiveLogicalSystemPluginsRecord() const
 {
     checkActiveLogicalSystem();

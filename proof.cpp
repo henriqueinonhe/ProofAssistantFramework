@@ -121,7 +121,7 @@ void Proof::setComment(const unsigned int lineNumber, const QString &comment)
 QVector<const LineOfProof *> Proof::getLinesOfProof() const
 {
     QVector<const LineOfProof *> vector;
-    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(linesOfProof, vector);
+    ContainerAuxiliaryTools::adaptFromSmartPointerContainer(linesOfProof, vector);
     return vector;
 }
 

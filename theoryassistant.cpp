@@ -97,7 +97,7 @@ void TheoryAssistant::removeInferenceTacticPlugin(const unsigned int tacticIndex
 void TheoryAssistant::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const
 {
     //Make Formulas
-    const auto parser = activeTheory->parser.get();
+    const auto parser = activeTheory.parser.get();
     const auto premisesFormulas = makePremisesFormulas(premises, parser);
     auto conclusionFormula = parser->parse(conclusion);
 

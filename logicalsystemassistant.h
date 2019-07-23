@@ -23,7 +23,7 @@ public:
     LogicalSystemAssistant(LogicalSystemAssistant &&other) noexcept = default;
     LogicalSystemAssistant &operator =(const LogicalSystemAssistant &) = delete;
     LogicalSystemAssistant &operator =(LogicalSystemAssistant &&) = delete;
-    ~LogicalSystemAssistant() = delete;
+    ~LogicalSystemAssistant() noexcept = default;
 
     LogicalSystemAssistant(LogicalSystem &&logicalSystem);
 

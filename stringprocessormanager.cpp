@@ -7,18 +7,16 @@ StringProcessorManager::StringProcessorManager(const QVector<shared_ptr<StringPr
 
 }
 
-StringProcessorManager::StringProcessorManager(QDataStream &stream, const QVector<shared_ptr<StringProcessor> > &processors)
+StringProcessorManager::StringProcessorManager(QDataStream &stream, const QVector<shared_ptr<StringProcessor> > &processors) :
+    processors(processors),
+    formatter(stream, ContainerAuxiliaryTools::adaptFromSmartPointerContainer<QVector<shared_ptr<StringProcessor>>, QVector<StringProcessor *>>(processors))
 {
-    deserialize(stream, processors);
 }
 
 void StringProcessorManager::deserialize(QDataStream &stream, const QVector<shared_ptr<StringProcessor> > &processors)
 {
-    QVector<StringProcessor *> processorsPtrs;
-    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(processors, processorsPtrs);
-
     this->processors = processors;
-    formatter.deserialize(stream, processorsPtrs);
+    formatter.deserialize(stream, ContainerAuxiliaryTools::adaptFromSmartPointerContainer<QVector<shared_ptr<StringProcessor>>, QVector<StringProcessor *>>(processors));
 }
 
 void StringProcessorManager::addProcessor(const shared_ptr<StringProcessor> &processor)
@@ -61,7 +59,7 @@ QString StringProcessorManager::toString() const
 QVector<StringProcessor *> StringProcessorManager::getProcessors()
 {
     QVector<StringProcessor *> processorsPtrs;
-    ContainerAuxiliaryTools::adatpFromSmartPointerContainer(processors, processorsPtrs);
+    ContainerAuxiliaryTools::adaptFromSmartPointerContainer(processors, processorsPtrs);
     return processorsPtrs;
 }
 

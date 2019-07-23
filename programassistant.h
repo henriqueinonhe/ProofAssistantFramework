@@ -1,6 +1,8 @@
 #ifndef PROGRAMASSISTANT_H
 #define PROGRAMASSISTANT_H
 
+#include "logicalsystemassistant.h"
+
 class Type;
 class Signature;
 class Formula;
@@ -27,7 +29,7 @@ public:
                              const QString &proofName,
                              const QString &proofPrinterPluginName,
                              const Type &wffType) const;
-    void loadLogicalSystem(const QString &name);
+    LogicalSystemAssistant loadLogicalSystem(const QString &name);
     void removeLogicalSystem(const QString &name) const;
     bool checkLogicalSystemNameCollision(const QString &name) const;
 

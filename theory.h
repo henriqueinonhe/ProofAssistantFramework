@@ -56,7 +56,7 @@ protected:
     QString name;
     QString description;
     shared_ptr<Signature> signature;
-    unique_ptr<const Parser> parser;
+    Parser parser;
     QLinkedList<Formula> axioms; //Linked list because there will be pointers pointing to axioms! NOTE Will there?
 
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
@@ -66,7 +66,6 @@ protected:
 
     friend class ProofAssistant;
     friend class TheoryBuilder;
-    friend class ProgramManager;
     friend QDataStream &operator <<(QDataStream &stream, const Theory &theory);
 };
 

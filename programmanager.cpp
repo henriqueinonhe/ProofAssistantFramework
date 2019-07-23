@@ -426,9 +426,9 @@ void ProgramManager::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     //File management
-    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName);
-    StorageManager::storeLogicalSystemsRecords(records);
-    StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
+    //LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName);
+    //StorageManager::storeLogicalSystemsRecords(records);
+    //StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
 }
 
 QVector<LogicalSystemRecord> ProgramManager::getLogicalSystemRecordsWithoutRemovedRecord(const QString &name) const
@@ -479,7 +479,7 @@ void ProgramManager::removeLogicalSystem(const QString &name) const
 void ProgramManager::loadLogicalSystem(const QString &name)
 {
     LogicalSystem *system = nullptr;
-    StorageManager::loadLogicalSystem(name, system);
+    //StorageManager::loadLogicalSystem(name, system);
     activeLogicalSystem.reset(system);
 }
 

@@ -432,14 +432,14 @@ void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const Q
     postProcessors = PluginManager::fetchPluginVector<StringProcessor>(postProcessorsPluginsPaths);
 }
 
-void StorageManager::loadLogicalSystem(const QString &systemName, LogicalSystem * &loadedSystem)
+LogicalSystem StorageManager::loadLogicalSystem(const QString &systemName)
 {
     const auto inferenceRules = loadInferenceRules(systemName);
 
     QFile dataFile(logicalSystemDataFilePath(systemName));
     accessFile(dataFile, QIODevice::ReadOnly);
     QDataStream stream(&dataFile);
-    loadedSystem = new LogicalSystem(stream, inferenceRules);
+    return LogicalSystem(stream, inferenceRules);
 }
 
 LogicalSystemPluginsRecord StorageManager::retrieveLogicalSystemPluginsRecord(const QString &systemName)

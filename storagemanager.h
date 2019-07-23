@@ -37,7 +37,7 @@ public:
     static void setupLogicalSystemDir(const LogicalSystem &system, const LogicalSystemPluginsRecord &pluginsRecord);
     static void deleteLogicalSystemDir(const QString &systemName);
     static void saveLogicalSystem(const LogicalSystem &system);
-    static void loadLogicalSystem(const QString &systemName, LogicalSystem *&loadedSystem);
+    static LogicalSystem loadLogicalSystem(const QString &systemName);
     static LogicalSystemPluginsRecord retrieveLogicalSystemPluginsRecord(const QString &systemName);
     static void storeLogicalSystemPluginsRecord(const QString &systemName, const LogicalSystemPluginsRecord &pluginsRecord);
 

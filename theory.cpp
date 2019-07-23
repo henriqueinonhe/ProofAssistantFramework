@@ -3,6 +3,7 @@
 #include "storagemanager.h"
 #include <QDataStream>
 #include "containerauxiliarytools.h"
+#include "qtclassesdeserialization.h"
 
 const QVector<shared_ptr<const InferenceTactic> > &Theory::getInferenceTactics() const
 {
@@ -34,28 +35,23 @@ Theory::Theory(const LogicalSystem * const parentLogic, const QString &name, con
     name(name),
     description(description),
     signature(signature),
+    parser(signature.get(), parentLogic->getWffType()),
     axioms(axioms)
 {
-    parser.reset(new Parser(getSignature(), parentLogic->getWffType()));
 }
 
 Theory::Theory(const LogicalSystem *parentLogic, const shared_ptr<Signature> &signature, const QVector<shared_ptr<const InferenceTactic> > &inferenceTactics, const QVector<shared_ptr<StringProcessor> > &preProcessors, const QVector<shared_ptr<StringProcessor> > &postProcessors, QDataStream &stream) :
     parentLogic(parentLogic),
+    name(QtDeserialization::deserializeQString(stream)),
+    description(QtDeserialization::deserializeQString(stream)),
     signature(signature),
-    parser(new Parser(getSignature(), parentLogic->getWffType())),
-    inferenceTactics(inferenceTactics)
+    parser(stream, signature.get()),
+    axioms(Formula::deserializeList(stream, signature.get())),
+    inferenceTactics(inferenceTactics),
+    preFormatter(stream, preProcessors),
+    postFormatter(stream, postProcessors)
 {
-    //Note to self: Why didn't I initialize everything using QDataStream
-    //instead of unserializing them?
-    //Because I'm unable to initialize QString with QDataStream, therefore there is no other way
-    //In the future I can implement a "QString factory" so I can initialize it the right way
-
-    stream >> this->name
-           >> this->description
-           >> this->signature;
-    axioms = Formula::deserializeList(stream, signature.get());
-    preFormatter.deserialize(stream, preProcessors);
-    postFormatter.deserialize(stream, postProcessors);
+    /* Note: Signature, PreProcessors and PostProcessors should come already deserialized */
 }
 
 const LogicalSystem *Theory::getParentLogic() const
@@ -83,6 +79,7 @@ QDataStream &operator <<(QDataStream &stream, const Theory &theory)
     stream << theory.name
            << theory.description
            << theory.signature
+           << theory.parser
            << theory.axioms
            << theory.preFormatter
            << theory.postFormatter;
