@@ -536,7 +536,7 @@ void StorageManager::storeTheoryPluginsRecord(const QString &logicalSystemName, 
 void StorageManager::storeTheoryPluginsData(const QString &logicalSystemName, const QString &theoryName, const Theory &theory)
 {
     const auto dataFilePath = theoryPluginsDataFilePath(logicalSystemName, theoryName);
-    writeComponent(dataFilePath, theory.getSignature());
+    writeComponent(dataFilePath, *theory.getSignature()); //TODO Refactor Using reference
     appendComponent(dataFilePath, theory.getPreFormatter().getProcessors());
     appendComponent(dataFilePath, theory.getPostFormatter().getProcessors());
 }

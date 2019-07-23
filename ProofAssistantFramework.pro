@@ -74,7 +74,6 @@ SOURCES += main.cpp \
     lineofproofsectionmanager.cpp \
     storagemanager.cpp \
     logicalsystemrecord.cpp \
-    programmanager.cpp \
     theoryassistant.cpp \
     theorybuilder.cpp \
     theorypluginsrecord.cpp \
@@ -160,7 +159,6 @@ HEADERS += \
     lineofproofsectionmanager.h \
     storagemanager.h \
     logicalsystemrecord.h \
-    programmanager.h \
     theoryrecord.h \
     ../Language/Parser/parsingtreeconstiterator.h \
     pluginmanager.h \
