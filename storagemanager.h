@@ -17,6 +17,7 @@ class Signature;
 class StringProcessor;
 class Proof;
 class LogicalSystemPluginsRecord;
+class ProofPrinter;
 
 //TODO Split class in two, one for paths and dirs and other for storing/retrieving
 
@@ -51,19 +52,19 @@ public:
     static bool theoryExists(const QString &logicalSystemName, const QString &theoryName);
     static void storeTheoriesRecords(const QString &logicalSystemName, const QVector<TheoryRecord> &records);
     static void storeTheoryData(const QString &logicalSystemName, const Theory &theory);
-    static void setupTheoryDir(const QString &logicalSystemName, const Theory &theory, const TheoryPluginsRecord &pluginsRecord);
+    static void setupTheoryDir(const QString &logicalSystemName, const Theory &theory, const TheoryPluginsRecord &pluginsRecord, const ProofPrinter &proofPrinter);
     static void deleteTheoryDir(const QString &logicalSystemName, const QString &theoryName);
-    static Theory loadTheory(const LogicalSystem &parentLogic, const QString &theoryName);
+    static Theory loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, std::shared_ptr<ProofPrinter> &proofPrinter);
     static void storeTheoryPluginsRecord(const QString &logicalSystemName, const QString &theoryName, const TheoryPluginsRecord &pluginsRecord);
     static TheoryPluginsRecord retrieveTheoryPluginsRecord(const QString &logicalSystemName, const QString &theoryName);
-    static void storeTheoryPluginsData(const QString &logicalSystemName, const QString &theoryName, const Theory &theory);
+    static void storeTheoryPluginsData(const QString &logicalSystemName, const QString &theoryName, const Theory &theory, const ProofPrinter &proofPrinter);
     static void loadTheoryPlugins(const QString &logicalSystemName,
                                   const QString &theoryName,
                                   std::shared_ptr<Signature> &signature,
                                   QVector<std::shared_ptr<const InferenceTactic>> &inferenceTactics,
                                   QVector<std::shared_ptr<StringProcessor>> &preProcessors,
-                                  QVector<std::shared_ptr<StringProcessor>> &postProcessors);
-
+                                  QVector<std::shared_ptr<StringProcessor>> &postProcessors,
+                                  std::shared_ptr<ProofPrinter> &proofPrinter);
     //Proof
     static QVector<ProofRecord> retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName);
     static QStringList proofsNamesList(const QString &logicalSystemName, const QString &theoryName);

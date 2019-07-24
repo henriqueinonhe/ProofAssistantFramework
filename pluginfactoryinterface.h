@@ -72,7 +72,7 @@ public:
                                        const QVector<Formula> &premises,
                                        const Formula &conclusion) const = 0;
 
-    virtual shared_ptr<Proof> instance(QDataStream &stream) const = 0;
+    virtual shared_ptr<Proof> instance(QDataStream &stream, const Signature * const signature) const = 0;
 
     virtual shared_ptr<Proof> instance() const = 0; //Test Loading
 

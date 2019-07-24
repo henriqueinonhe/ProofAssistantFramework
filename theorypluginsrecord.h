@@ -8,10 +8,13 @@ class QDataStream;
 
 struct TheoryPluginsRecord
 {
-    TheoryPluginsRecord(const QStringList &inferenceTacticsPluginsNameList = QStringList(),
+    TheoryPluginsRecord() = default;
+    TheoryPluginsRecord(const QString &proofPrinterPluginName,
+                        const QStringList &inferenceTacticsPluginsNameList = QStringList(),
                         const QStringList &preProcessorsPluginsNameList = QStringList(),
                         const QStringList &postProcessorsPluginsNameList = QStringList());
 
+    QString proofPrinterPluginName;
     QStringList inferenceTacticsPluginsNameList;
     QStringList preProcessorsPluginsNameList;
     QStringList postProcessorsPluginsNameList;

@@ -13,6 +13,7 @@ class Parser;
 class ProofRecord;
 class Proof;
 class LogicalSystemPluginsRecord;
+class ProofPrinter;
 
 namespace std
 {
@@ -24,7 +25,11 @@ using namespace std;
 class TheoryAssistant
 {
 public:
-    TheoryAssistant(const LogicalSystem &activeLogicalSystem, Theory &&activeTheory);
+    TheoryAssistant(const LogicalSystem &activeLogicalSystem, Theory &&activeTheory, const shared_ptr<ProofPrinter> &proofPrinter);
+
+    //Logical System
+    const LogicalSystem &getActiveLogicalSystem() const;
+    const ProofPrinter &getProofPrinter() const;
 
     //Theory
     const Theory &getActiveTheory() const;
@@ -47,6 +52,7 @@ public:
     ProofAssistant loadProof(const unsigned int proofId) const;
     void saveProof(const ProofAssistant &assistant) const;
 
+
 private:
     LogicalSystemPluginsRecord retrieveActiveLogicalSystemPluginsRecord() const;
     TheoryPluginsRecord retrieveActiveTheoryPluginsRecord() const;
@@ -58,6 +64,7 @@ private:
 
     const LogicalSystem &activeLogicalSystem;
     Theory activeTheory;
+    shared_ptr<ProofPrinter> proofPrinter;
 };
 
 #endif // THEORYASSISTANT_H

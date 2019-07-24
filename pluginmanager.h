@@ -57,6 +57,13 @@ public:
         return factory->instance(id, name, description, premises, conclusion);
     }
 
+    static shared_ptr<Proof> fetchPlugin(QDataStream &stream,
+                                         const Signature * const signature,
+                                         const QString &pluginPath)
+    {
+        const auto factory = fetchPluginFactory<Proof>(pluginPath);
+        return factory->instance(stream, signature);
+    }
 
     template <class T>
     static QVector<shared_ptr<T>> fetchPluginVector(const QStringList &pluginPathList)

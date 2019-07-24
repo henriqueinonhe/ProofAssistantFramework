@@ -9,6 +9,7 @@ class LogicalSystemPluginsRecord;
 class Signature;
 class TheoryRecord;
 class TheoryAssistant;
+class ProofPrinter;
 
 namespace std
 {

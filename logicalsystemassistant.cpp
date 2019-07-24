@@ -6,6 +6,7 @@
 #include "logicalsystempluginsrecord.h"
 #include "pluginmanager.h"
 #include "theoryassistant.h"
+#include "theorypluginsrecord.h"
 
 const LogicalSystem &LogicalSystemAssistant::getActiveLogicalSystem() const
 {
@@ -14,8 +15,9 @@ const LogicalSystem &LogicalSystemAssistant::getActiveLogicalSystem() const
 
 TheoryAssistant LogicalSystemAssistant::loadTheory(const QString &name)
 {
-    auto theory = StorageManager::loadTheory(activeLogicalSystem, name);
-    return TheoryAssistant(activeLogicalSystem, std::move(theory));
+    shared_ptr<ProofPrinter> proofPrinter;
+    auto theory = StorageManager::loadTheory(activeLogicalSystem, name, proofPrinter);
+    return TheoryAssistant(activeLogicalSystem, std::move(theory), proofPrinter);
 }
 
 void LogicalSystemAssistant::createTheory(const TheoryBuilder &builder, const TheoryPluginsRecord &pluginsRecord) const
@@ -32,6 +34,7 @@ void LogicalSystemAssistant::createTheory(const TheoryBuilder &builder, const Th
 
     //Theory
     const auto theory = builder.build();
+    const auto proofPrinter = PluginManager::fetchPlugin<ProofPrinter>(StorageManager::proofPrinterPluginPath(pluginsRecord.proofPrinterPluginName));
 
     //TheoryRecord
     TheoryRecord newTheoryRecord(theoryName, theoryDescription);
@@ -40,7 +43,7 @@ void LogicalSystemAssistant::createTheory(const TheoryBuilder &builder, const Th
 
     //File Management
     StorageManager::storeTheoriesRecords(activeLogicalSystemName, records);
-    StorageManager::setupTheoryDir(activeLogicalSystemName, theory, pluginsRecord);
+    StorageManager::setupTheoryDir(activeLogicalSystemName, theory, pluginsRecord, *proofPrinter);
 }
 
 void LogicalSystemAssistant::removeTheory(const QString &theoryName) const

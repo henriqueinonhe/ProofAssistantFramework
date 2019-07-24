@@ -9,8 +9,6 @@ TARGET = ProofAssistantFramework
 CONFIG += console
 CONFIG -= app_bundle
 
-PRECOMPILED_HEADER = pch.h
-
 TEMPLATE = app
 
 INCLUDEPATH += ../Language/Parser \
@@ -21,66 +19,10 @@ INCLUDEPATH += ../Language/Parser \
                ../Language/Type \
                ../Language/Utils
 
+LIBS = -L"C:/Users/Henrique/Documents/Qt Projects/Static Libraries/Libs/" -llibProofAssistantFramework
+
 SOURCES += main.cpp \
-    ../Language/Type/typeparsingtreeconstiterator.cpp \
-    logicalsystemassistant.cpp \
-    logicalsystempluginsrecord.cpp \
-    programassistant.cpp \
-    proofprinter.cpp \
-    prooftester.cpp \
-    stringprocessormanager.cpp \
     tests.cpp \
-    ../Language/Parser/formula.cpp \
-    ../Language/Parser/lexer.cpp \
-    ../Language/Parser/parser.cpp \
-    ../Language/Parser/parsingtree.cpp \
-    ../Language/Parser/parsingtreeiterator.cpp \
-    ../Language/Parser/parsingtreenode.cpp \
-    ../Language/Parser/signature.cpp \
-    ../Language/Parser/tablesignature.cpp \
-    ../Language/Processors/PostProcessors/basicpostprocessor.cpp \
-    ../Language/Processors/PreProcessors/basicpreprocessor.cpp \
-    ../Language/Processors/PreProcessors/classicfunctionnotationpreprocessor.cpp \
-    ../Language/Processors/basicprocessor.cpp \
-    ../Language/Processors/basicprocessortokenrecord.cpp \
-    ../Language/Processors/formatter.cpp \
-    ../Language/Processors/stringprocessor.cpp \
-    ../Language/Token/bindingrecord.cpp \
-    ../Language/Token/bindingtoken.cpp \
-    ../Language/Token/coretoken.cpp \
-    ../Language/Token/punctuationtoken.cpp \
-    ../Language/Token/token.cpp \
-    ../Language/Token/tokenstring.cpp \
-    ../Language/Token/variabletoken.cpp \
-    ../Language/Type/type.cpp \
-    ../Language/Type/typeparser.cpp \
-    ../Language/Type/typeparsingtree.cpp \
-    ../Language/Type/typeparsingtreeiterator.cpp \
-    ../Language/Type/typeparsingtreenode.cpp \
-    ../Language/Type/typetoken.cpp \
-    ../Language/Type/typetokenstring.cpp \
-    ../Language/Utils/qtclassesdeserialization.cpp \
-    logicalsystem.cpp \
-    theory.cpp \
-    proof.cpp \
-    lineofproof.cpp \
-    prooflinks.cpp \
-    inferencerule.cpp \
-    proofassistant.cpp \
-    justification.cpp \
-    inferenceprocedure.cpp \
-    inferencetactic.cpp \
-    lineofproofsection.cpp \
-    lineofproofsectionmanager.cpp \
-    storagemanager.cpp \
-    logicalsystemrecord.cpp \
-    theoryassistant.cpp \
-    theorybuilder.cpp \
-    theorypluginsrecord.cpp \
-    theoryrecord.cpp \
-    ../Language/Parser/parsingtreeconstiterator.cpp \
-    pluginmanager.cpp \
-    proofrecord.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -94,72 +36,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
-    ../Language/Type/typeparsingtreeconstiterator.h \
     catch.hpp \
-    ../Language/Parser/formula.h \
-    ../Language/Parser/lexer.h \
-    ../Language/Parser/parser.h \
-    ../Language/Parser/parsingerrorexception.hpp \
-    ../Language/Parser/parsingtree.h \
-    ../Language/Parser/parsingtreeiterator.h \
-    ../Language/Parser/parsingtreenode.h \
-    ../Language/Parser/signature.h \
-    ../Language/Parser/tablesignature.h \
-    ../Language/Processors/PostProcessors/basicpostprocessor.h \
-    ../Language/Processors/PreProcessors/basicpreprocessor.h \
-    ../Language/Processors/PreProcessors/classicfunctionnotationpreprocessor.h \
-    ../Language/Processors/basicprocessor.h \
-    ../Language/Processors/basicprocessortokenrecord.h \
-    ../Language/Processors/formatter.h \
-    ../Language/Processors/stringprocessor.h \
-    ../Language/Token/bindingrecord.h \
-    ../Language/Token/bindingtoken.h \
-    ../Language/Token/coretoken.h \
-    ../Language/Token/punctuationtoken.h \
-    ../Language/Token/token.h \
-    ../Language/Token/tokenstring.h \
-    ../Language/Token/variabletoken.h \
-    ../Language/Type/type.h \
-    ../Language/Type/typeparser.h \
-    ../Language/Type/typeparsingerrorexception.h \
-    ../Language/Type/typeparsingtree.h \
-    ../Language/Type/typeparsingtreeiterator.h \
-    ../Language/Type/typeparsingtreenode.h \
-    ../Language/Type/typetoken.h \
-    ../Language/Type/typetokenstring.h \
-    ../Language/Utils/containerauxiliarytools.h \
-    ../Language/Utils/parsingauxiliarytools.h \
-    ../Language/Utils/pool.h \
-    ../Language/Utils/qtclassesdeserialization.h \
-    dummyclasses.h \
-    logicalsystem.h \
-    logicalsystemassistant.h \
-    logicalsystempluginsrecord.h \
     pch.h \
-    pluginfactoryinterface.h \
-    programassistant.h \
-    proofprinter.h \
-    prooftester.h \
-    smartpointersserialization.h \
-    stringprocessormanager.h \
-    theory.h \
-    proof.h \
-    lineofproof.h \
-    prooflinks.h \
-    inferencerule.h \
-    theoryassistant.h \
-    theorybuilder.h \
-    theorypluginsrecord.h \
-    tree.h \
-    proofassistant.h \
-    justification.h \
-    inferenceprocedure.h \
-    inferencetactic.h \
-    lineofproofsection.h \
-    lineofproofsectionmanager.h \
-    storagemanager.h \
-    logicalsystemrecord.h \
-    theoryrecord.h \
-    ../Language/Parser/parsingtreeconstiterator.h \
-    pluginmanager.h \
-    proofrecord.h

@@ -681,7 +681,6 @@ TEST_CASE("Framework Integration I")
                                              inferenceRulesNamesList,
                                              "TableSignaturePlugin",
                                              "",
-                                             "DummyProofPrinter",
                                              Type("o"));
 
         const auto logicalSystemRecord = StorageManager::retrieveLogicalSystemsRecords().first();
@@ -709,7 +708,7 @@ TEST_CASE("Framework Integration I")
         {
             QStringList inferenceList;
             inferenceList << "YadayadaRule";
-            CHECK_THROWS_WITH(programAssistant.createLogicalSystem("Name", "Description", inferenceList, "TableSignature", "", "DummyProofPrinter", Type("o")), "The plugin at \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\" couldn't be loaded!");
+            CHECK_THROWS_WITH(programAssistant.createLogicalSystem("Name", "Description", inferenceList, "TableSignature", "", Type("o")), "The plugin at \"C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/plugins/Inference Rules/YadayadaRule.dll\" couldn't be loaded!");
             CHECK(!QDir("C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox/data/Logical Systems/Name").exists());
         }
     }
@@ -724,7 +723,6 @@ TEST_CASE("Framework Integration I")
                                              inferenceRulesNamesList,
                                              "TableSignaturePlugin",
                                              "",
-                                             "DummyProofPrinter",
                                              Type("o"));
 
         auto logicalSystemAssistant = programAssistant.loadLogicalSystem("Propositional Logic");
@@ -742,7 +740,7 @@ TEST_CASE("Framework Integration I")
         builder.addAxiom("P");
         builder.addAxiom("(~ (~ P))");
 
-        logicalSystemAssistant.createTheory(builder, TheoryPluginsRecord());
+        logicalSystemAssistant.createTheory(builder, TheoryPluginsRecord("DummyProofPrinter"));
 
         CHECK(StorageManager::retrieveCurrentProofId("Propositional Logic", "Graph Theory") == 0);
 
@@ -778,7 +776,6 @@ TEST_CASE("Framework Integration I")
                                              inferenceRulesNamesList,
                                              "TableSignaturePlugin",
                                              "",
-                                             "DummyProofPrinter",
                                              Type("o"));
 
         auto logicalSystemAssistant = programAssistant.loadLogicalSystem("Propositional Logic");
@@ -796,7 +793,7 @@ TEST_CASE("Framework Integration I")
         builder.addAxiom("P");
         builder.addAxiom("(~ (~ P))");
 
-        logicalSystemAssistant.createTheory(builder, TheoryPluginsRecord());
+        logicalSystemAssistant.createTheory(builder, TheoryPluginsRecord("DummyProofPrinter"));
         auto theoryAssistant = logicalSystemAssistant.loadTheory("Graph Theory");
 
         //Create Proof
@@ -844,7 +841,6 @@ TEST_CASE("Framework Integration II")
                                          inferenceRules,
                                          "AutomaticPropositionalLogicSignature",
                                          "",
-                                         "DummyProofPrinter",
                                          Type("o"));
     auto logicalSystemAssistant = programAssistant.loadLogicalSystem("Propositional Logic2");
 
@@ -857,7 +853,7 @@ TEST_CASE("Framework Integration II")
     builder.addAxiom("A");
     builder.addAxiom("B");
 
-    TheoryPluginsRecord pluginsRecords;
+    TheoryPluginsRecord pluginsRecords("DummyProofPrinter");
     logicalSystemAssistant.createTheory(builder, pluginsRecords);
     auto theoryAssistant = logicalSystemAssistant.loadTheory("First Theory");
 

@@ -46,18 +46,11 @@ void ProgramAssistant::validateProofPlugin(const QString &proofPluginName) const
     }
 }
 
-void ProgramAssistant::validateProofPrinterPlugin(const QString &proofPrinterPluginName) const
-{
-    auto proofPrinterPluginPath = StorageManager::proofPrinterPluginPath(proofPrinterPluginName);
-    PluginManager::fetchPlugin<ProofPrinter>(proofPrinterPluginPath);
-}
-
 void ProgramAssistant::createLogicalSystem(const QString &name,
                                            const QString &description,
                                            const QStringList &inferenceRulesNamesList,
                                            const QString &signaturePluginName,
                                            const QString &proofPluginName,
-                                           const QString &proofPrinterPluginName,
                                            const Type &wffType) const
 {
     if(checkLogicalSystemNameCollision(name))
@@ -81,7 +74,7 @@ void ProgramAssistant::createLogicalSystem(const QString &name,
     records.append(newSystemRecord);
 
     //File management
-    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName, proofPrinterPluginName);
+    LogicalSystemPluginsRecord pluginsRecord(inferenceRulesNamesList, signaturePluginName, proofPluginName);
     StorageManager::storeLogicalSystemsRecords(records);
     StorageManager::setupLogicalSystemDir(logicalSystem, pluginsRecord);
 }

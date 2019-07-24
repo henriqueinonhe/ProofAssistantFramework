@@ -8,6 +8,7 @@
 #include "theorypluginsrecord.h"
 #include "proof.h"
 #include "logicalsystempluginsrecord.h"
+#include "proofprinter.h"
 
 QString StorageManager::rootPath = "C:/Users/Henrique/Desktop/Proof Assistant Framework Sandbox";
 const QString StorageManager::storageFilesSuffix = ".dat";
@@ -217,7 +218,7 @@ QStringList StorageManager::proofPrinterPluginsList()
 
 bool StorageManager::proofPrinterPluginExists(const QString &pluginName)
 {
-    return proofPrinterPluginsList().contains(pluginName);
+    return proofPrinterPluginsList().contains(pluginName + ".dll");
 }
 
 QString StorageManager::inferenceRulePluginPath(const QString &pluginName)
@@ -410,7 +411,7 @@ void StorageManager::storeTheoryData(const QString &logicalSystemName, const The
     writeComponent(theoryDataFilePath(logicalSystemName, theory.getName()), theory);
 }
 
-void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const QString &theoryName, std::shared_ptr<Signature> &signature, QVector<std::shared_ptr<const InferenceTactic> > &inferenceTactics, QVector<std::shared_ptr<StringProcessor> > &preProcessors, QVector<std::shared_ptr<StringProcessor> > &postProcessors)
+void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const QString &theoryName, std::shared_ptr<Signature> &signature, QVector<std::shared_ptr<const InferenceTactic> > &inferenceTactics, QVector<std::shared_ptr<StringProcessor> > &preProcessors, QVector<std::shared_ptr<StringProcessor> > &postProcessors, std::shared_ptr<ProofPrinter> &proofPrinter)
 {
     //NOTE Maybe refactor using tuples
     LogicalSystemPluginsRecord systemPluginsRecord;
@@ -422,6 +423,7 @@ void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const Q
     const auto inferenceTacticsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.inferenceTacticsPluginsNameList, inferenceTacticPluginPath);
     const auto preProcessorsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.preProcessorsPluginsNameList, preProcessorPluginPath);
     const auto postProcessorsPluginsPaths = convertPluginNamesToPaths(theoryPluginsRecord.postProcessorsPluginsNameList, postProcessorPluginPath);
+    const auto proofPrinterPluginPath = StorageManager::proofPrinterPluginPath(theoryPluginsRecord.proofPrinterPluginName);
 
     const auto pluginsDataFilePath = theoryPluginsDataFilePath(logicalSystemName, theoryName);
     QFile dataFile(pluginsDataFilePath);
@@ -432,7 +434,9 @@ void StorageManager::loadTheoryPlugins(const QString &logicalSystemName, const Q
     inferenceTactics = PluginManager::fetchPluginVector<const InferenceTactic>(inferenceTacticsPluginsPaths);
     preProcessors = PluginManager::fetchPluginVector(stream, preProcessorsPluginsPaths, signature.get());
     postProcessors = PluginManager::fetchPluginVector(stream, postProcessorsPluginsPaths, signature.get());
+    proofPrinter = PluginManager::fetchPlugin<ProofPrinter>(stream, proofPrinterPluginPath);
 }
+
 
 LogicalSystem StorageManager::loadLogicalSystem(const QString &systemName)
 {
@@ -476,7 +480,7 @@ void StorageManager::storeTheoriesRecords(const QString &logicalSystemName, cons
     storeRecords<TheoryRecord>(records, theoriesRecordsPath(logicalSystemName));
 }
 
-void StorageManager::setupTheoryDir(const QString &logicalSystemName, const Theory &theory, const TheoryPluginsRecord &pluginsRecord)
+void StorageManager::setupTheoryDir(const QString &logicalSystemName, const Theory &theory, const TheoryPluginsRecord &pluginsRecord, const ProofPrinter &proofPrinter)
 {
     const auto theoryName = theory.getName();
     QDir theoriesDir(theoriesDirPath(logicalSystemName));
@@ -488,7 +492,7 @@ void StorageManager::setupTheoryDir(const QString &logicalSystemName, const Theo
     storeCurrentProofId(logicalSystemName, theoryName, initialProofId);
     storeProofsRecords(logicalSystemName, theoryName, QVector<ProofRecord>());
     storeTheoryPluginsRecord(logicalSystemName, theory.getName(), pluginsRecord);
-    storeTheoryPluginsData(logicalSystemName, theory.getName(), theory);
+    storeTheoryPluginsData(logicalSystemName, theory.getName(), theory, proofPrinter);
     storeTheoryData(logicalSystemName, theory);
 }
 
@@ -498,7 +502,7 @@ void StorageManager::deleteTheoryDir(const QString &logicalSystemName, const QSt
     rmDir(theoryDir);
 }
 
-Theory StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName)
+Theory StorageManager::loadTheory(const LogicalSystem &parentLogic, const QString &theoryName, std::shared_ptr<ProofPrinter> &proofPrinter)
 {
     //Load Theory Plugins
     const auto logicalSystemName = parentLogic.getName();
@@ -507,7 +511,7 @@ Theory StorageManager::loadTheory(const LogicalSystem &parentLogic, const QStrin
     QVector<shared_ptr<const InferenceTactic>> inferenceTactics;
     QVector<shared_ptr<StringProcessor>> preProcessors;
     QVector<shared_ptr<StringProcessor>> postProcessors;
-    loadTheoryPlugins(logicalSystemName, theoryName, signature, inferenceTactics, preProcessors, postProcessors);
+    loadTheoryPlugins(logicalSystemName, theoryName, signature, inferenceTactics, preProcessors, postProcessors, proofPrinter);
 
     //Load Theory
     QFile dataFile(StorageManager::theoryDataFilePath(logicalSystemName, theoryName));
@@ -533,12 +537,13 @@ void StorageManager::storeTheoryPluginsRecord(const QString &logicalSystemName, 
     writeComponent(theoryPluginsRecordFilePath(logicalSystemName, theoryName), pluginsRecord);
 }
 
-void StorageManager::storeTheoryPluginsData(const QString &logicalSystemName, const QString &theoryName, const Theory &theory)
+void StorageManager::storeTheoryPluginsData(const QString &logicalSystemName, const QString &theoryName, const Theory &theory, const ProofPrinter &proofPrinter)
 {
     const auto dataFilePath = theoryPluginsDataFilePath(logicalSystemName, theoryName);
     writeComponent(dataFilePath, *theory.getSignature()); //TODO Refactor Using reference
     appendComponent(dataFilePath, theory.getPreFormatter().getProcessors());
     appendComponent(dataFilePath, theory.getPostFormatter().getProcessors());
+    appendComponent(dataFilePath, proofPrinter);
 }
 
 QVector<ProofRecord> StorageManager::retrieveProofsRecords(const QString &logicalSystemName, const QString &theoryName)

@@ -7,9 +7,10 @@
 #include "parser.h"
 #include "logicalsystempluginsrecord.h"
 
-TheoryAssistant::TheoryAssistant(const LogicalSystem &activeLogicalSystem, Theory &&activeTheory) :
+TheoryAssistant::TheoryAssistant(const LogicalSystem &activeLogicalSystem, Theory &&activeTheory, const shared_ptr<ProofPrinter> &proofPrinter) :
     activeLogicalSystem(activeLogicalSystem),
-    activeTheory(std::move(activeTheory))
+    activeTheory(std::move(activeTheory)),
+    proofPrinter(proofPrinter)
 {
 
 }
@@ -147,7 +148,7 @@ ProofAssistant TheoryAssistant::loadProof(const unsigned int proofId) const
     else
     {
         const auto proofPluginPath = StorageManager::proofPluginPath(proofPluginName);
-        auto proof = PluginManager::fetchPlugin<Proof>(stream, proofPluginPath);
+        auto proof = PluginManager::fetchPlugin(stream, activeTheory.getSignature(), proofPluginPath);
         return ProofAssistant(activeTheory, proof);
     }
 }
@@ -181,11 +182,11 @@ void TheoryAssistant::storeActiveTheoryPluginsRecord(const TheoryPluginsRecord &
 }
 
 shared_ptr<Proof> TheoryAssistant::loadProofPlugin(const QString &proofPluginName,
-                                                  const uint id,
-                                                  const QString &name,
-                                                  const QString &description,
-                                                  const QVector<Formula> &premises,
-                                                  const Formula &conclusion) const
+                                                   const uint id,
+                                                   const QString &name,
+                                                   const QString &description,
+                                                   const QVector<Formula> &premises,
+                                                   const Formula &conclusion) const
 {
     if(proofPluginName == "") //TODO Refactor using a constant
     {
@@ -252,5 +253,15 @@ ProofLinks TheoryAssistant::linkConclusion(const unsigned int currentProofId, co
         }
     }
     return ProofLinks(conclusion, linkedProofsIds);
+}
+
+const LogicalSystem &TheoryAssistant::getActiveLogicalSystem() const
+{
+    return activeLogicalSystem;
+}
+
+const ProofPrinter &TheoryAssistant::getProofPrinter() const
+{
+    return *proofPrinter;
 }
 

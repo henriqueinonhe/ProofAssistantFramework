@@ -121,7 +121,22 @@ protected:
 
 class DummyProofPrinter : public ProofPrinter
 {
+public:
+    DummyProofPrinter() = default;
+    DummyProofPrinter(QDataStream &)
+    {
 
+    }
+
+protected:
+    void serialize(QDataStream &) const override
+    {
+
+    }
+    void deserialize(QDataStream &) override
+    {
+
+    }
 };
 
 #endif // DUMMYCLASSES_H
