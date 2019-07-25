@@ -33,7 +33,7 @@ public:
 
     QString format(const QString &input) const;
 
-    QString toString() const;
+    QStringList toStringList() const;
 
     QVector<StringProcessor *> getProcessors();
     QVector<const StringProcessor *> getProcessors() const;

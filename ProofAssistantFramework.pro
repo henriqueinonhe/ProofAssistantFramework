@@ -21,6 +21,8 @@ INCLUDEPATH += ../Language/Parser \
 
 LIBS = -L"C:/Users/Henrique/Documents/Qt Projects/Static Libraries/Libs/" -llibProofAssistantFramework
 
+PRE_TARGETDEPS += "C:/Users/Henrique/Documents/Qt Projects/Static Libraries/Libs/libProofAssistantFramework.a"
+
 SOURCES += main.cpp \
     tests.cpp \
 

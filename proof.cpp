@@ -114,7 +114,11 @@ bool Proof::isFinishedAdditionalChecks() const
 
 void Proof::setComment(const unsigned int lineNumber, const QString &comment)
 {
-    //NOTE Maybe add a boundary check
+    if(lineNumber >= linesOfProof.size())
+    {
+        throw invalid_argument("There is no line number associated with this index!");
+    }
+
     linesOfProof[lineNumber]->setComment(comment);
 }
 
@@ -131,6 +135,11 @@ const LineOfProof &Proof::getLineOfProof(const int lineNumber) const
     if(lineNumber <= 0)
     {
         throw invalid_argument("Line number must be a positive integer!");
+    }
+
+    if(lineNumber > linesOfProof.size())
+    {
+        throw invalid_argument("There is no line number associated with this index!");
     }
 
     const int zeroIndexCompensation = 1;

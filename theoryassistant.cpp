@@ -69,6 +69,26 @@ void TheoryAssistant::removePostProcessorPlugin(const unsigned int processorInde
     storeActiveTheoryPluginsRecord(pluginsRecord);
 }
 
+void TheoryAssistant::turnOnPreProcessorPlugin(const unsigned int processorIndex)
+{
+    activeTheory.getPreFormatter().turnOnProcessor(processorIndex);
+}
+
+void TheoryAssistant::turnOnPostProcessorPlugin(const unsigned int processorIndex)
+{
+    activeTheory.getPostFormatter().turnOnProcessor(processorIndex);
+}
+
+void TheoryAssistant::turnOffPreProcessorPlugin(const unsigned int processorIndex)
+{
+    activeTheory.getPreFormatter().turnOffProcessor(processorIndex);
+}
+
+void TheoryAssistant::turnOffPostProcessorPlugin(const unsigned int processorIndex)
+{
+    activeTheory.getPostFormatter().turnOffProcessor(processorIndex);
+}
+
 void TheoryAssistant::addInferenceTacticPlugin(const QString &tacticPluginName)
 {
     const auto inferenceTactic = PluginManager::fetchPlugin<const InferenceTactic>(StorageManager::inferenceTacticPluginPath(tacticPluginName));
@@ -94,6 +114,16 @@ void TheoryAssistant::removeInferenceTacticPlugin(const unsigned int tacticIndex
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.inferenceTacticsPluginsNameList.removeAt(tacticIndex);
     storeActiveTheoryPluginsRecord(pluginsRecord);
+}
+
+QStringList TheoryAssistant::listLoadedPreProcessors() const
+{
+    return activeTheory.getPreFormatter().toStringList();
+}
+
+QStringList TheoryAssistant::listLoadedPostProcessors() const
+{
+    return activeTheory.getPostFormatter().toStringList();
 }
 
 void TheoryAssistant::createProof(const QString &name, const QString &description, const QStringList &premises, const QString &conclusion) const

@@ -51,9 +51,9 @@ QString StringProcessorManager::format(const QString &input) const
     return formatter.format(input);
 }
 
-QString StringProcessorManager::toString() const
+QStringList StringProcessorManager::toStringList() const
 {
-    return formatter.toString();
+    return formatter.toStringList();
 }
 
 QVector<StringProcessor *> StringProcessorManager::getProcessors()
