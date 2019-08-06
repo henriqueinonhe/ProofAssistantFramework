@@ -45,6 +45,8 @@ public:
     void turnOnPostProcessorPlugin(const unsigned int processorIndex);
     void turnOffPreProcessorPlugin(const unsigned int processorIndex);
     void turnOffPostProcessorPlugin(const unsigned int processorIndex);
+    StringProcessor &accessPreProcessorPlugin(const unsigned int processorIndex);
+    StringProcessor &accessPostProcessorPlugin(const unsigned int processorIndex);
     QStringList listLoadedPreProcessors() const;
     QStringList listLoadedPostProcessors() const;
     void addInferenceTacticPlugin(const QString &tacticPluginName);

@@ -89,6 +89,28 @@ void TheoryAssistant::turnOffPostProcessorPlugin(const unsigned int processorInd
     activeTheory.getPostFormatter().turnOffProcessor(processorIndex);
 }
 
+StringProcessor &TheoryAssistant::accessPreProcessorPlugin(const unsigned int processorIndex)
+{
+    const auto processors = activeTheory.getPreFormatter().getProcessors();
+    if(processorIndex >= static_cast<uint>(processors.size()))
+    {
+        throw invalid_argument("There is no processor associated with that index!");
+    }
+
+    return *processors[processorIndex];
+}
+
+StringProcessor &TheoryAssistant::accessPostProcessorPlugin(const unsigned int processorIndex)
+{
+    const auto processors = activeTheory.getPostFormatter().getProcessors();
+    if(processorIndex >= static_cast<uint>(processors.size()))
+    {
+        throw invalid_argument("There is no processor associated with that index!");
+    }
+
+    return *processors[processorIndex];
+}
+
 void TheoryAssistant::addInferenceTacticPlugin(const QString &tacticPluginName)
 {
     const auto inferenceTactic = PluginManager::fetchPlugin<const InferenceTactic>(StorageManager::inferenceTacticPluginPath(tacticPluginName));
