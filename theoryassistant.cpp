@@ -35,6 +35,7 @@ void TheoryAssistant::addPreProcessorPlugin(const QString &processorPluginName)
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.preProcessorsPluginsNameList << processorPluginName;
     storeActiveTheoryPluginsRecord(pluginsRecord);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::addPostProcessorPlugin(const QString &processorPluginName)
@@ -47,6 +48,7 @@ void TheoryAssistant::addPostProcessorPlugin(const QString &processorPluginName)
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.postProcessorsPluginsNameList << processorPluginName;
     storeActiveTheoryPluginsRecord(pluginsRecord);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::removePreProcessorPlugin(const unsigned int processorIndex)
@@ -57,6 +59,7 @@ void TheoryAssistant::removePreProcessorPlugin(const unsigned int processorIndex
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.preProcessorsPluginsNameList.pop_back();
     storeActiveTheoryPluginsRecord(pluginsRecord);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::removePostProcessorPlugin(const unsigned int processorIndex)
@@ -67,26 +70,31 @@ void TheoryAssistant::removePostProcessorPlugin(const unsigned int processorInde
     auto pluginsRecord = retrieveActiveTheoryPluginsRecord();
     pluginsRecord.postProcessorsPluginsNameList.pop_back();
     storeActiveTheoryPluginsRecord(pluginsRecord);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::turnOnPreProcessorPlugin(const unsigned int processorIndex)
 {
     activeTheory.getPreFormatter().turnOnProcessor(processorIndex);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::turnOnPostProcessorPlugin(const unsigned int processorIndex)
 {
     activeTheory.getPostFormatter().turnOnProcessor(processorIndex);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::turnOffPreProcessorPlugin(const unsigned int processorIndex)
 {
     activeTheory.getPreFormatter().turnOffProcessor(processorIndex);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 void TheoryAssistant::turnOffPostProcessorPlugin(const unsigned int processorIndex)
 {
     activeTheory.getPostFormatter().turnOffProcessor(processorIndex);
+    StorageManager::storeTheoryData(activeLogicalSystem.getName(), activeTheory);
 }
 
 StringProcessor &TheoryAssistant::accessPreProcessorPlugin(const unsigned int processorIndex)
